@@ -1,4 +1,5 @@
-import 'package:boton/home/home.dart';
+import 'package:boton/constants/mcolors.dart';
+import 'package:boton/screens/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         drawer: Container(),
         appBar: AppBar(
-          backgroundColor: Color(0xff27548A),
+          backgroundColor: MyCollors.appbarcolor,
           title: Text("boton"),
           // leading: Icon(Icons.account_balance_rounded),
         ),
