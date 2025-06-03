@@ -13,6 +13,11 @@ TextStyle projectsubtitle = const TextStyle(
   fontWeight: FontWeight.bold,
   color: MyCollors.projjectsubtitlecolor,
 );
+TextStyle largtitletext = const TextStyle(
+  fontSize: 22,
+  fontWeight: FontWeight.bold,
+  color: MyCollors.firstcolor,
+);
 
 BoxDecoration firstdec = BoxDecoration(
   color: MyCollors.firstcolor,

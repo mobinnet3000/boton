@@ -1,5 +1,4 @@
 import 'package:boton/constants/mcolors.dart';
-import 'package:boton/constants/mypaddings.dart';
 import 'package:boton/constants/text_style.dart';
 import 'package:boton/data/fakedata.dart';
 import 'package:flutter/material.dart';

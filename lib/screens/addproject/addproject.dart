@@ -1,7 +1,6 @@
 import 'package:boton/components/myybotton.dart';
 import 'package:boton/components/responsivcont.dart';
 import 'package:boton/components/textfield.dart';
-import 'package:boton/constants/mcolors.dart';
 import 'package:boton/constants/mypaddings.dart';
 import 'package:boton/constants/text_style.dart';
 import 'package:flutter/material.dart';

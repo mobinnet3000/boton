@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class mybotton extends StatelessWidget {
   mybotton({super.key, required this.ontap, required this.matn});
-  void Function()? ontap;
+  final void Function()? ontap;
   final String matn;
   @override
   Widget build(BuildContext context) {
