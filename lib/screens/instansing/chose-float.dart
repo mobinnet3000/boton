@@ -3,6 +3,7 @@ import 'package:boton/components/responsivcont.dart';
 import 'package:boton/components/textfield.dart';
 import 'package:boton/constants/mypaddings.dart';
 import 'package:boton/constants/text_style.dart';
+import 'package:boton/screens/instansing/instanslisttime.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -33,7 +34,12 @@ class _ChoiseFloatState extends State<ChoiseFloat> {
             child: ListView.builder(
               itemCount: floats.length,
               itemBuilder: (context, index) {
-                return mybotton(ontap: () {}, matn: floats[index]);
+                return mybotton(
+                  ontap: () {
+                    Get.to(InstanseTime());
+                  },
+                  matn: floats[index],
+                );
               },
             ),
           ),

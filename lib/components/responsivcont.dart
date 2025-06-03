@@ -6,10 +6,12 @@ class RespCont extends StatelessWidget {
   Widget child;
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        constraints: BoxConstraints(maxWidth: 1000),
-        child: child,
+    return Scaffold(
+      body: Center(
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 1000),
+          child: child,
+        ),
       ),
     );
   }

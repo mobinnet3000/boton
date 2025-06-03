@@ -3,7 +3,9 @@ import 'package:boton/components/responsivcont.dart';
 import 'package:boton/components/textfield.dart';
 import 'package:boton/constants/mypaddings.dart';
 import 'package:boton/constants/text_style.dart';
+import 'package:boton/screens/instansing/instans.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class EachInstanse extends StatefulWidget {
   @override
@@ -48,7 +50,14 @@ class _ProjectFormPageState extends State<EachInstanse> {
                     ],
                   ),
                 ),
-                mybotton(ontap: () {}, matn: 'ثبت اطلاعات'),
+                mybotton(
+                  ontap: () {
+                    ChoiseFloatState().instt.add("value");
+
+                    Get.to(Instanses());
+                  },
+                  matn: 'ثبت اطلاعات',
+                ),
 
                 SizedBox(height: 10),
               ],

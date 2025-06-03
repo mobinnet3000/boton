@@ -3,7 +3,10 @@ import 'package:boton/components/responsivcont.dart';
 import 'package:boton/components/textfield.dart';
 import 'package:boton/constants/mypaddings.dart';
 import 'package:boton/constants/text_style.dart';
+import 'package:boton/screens/home/home.dart';
+import 'package:boton/screens/instansing/bot-or-mill.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class AddNewProject extends StatefulWidget {
   @override
@@ -57,13 +60,20 @@ class _ProjectFormPageState extends State<AddNewProject> {
                     Expanded(
                       flex: 1,
                       child: mybotton(
-                        ontap: () {},
+                        ontap: () {
+                          Get.to(BotOrMill());
+                        },
                         matn: 'ثبت و ادامه نمونه گیری',
                       ),
                     ),
                     Expanded(
                       flex: 1,
-                      child: mybotton(ontap: () {}, matn: 'ثبت و پایان'),
+                      child: mybotton(
+                        ontap: () {
+                          Get.to(ProjectListPage());
+                        },
+                        matn: 'ثبت و پایان',
+                      ),
                     ),
                   ],
                 ),

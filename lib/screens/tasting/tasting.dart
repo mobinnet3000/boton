@@ -4,6 +4,7 @@ import 'package:boton/components/textfield.dart';
 import 'package:boton/constants/mypaddings.dart';
 import 'package:boton/constants/text_style.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class EachTesting extends StatefulWidget {
   @override
@@ -44,7 +45,12 @@ class _ProjectFormPageState extends State<EachTesting> {
                     ],
                   ),
                 ),
-                mybotton(ontap: () {}, matn: 'ثبت اطلاعات'),
+                mybotton(
+                  ontap: () {
+                    Get.back();
+                  },
+                  matn: 'ثبت اطلاعات',
+                ),
 
                 SizedBox(height: 10),
               ],

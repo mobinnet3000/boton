@@ -19,7 +19,7 @@ class MyTextFild extends StatelessWidget {
     return Padding(
       padding: MyPadings.normal,
       child: TextFormField(
-        readOnly: readonly!,
+        readOnly: readonly ?? false,
         maxLines: maxlins,
         controller: cont,
         validator:

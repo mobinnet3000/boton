@@ -3,7 +3,10 @@ import 'package:boton/components/responsivcont.dart';
 import 'package:boton/components/textfield.dart';
 import 'package:boton/constants/mypaddings.dart';
 import 'package:boton/constants/text_style.dart';
+import 'package:boton/screens/instansing/bot-or-mill.dart';
+import 'package:boton/screens/tasting/what-day.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class EachProlect extends StatefulWidget {
   @override
@@ -62,11 +65,21 @@ class _ProjectFormPageState extends State<EachProlect> {
                   children: [
                     Expanded(
                       flex: 1,
-                      child: mybotton(ontap: () {}, matn: 'ثبت نمونه گیری '),
+                      child: mybotton(
+                        ontap: () {
+                          Get.to(BotOrMill());
+                        },
+                        matn: 'ثبت نمونه گیری ',
+                      ),
                     ),
                     Expanded(
                       flex: 1,
-                      child: mybotton(ontap: () {}, matn: "ثبت اطلاعات شکست "),
+                      child: mybotton(
+                        ontap: () {
+                          Get.to(WhatDay());
+                        },
+                        matn: "ثبت اطلاعات شکست ",
+                      ),
                     ),
                   ],
                 ),

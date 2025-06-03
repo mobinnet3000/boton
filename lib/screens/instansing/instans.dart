@@ -3,6 +3,8 @@ import 'package:boton/components/responsivcont.dart';
 import 'package:boton/components/textfield.dart';
 import 'package:boton/constants/mypaddings.dart';
 import 'package:boton/constants/text_style.dart';
+import 'package:boton/screens/home/home.dart';
+import 'package:boton/screens/instansing/each-instanse.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,11 +12,11 @@ class Instanses extends StatefulWidget {
   Instanses({super.key});
 
   @override
-  State<Instanses> createState() => _ChoiseFloatState();
+  State<Instanses> createState() => ChoiseFloatState();
 }
 
-class _ChoiseFloatState extends State<Instanses> {
-  List floats = [];
+class ChoiseFloatState extends State<Instanses> {
+  RxList instt = ["نمونه 1", "نمونه 2"].obs;
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +31,30 @@ class _ChoiseFloatState extends State<Instanses> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: floats.length,
+              itemCount: instt.value.length,
               itemBuilder: (context, index) {
-                return mybotton(ontap: () {}, matn: floats[index]);
+                return mybotton(
+                  ontap: () {
+                    // Get.to(EachInstanse());
+                  },
+                  matn: instt.value[index],
+                );
               },
             ),
           ),
 
-          mybotton(ontap: () {}, matn: 'نمونه جدید'),
+          mybotton(
+            ontap: () {
+              Get.to(EachInstanse());
+            },
+            matn: 'نمونه جدید',
+          ),
+          mybotton(
+            ontap: () {
+              Get.to(ProjectListPage());
+            },
+            matn: "ثبت نهایی",
+          ),
         ],
       ),
     );
