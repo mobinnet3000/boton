@@ -1,7 +1,9 @@
 import 'package:boton/constants/mcolors.dart';
 import 'package:boton/constants/text_style.dart';
 import 'package:boton/data/fakedata.dart';
+import 'package:boton/screens/home/each-project.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ProjectsList extends StatelessWidget {
   const ProjectsList({super.key});
@@ -14,8 +16,10 @@ class ProjectsList extends StatelessWidget {
       itemBuilder: (context, index) {
         final project = projects[index];
 
-        return GestureDetector(
-          onTap: () {},
+        return InkWell(
+          onTap: () {
+            Get.to(EachProlect());
+          },
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 8),
             padding: const EdgeInsets.all(16),

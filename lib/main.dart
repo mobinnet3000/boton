@@ -1,10 +1,13 @@
 import 'package:boton/constants/mcolors.dart';
 import 'package:boton/screens/addproject/addproject.dart';
+import 'package:boton/screens/home/each-project.dart';
+import 'package:boton/screens/home/home.dart';
 import 'package:boton/screens/instansing/bot-or-mill.dart';
 import 'package:boton/screens/instansing/chose-float.dart';
 import 'package:boton/screens/instansing/each-instanse.dart';
 import 'package:boton/screens/instansing/instans.dart';
 import 'package:boton/screens/instansing/instanslisttime.dart';
+import 'package:boton/screens/tasting/instanses.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -28,7 +31,7 @@ class MyApp extends StatelessWidget {
           title: Text("boton"),
           // leading: Icon(Icons.account_balance_rounded),
         ),
-        body: EachInstanse(),
+        body: ProjectListPage(),
       ),
     );
   }

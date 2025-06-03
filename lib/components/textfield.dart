@@ -3,8 +3,15 @@ import 'package:boton/constants/mypaddings.dart';
 import 'package:flutter/material.dart';
 
 class MyTextFild extends StatelessWidget {
-  MyTextFild({super.key, required this.labeltext, this.cont, this.maxlins});
+  MyTextFild({
+    super.key,
+    required this.labeltext,
+    this.cont,
+    this.maxlins,
+    this.readonly,
+  });
   final String labeltext;
+  bool? readonly = false;
   int? maxlins = 1;
   TextEditingController? cont = TextEditingController();
   @override
@@ -12,6 +19,7 @@ class MyTextFild extends StatelessWidget {
     return Padding(
       padding: MyPadings.normal,
       child: TextFormField(
+        readOnly: readonly!,
         maxLines: maxlins,
         controller: cont,
         validator:
