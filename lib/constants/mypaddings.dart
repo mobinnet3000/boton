@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MyPadings {
+  MyPadings._();
   static EdgeInsetsGeometry normal = EdgeInsets.all(10);
   static EdgeInsetsGeometry large = EdgeInsets.all(18);
   static EdgeInsetsGeometry small = EdgeInsets.all(5);

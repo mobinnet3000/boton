@@ -20,11 +20,7 @@ class ProjectsList extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 8),
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: MyCollors.firstcolor,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [MyShados.projectsshadow],
-            ),
+            decoration: firstdec,
             child: Row(
               children: [
                 // بخش متنی
