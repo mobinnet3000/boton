@@ -1,16 +1,10 @@
-import 'package:boton/constants/mcolors.dart';
-import 'package:boton/screens/addproject/addproject.dart';
-import 'package:boton/screens/home/each-project.dart';
-import 'package:boton/screens/home/home.dart';
-import 'package:boton/screens/instansing/bot-or-mill.dart';
-import 'package:boton/screens/instansing/chose-float.dart';
-import 'package:boton/screens/instansing/each-instanse.dart';
-import 'package:boton/screens/instansing/instans.dart';
-import 'package:boton/screens/instansing/instanslisttime.dart';
-import 'package:boton/screens/tasting/instanses.dart';
+import 'package:boton/screens/layouts/main_layout.dart';
+import 'package:boton/screens/login/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:boton/screens/login/login_page.dart'; // مسیر صفحه لاگین شما
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:boton/constants/routs.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -18,21 +12,92 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      locale: Locale('fa'),
+      title: 'پنل مدیریت بتن',
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        drawer: Container(),
-        appBar: AppBar(
-          backgroundColor: MyCollors.appbarcolor,
-          title: Text("boton"),
-          // leading: Icon(Icons.account_balance_rounded),
+
+      //======================================================================
+      // بخش پشتیبانی از زبان فارسی و راست‌چین کردن (RTL)
+      //======================================================================
+      locale: Locale('fa', 'IR'),
+      fallbackLocale: const Locale('fa', 'IR'),
+      supportedLocales: const [
+        Locale('fa', 'IR'),
+        Locale('en', 'US'),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+
+      //======================================================================
+      // بخش تم (Theme) مدرن و اصلاح‌شده برای ثبات رنگ‌ها
+      //======================================================================
+      theme: ThemeData(
+        // استفاده از ColorScheme به عنوان منبع اصلی رنگ‌ها
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue.shade700, // رنگ پایه برای تولید پالت
+          primary: Colors.blue.shade700,    // تعریف صریح رنگ اصلی
+          secondary: Colors.amber.shade700, // تعریف صریح رنگ ثانویه
+          brightness: Brightness.light,      // تم روشن
         ),
-        body: ProjectListPage(),
+        
+        // فعال کردن طراحی متریال ۳ برای ظاهری مدرن‌تر
+        useMaterial3: true,
+        fontFamily: 'Vazirmatn', // فونت پیش‌فرض کل برنامه
+
+        // استایل سفارشی برای AppBar
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.blue.shade700,
+          foregroundColor: Colors.black, // رنگ متن و آیکون‌ها در AppBar
+          elevation: 2,
+        ),
+
+        // استایل سفارشی برای فیلدهای ورودی
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: const BorderSide(width: 1.5),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide(color: Colors.amber.shade700, width: 2.5),
+          ),
+          labelStyle: TextStyle(color: Colors.blue.shade800, fontWeight: FontWeight.w500),
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.85),
+          contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+        ),
+
+        // استایل سفارشی برای دکمه‌های اصلی
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            textStyle: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Vazirmatn',
+            ),
+          ),
+        ),
       ),
+      
+      // اولین صفحه‌ای که برنامه با آن شروع می‌شود
+      // home: const LoginPage(),
+       initialRoute: Main_Layout,
+        routes: {
+          init_route: (context) => LoginPage(),
+          Main_Layout: (context) => MainLayout(),
+          Register_Page: (context) => RegisterPage(),
+          // intro_route: (context) => ,
+          // auth_route: (context) => 
+        },
     );
   }
 }
