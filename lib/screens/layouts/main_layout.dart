@@ -30,23 +30,23 @@ Widget getBody(DrawerSection section) {
         case DrawerSection.projects:
           return ProjectsPage();
         case DrawerSection.dailyTest:
-          return PlaceholderPage(title: 'گزارش فعالیت');
+          return PlaceholderPage(title: 'گزارش روزانه');
         case DrawerSection.activityReport:
-          return PlaceholderPage(title: 'گزارش مالی');
+          return PlaceholderPage(title: 'گزارش فعالیت');
         case DrawerSection.financialReport:
-          return  PlaceholderPage(title: 'مدیریت');
+          return  PlaceholderPage(title: 'گزارش مالی');
         case DrawerSection.managers:
-          return SupportPage();
+          return PlaceholderPage(title: 'مدیریت');
         case DrawerSection.settings:
-          return Center(child: Text('تنظیمات'));
+          return PlaceholderPage(title: 'تنظیمات');
         case DrawerSection.support:
-          return Center(child: Text('پشتیبانی'));
+          return SupportPage();
         default:
           return Center(child: Text('صفحه پیدا نشد'));
       }
     }
 
-    static List  ml = [DrawerSection.dashboard ,DrawerSection.projects ,DrawerSection.dailyTest ,DrawerSection.activityReport ,DrawerSection.settings ,DrawerSection.financialReport ,];  // لیست صفحات ما که با انتخاب منو تغییر می‌کند
+    static List  ml = [DrawerSection.dashboard ,DrawerSection.projects ,DrawerSection.dailyTest ,DrawerSection.activityReport ,DrawerSection.financialReport ,DrawerSection.managers ,DrawerSection.settings ,DrawerSection.support ];  // لیست صفحات ما که با انتخاب منو تغییر می‌کند
   // static const List<Widget> _pages = <Widget>[
   //   DashboardHomePage(), // پیشخوان
   //   ProjectsPage(), // پروژه‌ها
@@ -74,34 +74,47 @@ Widget getBody(DrawerSection section) {
         children: [
           // منوی ثابت کناری (NavigationRail) فقط در صفحات بزرگ نمایش داده می‌شود
           if (isLargeScreen)
-          NavigationRail(
-              selectedIndex: _selectedIndex,
-              extended: _isRailExpanded, // کنترل باز و بسته بودن
-              onDestinationSelected: (index) {
-                menuController.selectSection(ml[index]);
-              },
-              leading: IconButton(
-                icon: Icon(_isRailExpanded ? Icons.menu_open : Icons.menu),
-                onPressed: () {
-                  setState(() => _isRailExpanded = !_isRailExpanded);
-                },
-              ),
-              destinations: DrawerItems.getDestinationss(),
-            ),
-            // NavigationRail(
-            //   selectedIndex: _selectedIndex,
-            //   extended: _isRailExpanded, // کنترل باز و بسته بودن
-            //   onDestinationSelected: (index) {
-            //     setState(() => _selectedIndex = index);
-            //   },
-            //   leading: IconButton(
-            //     icon: Icon(_isRailExpanded ? Icons.menu_open : Icons.menu),
-            //     onPressed: () {
-            //       setState(() => _isRailExpanded = !_isRailExpanded);
-            //     },
-            //   ),
-            //   destinations: AppDrawerContent.getDestinations(),
-            // ),
+          // NavigationRail(
+          //     selectedIndex: _selectedIndex,
+          //     extended: _isRailExpanded, // کنترل باز و بسته بودن
+          //     onDestinationSelected: (index) {
+          //       setState(() {
+          //         () => _selectedIndex = index;
+          //         menuController.selectSection(ml[index]);
+          //       });
+                
+          //     },
+              
+          //     leading: IconButton(
+                
+
+          //       icon: Icon(_isRailExpanded ? Icons.menu_open : Icons.menu),
+          //       onPressed: () {
+          //         setState(() => _isRailExpanded = !_isRailExpanded);
+          //       },
+          //     ),
+          //     destinations: DrawerItems.getDestinationss(),
+          //   ),
+            AnimatedContainer(
+  duration: Duration(milliseconds: 300), // مدت زمان انیمیشن
+  curve: Curves.easeInOut, // نوع منحنی انیمیشن
+  child: NavigationRail(
+    selectedIndex: _selectedIndex,
+    extended: _isRailExpanded, // کنترل باز و بسته بودن
+    onDestinationSelected: (index) {
+      setState(() => _selectedIndex = index);
+      menuController.selectSection(ml[index]);
+    },
+    leading: IconButton(
+      icon: Icon(_isRailExpanded ? Icons.menu_open : Icons.menu),
+      onPressed: () {
+        setState(() => _isRailExpanded = !_isRailExpanded);
+      },
+    ),
+    destinations: DrawerItems.getDestinationss(),
+  ),
+)
+,
           
           const VerticalDivider(thickness: 1, width: 1),
 

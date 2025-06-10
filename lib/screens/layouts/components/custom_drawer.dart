@@ -15,13 +15,18 @@ class _CustomDrawerState extends State<CustomDrawer> {
       Opacity3 = 0,
       Opacity4 = 0,
       Opacity5 = 0,
-      Opacity6 = 0;
+      Opacity6 = 0,
+      Opacity7 = 0,
+      Opacity8 = 0;
   double Padding1 = 25,
       Padding2 = 25,
       Padding3 = 25,
       Padding4 = 25,
       Padding5 = 25,
-      Padding6 = 25;
+      Padding6 = 25,
+      Padding7 = 25,
+      Padding8 = 25;
+  
   @override
   void initState() {
     super.initState();
@@ -79,6 +84,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         DrawerSection.dailyTest,
                         DrawerSection.activityReport,
                         DrawerSection.financialReport,
+                        DrawerSection.managers,
+                        DrawerSection.settings,
+                        DrawerSection.support,
+
                       ].contains(menuController.selectedSection.value)
                       ? Opacity1
                       : Opacity1,
@@ -100,33 +109,49 @@ class _CustomDrawerState extends State<CustomDrawer> {
               opacity: Opacity3,
               padding: Padding3,
               menuController: menuController,
-              text:  'گزارش فعالیت',
-              icon: Icons.history_edu_outlined,
+              text:  'گزارش روزانه',
+              icon: Icons.today_outlined,
               selection: DrawerSection.dailyTest,
             ),
             DrawerItems(
               opacity: Opacity4,
               padding: Padding4,
               menuController: menuController,
-              text: 'گزارش مالی',
-              icon: Icons.monetization_on_outlined,
+              text:  'گزارش فعالیت',
+              icon: Icons.history_edu_outlined,
               selection: DrawerSection.activityReport,
             ),
             DrawerItems(
               opacity: Opacity5,
               padding: Padding5,
               menuController: menuController,
-              text: 'مدیریت',
-              icon: Icons.admin_panel_settings_outlined,
-              selection: DrawerSection.settings,
+              text: 'گزارش مالی',
+              icon: Icons.monetization_on_outlined,
+              selection: DrawerSection.financialReport,
             ),
             DrawerItems(
               opacity: Opacity6,
               padding: Padding6,
               menuController: menuController,
+              text: 'مدیریت',
+              icon: Icons.admin_panel_settings_outlined,
+              selection: DrawerSection.managers,
+            ),
+            DrawerItems(
+              opacity: Opacity7,
+              padding: Padding7,
+              menuController: menuController,
+              text: 'تنظیمات',
+              icon: Icons.settings_outlined,
+              selection: DrawerSection.managers,
+            ),
+            DrawerItems(
+              opacity: Opacity8,
+              padding: Padding8,
+              menuController: menuController,
               text: 'پشتیبانی',
               icon: Icons.support_agent_outlined,
-              selection: DrawerSection.financialReport,
+              selection: DrawerSection.support,
             ),
           ],
         ),
@@ -164,6 +189,16 @@ class _CustomDrawerState extends State<CustomDrawer> {
     setState(() {
       Opacity6 = 1;
       Padding6 = 0;
+    });
+    await Future.delayed(const Duration(milliseconds: 300));
+    setState(() {
+      Opacity7 = 1;
+      Padding7 = 0;
+    });
+    await Future.delayed(const Duration(milliseconds: 300));
+    setState(() {
+      Opacity8 = 1;
+      Padding8 = 0;
     });
   }
 }
