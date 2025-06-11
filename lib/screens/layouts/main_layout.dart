@@ -1,10 +1,12 @@
 // lib/layouts/main_layout.dart
 import 'package:boton/controller/drawer_controller.dart';
 import 'package:boton/controller/menu_controller.dart';
+import 'package:boton/screens/daily/daily.dart';
 import 'package:boton/screens/layouts/components/costum_app_bar.dart';
 import 'package:boton/screens/layouts/components/custom_drawer.dart';
 import 'package:boton/screens/layouts/components/header.dart';
 import 'package:boton/screens/layouts/components/item_drawer.dart';
+import 'package:boton/screens/report/report.dart';
 import 'package:boton/screens/setting/setting.dart';
 import 'package:flutter/material.dart';
 // صفحات مختلف داشبورد را اینجا وارد می‌کنیم
@@ -25,28 +27,29 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   int _selectedIndex = 0; // آیتم منوی انتخاب شده
   bool _isRailExpanded = false; // آیا منوی کناری در حالت دسکتاپ باز است یا بسته
-Widget getBody(DrawerSection section) {
-      switch (section) {
-        case DrawerSection.dashboard:
-          return  DashboardHomePage();
-        case DrawerSection.projects:
-          return ProjectsPage();
-        case DrawerSection.dailyTest:
-          return PlaceholderPage(title: 'گزارش روزانه');
-        case DrawerSection.activityReport:
-          return PlaceholderPage(title: 'گزارش فعالیت');
-        case DrawerSection.financialReport:
-          return  PlaceholderPage(title: 'گزارش مالی');
-        case DrawerSection.managers:
-          return PlaceholderPage(title: 'مدیریت');
-        case DrawerSection.settings:
-          return PlaceholderPage(title: 'تنظیمات');
-        case DrawerSection.support:
-          return SupportPage();
-        default:
-          return Center(child: Text('صفحه پیدا نشد'));
-      }
+  Widget getBody(DrawerSection section) {
+    switch (section) {
+      case DrawerSection.dashboard:
+        return DashboardHomePage();
+      case DrawerSection.projects:
+        return MainCirclesBackground(title: "پروژه ها ", base: ProjectsPage());
+      case DrawerSection.dailyTest:
+        return MainCirclesBackground(title: 'آزمایشهای روزانه', base: Daily());
+      case DrawerSection.activityReport:
+        return PlaceholderPage(title: 'گزارش فعالیت');
+      case DrawerSection.financialReport:
+        return PlaceholderPage(title: 'گزارش مالی');
+      case DrawerSection.managers:
+        return PlaceholderPage(title: 'مدیریت');
+      case DrawerSection.settings:
+        return TabsScreenImproved();
+      case DrawerSection.support:
+        return MainCirclesBackground(title: " پشتیبانی ", base: SupportPage());
+
+      default:
+        return Center(child: Text('صفحه پیدا نشد'));
     }
+  }
 
   static List ml = [
     DrawerSection.dashboard,
