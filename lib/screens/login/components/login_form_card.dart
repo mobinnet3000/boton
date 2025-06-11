@@ -1,7 +1,5 @@
 // lib/components/login_form_card.dart
 import 'package:boton/constants/routs.dart';
-import 'package:boton/screens/layouts/main_layout.dart';
-import 'package:boton/screens/login/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:boton/constants/mypaddings.dart';

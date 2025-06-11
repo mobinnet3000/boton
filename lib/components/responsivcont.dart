@@ -48,7 +48,7 @@ import 'package:flutter/material.dart';
 
 class RespCont extends StatelessWidget {
   final Widget child;
-  const RespCont({ Key? key, required this.child }) : super(key: key);
+  const RespCont({ super.key, required this.child });
 
   @override
   Widget build(BuildContext context){

@@ -4,7 +4,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
 
   // Constructor برای دریافت عنوان اپ بار
-  CustomAppBar({required this.title});
+  const CustomAppBar({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {

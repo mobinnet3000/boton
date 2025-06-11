@@ -1,13 +1,13 @@
 // lib/layouts/main_layout.dart
 import 'package:boton/controller/drawer_controller.dart';
 import 'package:boton/controller/menu_controller.dart';
+import 'package:boton/screens/dashboard/projects_page.dart';
 import 'package:boton/screens/layouts/components/costum_app_bar.dart';
 import 'package:boton/screens/layouts/components/custom_drawer.dart';
 import 'package:boton/screens/layouts/components/item_drawer.dart';
 import 'package:flutter/material.dart';
 // صفحات مختلف داشبورد را اینجا وارد می‌کنیم
 import 'package:boton/screens/dashboard/dashboard_home_page.dart';
-import 'package:boton/screens/dashboard/projects_page.dart';
 import 'package:boton/screens/dashboard/placeholder_page.dart'; 
 // --- ایمپورت جدید برای صفحه پشتیبانی ---
 import 'package:boton/screens/dashboard/support_page.dart';
@@ -41,8 +41,8 @@ Widget getBody(DrawerSection section) {
           return PlaceholderPage(title: 'تنظیمات');
         case DrawerSection.support:
           return SupportPage();
-        default:
-          return Center(child: Text('صفحه پیدا نشد'));
+        // default:
+        //   return Center(child: Text('صفحه پیدا نشد'));
       }
     }
 

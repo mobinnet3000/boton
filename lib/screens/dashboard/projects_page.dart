@@ -1,111 +1,179 @@
 // lib/pages/dashboard/projects_page.dart
+import 'package:boton/controller/project_controller.dart';
+import 'package:boton/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:boton/models/project_model.dart'; // مدل پروژه
-import 'package:boton/screens/project_single/project_single_page.dart'; // صفحه جزئیات پروژه
-import 'package:boton/utils/snackbar_helper.dart'; // ۱. این ایمپورت را اضافه کنید
+import 'widgets/project_list_item_card.dart';
+
 
 class ProjectsPage extends StatelessWidget {
   const ProjectsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // استفاده از تم فعلی برای رنگ‌بندی TabBar
-    final theme = Theme.of(context);
-
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: theme.scaffoldBackgroundColor,
-          elevation: 1,
-          flexibleSpace: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TabBar(
-                // استفاده از رنگ‌های تم برای هماهنگی بیشتر
-                indicatorColor: theme.colorScheme.primary,
-                labelColor: theme.colorScheme.primary,
-                unselectedLabelColor: Colors.grey,
-                tabs: const [
-                  Tab(text: 'لیست پروژه‌ها'),
-                  Tab(text: 'افزودن پروژه'),
-                ],
-              ),
-            ],
+      child: Column(
+        children: [
+          Container(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: TabBar(
+              indicatorColor: Theme.of(context).primaryColor,
+              labelColor: Theme.of(context).primaryColor,
+              unselectedLabelColor: Colors.grey.shade600,
+              tabs: const [Tab(text: 'لیست پروژه‌ها'), Tab(text: 'افزودن پروژه')],
+            ),
           ),
-        ),
-        body: const TabBarView(
-          children: [
-            ProjectListPage(),
-            AddProjectPage(),
-          ],
-        ),
+          const Expanded(child: TabBarView(children: [ProjectListPage(), AddProjectPage()])),
+        ],
       ),
     );
   }
 }
 
-// ویجت نمایش لیست پروژه‌ها
 class ProjectListPage extends StatelessWidget {
   const ProjectListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // داده‌های آزمایشی
-    final List<String> projects = ['پروژه برج میلاد', 'پروژه ایران‌مال', 'پروژه مسکونی الهیه'];
-
-    return ListView.builder(
-      padding: const EdgeInsets.only(top: 8.0),
-      itemCount: projects.length,
-      itemBuilder: (context, index) {
-        final projectName = projects[index];
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: ListTile(
-            title: Text(projectName, style: const TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: const Text('برای مشاهده جزئیات کلیک کنید'),
-            leading: Icon(Icons.apartment_rounded, color: Theme.of(context).primaryColor),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.grey),
-            onTap: () {
-              // --- منطق جدید onTap ---
-
-              // ۱. ابتدا اسنک‌بار موفقیت‌آمیز را نمایش می‌دهیم
-              SnackbarHelper.showSuccess(
-                title: 'پروژه انتخاب شد',
-                message: ':در حال باز کردن پروژه $projectName',
-              );
-
-              // ۲. با یک تأخیر کوتاه، به صفحه جزئیات می‌رویم
-              // این تأخیر به کاربر فرصت می‌دهد تا اسنک‌بار را ببیند
-              Future.delayed(const Duration(milliseconds: 400), () {
-                final projectData = Project(id: index.toString(), name: projectName);
-                Get.to(
-                  () => ProjectSinglePage(project: projectData),
-                  transition: Transition.rightToLeftWithFade,
-                );
-              });
-            },
-          ),
-        );
-      },
+    final ProjectController controller = Get.put(ProjectController());
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: TextField(onChanged: controller.updateSearchQuery, decoration: InputDecoration(hintText: 'جستجو...', prefixIcon: const Icon(Icons.search), border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)), contentPadding: const EdgeInsets.symmetric(horizontal: 15))),
+        ),
+        _SortableHeader(), // هدر جدید ما
+        const Divider(height: 1),
+        Expanded(
+          child: Obx(() => controller.displayedProjects.isEmpty
+              ? const Center(child: Text('هیچ پروژه‌ای یافت نشد.'))
+              : ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: controller.displayedProjects.length,
+                  itemBuilder: (context, index) {
+                    final project = controller.displayedProjects[index];
+                    return ProjectListItemCard(project: project, onDelete: () => controller.deleteProject(project.id));
+                  },
+                )),
+        ),
+        _PaginationControls(), // کنترل‌های صفحه‌بندی
+      ],
     );
   }
 }
 
-// ویجت صفحه افزودن پروژه
-class AddProjectPage extends StatelessWidget {
-  const AddProjectPage({super.key});
-
+// ویجت هدر قابل مرتب‌سازی
+class _SortableHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'فرم افزودن پروژه در اینجا قرار می‌گیرد',
-        style: TextStyle(fontSize: 18, color: Colors.grey),
+    final ProjectController controller = Get.find();
+    return Obx(() => SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        children: [
+          _buildHeaderItem(context, controller, 'نام پروژه', 0),
+          _buildHeaderItem(context, controller, 'تاریخ', 1),
+          _buildHeaderItem(context, controller, 'کارفرما', 2),
+          _buildHeaderItem(context, controller, 'ناظر', 3),
+          _buildHeaderItem(context, controller, 'منطقه', 4),
+          _buildHeaderItem(context, controller, 'طبقات', 5),
+          _buildHeaderItem(context, controller, 'نوع آزمون', 6),
+        ],
+      ),
+    ));
+  }
+
+  Widget _buildHeaderItem(BuildContext context, ProjectController controller, String title, int index) {
+    final bool isActive = controller.sortColumnIndex.value == index;
+    return TextButton.icon(
+      onPressed: () => controller.updateSortColumn(index),
+      icon: Icon(
+        isActive ? (controller.isSortAscending.value ? Icons.arrow_upward : Icons.arrow_downward) : null,
+        size: 16,
+        color: isActive ? Theme.of(context).primaryColor : Colors.grey,
+      ),
+      label: Text(title, style: TextStyle(fontWeight: isActive ? FontWeight.bold : FontWeight.normal, color: isActive ? Theme.of(context).primaryColor : Colors.grey.shade700)),
+    );
+  }
+}
+
+// ویجت کنترل‌های صفحه‌بندی
+class _PaginationControls extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final ProjectController controller = Get.find();
+    return Obx(() => Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              const Text('تعداد در صفحه:'),
+              const SizedBox(width: 8),
+              DropdownButton<int>(
+                value: controller.itemsPerPage.value,
+                items: [10, 20, 50].map((size) => DropdownMenuItem(value: size, child: Text(size.toString()))).toList(),
+                onChanged: (value) => controller.changeItemsPerPage(value!),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              IconButton(onPressed: controller.currentPage.value > 1 ? () => controller.goToPage(controller.currentPage.value - 1) : null, icon: const Icon(Icons.chevron_right)), // Right for RTL
+              Text('صفحه ${controller.currentPage.value} از ${controller.totalPages}'),
+              IconButton(onPressed: controller.currentPage.value < controller.totalPages ? () => controller.goToPage(controller.currentPage.value + 1) : null, icon: const Icon(Icons.chevron_left)), // Left for RTL
+            ],
+          ),
+        ],
+      ),
+    ));
+  }
+}
+
+class AddProjectPage extends StatefulWidget {
+  const AddProjectPage({super.key});
+  @override
+  State<AddProjectPage> createState() => _AddProjectPageState();
+}
+class _AddProjectPageState extends State<AddProjectPage> {
+  final _formKey = GlobalKey<FormState>();
+  String _selectedTestType = 'مقاومت فشاری';
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('افزودن پروژه جدید', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 24),
+              TextFormField(decoration: const InputDecoration(labelText: 'نام پروژه')), const SizedBox(height: 16),
+              TextFormField(decoration: const InputDecoration(labelText: 'نام کارفرما')), const SizedBox(height: 16),
+              TextFormField(decoration: const InputDecoration(labelText: 'نام مهندس ناظر')), const SizedBox(height: 16),
+              TextFormField(decoration: const InputDecoration(labelText: 'آدرس پروژه')), const SizedBox(height: 16),
+              TextFormField(decoration: const InputDecoration(labelText: 'تعداد طبقات'), keyboardType: TextInputType.number), const SizedBox(height: 24),
+              const Text('نوع آزمون اصلی پروژه:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              RadioListTile<String>(title: const Text('مقاومت فشاری'), value: 'مقاومت فشاری', groupValue: _selectedTestType, onChanged: (value) => setState(() => _selectedTestType = value!)),
+              RadioListTile<String>(title: const Text('چکش اشمیت'), value: 'چکش اشمیت', groupValue: _selectedTestType, onChanged: (value) => setState(() => _selectedTestType = value!)),
+              const SizedBox(height: 40),
+              ElevatedButton.icon(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    SnackbarHelper.showSuccess(message: 'پروژه جدید با موفقیت افزوده شد.');
+                  }
+                },
+                icon: const Icon(Icons.add_circle_outline), label: const Text('افزودن پروژه'),
+                style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

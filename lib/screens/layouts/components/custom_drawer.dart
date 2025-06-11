@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CustomDrawer extends StatefulWidget {
+  const CustomDrawer({super.key});
+
   @override
   State<CustomDrawer> createState() => _CustomDrawerState();
 }

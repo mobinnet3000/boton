@@ -49,7 +49,6 @@ class DrawerItems extends StatelessWidget {
               if (Scaffold.of(context).isDrawerOpen) {
                 Navigator.of(context).pop();
               }
-              ;
             },
           ),
         ),

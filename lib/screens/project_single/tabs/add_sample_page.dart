@@ -17,7 +17,7 @@ class AddSamplePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('افزودن نمونه ${nextSampleNumber} - $sectionName'),
+        title: Text('افزودن نمونه $nextSampleNumber - $sectionName'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

@@ -1,5 +1,5 @@
 // lib/pages/dashboard/support_page.dart
-import 'dart:io'; // برای کار با فایل (در آینده)
+// برای کار با فایل (در آینده)
 import 'package:flutter/material.dart';
 import 'package:boton/utils/snackbar_helper.dart'; // برای نمایش پیام موفقیت
 

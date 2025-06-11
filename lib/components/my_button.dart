@@ -12,12 +12,12 @@ class MyButton extends StatelessWidget {
 
   // 3. پارامترهای جدید به کانستراکتور اضافه شدند
   const MyButton({
-    Key? key,
+    super.key,
     required this.ontap,
     required this.matn,
     this.buttonColor, // می‌تواند null باشد
     this.textColor,   // می‌تواند null باشد
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
