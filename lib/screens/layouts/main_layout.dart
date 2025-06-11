@@ -6,6 +6,7 @@ import 'package:boton/screens/layouts/components/costum_app_bar.dart';
 import 'package:boton/screens/layouts/components/custom_drawer.dart';
 import 'package:boton/screens/layouts/components/header.dart';
 import 'package:boton/screens/layouts/components/item_drawer.dart';
+import 'package:boton/screens/setting/setting.dart';
 import 'package:flutter/material.dart';
 // صفحات مختلف داشبورد را اینجا وارد می‌کنیم
 import 'package:boton/screens/dashboard/dashboard_home_page.dart';
@@ -40,7 +41,7 @@ class _MainLayoutState extends State<MainLayout> {
       case DrawerSection.managers:
         return PlaceholderPage(title: 'مدیریت');
       case DrawerSection.settings:
-        return PlaceholderPage(title: 'تنظیمات');
+        return TabsScreenImproved();
       case DrawerSection.support:
         return MainCirclesBackground(title: " پشتیبانی ", base: SupportPage());
 

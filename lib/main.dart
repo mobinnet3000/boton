@@ -38,6 +38,25 @@ class MyApp extends StatelessWidget {
       // بخش تم (Theme) مدرن و اصلاح‌شده برای ثبات رنگ‌ها
       //======================================================================
       theme: ThemeData(
+        primarySwatch: Colors.indigo,
+        // fontFamily: 'Vazir', // Make sure to add Vazir font to your project
+        scaffoldBackgroundColor: Colors.grey[100],
+        // inputDecorationTheme: InputDecorationTheme(
+        //   filled: true,
+        //   fillColor: Colors.white,
+        //   border: OutlineInputBorder(
+        //     borderRadius: BorderRadius.circular(12.0),
+        //     borderSide: BorderSide.none,
+        //   ),
+        //   prefixIconColor: Colors.indigo[400],
+        // ),
+        cardTheme: CardTheme(
+          elevation: 4.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
+        ),
         // استفاده از ColorScheme به عنوان منبع اصلی رنگ‌ها
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.blue.shade700, // رنگ پایه برای تولید پالت
