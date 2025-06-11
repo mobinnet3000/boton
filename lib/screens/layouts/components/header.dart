@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MainCirclesBackground extends StatefulWidget {
-  final Widget title;
+  final String title;
   final Color backgroundColor;
   final double position;
   final int duration;
@@ -9,8 +9,8 @@ class MainCirclesBackground extends StatefulWidget {
 
   const MainCirclesBackground({
     super.key,
-    required this.title,
-    this.backgroundColor = Colors.orange ,
+    this.title = '',
+    this.backgroundColor = Colors.teal,
     this.position = -930,
     this.duration = 300,
     required this.base,
@@ -30,6 +30,14 @@ class _MainCirclesBackgroundState extends State<MainCirclesBackground> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    double opacity = 0.0;
+    double position = -1000;
+    // کد شما که می‌خواهید در هر فراخوانی build اجرا شود
+    loadAnimations();
+  }
+
   Widget build(BuildContext context) {
     return Stack(
       children: [
@@ -64,7 +72,18 @@ class _MainCirclesBackgroundState extends State<MainCirclesBackground> {
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: [widget.title],
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 25),
+                    child: Text(
+                      widget.title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

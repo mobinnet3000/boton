@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 /// یک کلاس کمکی برای نمایش اسنک‌بارهای شیشه‌ای و سفارشی در سراسر برنامه.
 /// این کلاس از متدهای استاتیک استفاده می‌کند تا نیازی به ساخت نمونه از آن نباشد.
 class SnackbarHelper {
-  
   /// نمایش اسنک‌بار موفقیت (سبز رنگ)
   static void showSuccess({
     required String message,
@@ -46,7 +45,6 @@ class SnackbarHelper {
     );
   }
 
-
   // این یک متد خصوصی است که منطق اصلی ساخت اسنک‌بار شیشه‌ای را در خود دارد
   static void _showGlassSnackbar({
     required String title,
@@ -77,23 +75,23 @@ class SnackbarHelper {
         message,
         textAlign: TextAlign.right,
         style: const TextStyle(
-          color: Colors.white70, // کمی شفاف‌تر برای خوانایی بهتر
+          color: Colors.black, // کمی شفاف‌تر برای خوانایی بهتر
           fontSize: 14,
         ),
       ),
       snackPosition: SnackPosition.TOP, // نمایش در بالای صفحه
       backgroundColor: color.withOpacity(0.4), // پس‌زمینه نیمه‌شفاف
       barBlur: 15.0, // افکت اصلی بلور و شیشه‌ای شدن
-      overlayBlur: 2.0, // بلور کردن محتوای زیر اسنک‌بار
-      
+      overlayBlur: 0.5, // بلور کردن محتوای زیر اسنک‌بار
+
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       borderRadius: 15,
-      
+
       borderColor: color.withOpacity(0.8), // یک حاشیه برای تاکید بیشتر
       borderWidth: 1.5,
-      
-      duration: const Duration(seconds: 4), // مدت زمان نمایش
+
+      duration: const Duration(milliseconds: 1500), // مدت زمان نمایش
       isDismissible: true,
       forwardAnimationCurve: Curves.easeOutBack,
       reverseAnimationCurve: Curves.easeInBack,
