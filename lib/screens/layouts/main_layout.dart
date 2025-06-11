@@ -2,10 +2,12 @@
 import 'package:boton/controller/drawer_controller.dart';
 import 'package:boton/controller/menu_controller.dart';
 import 'package:boton/screens/daily/daily.dart';
+import 'package:boton/screens/finance/finance_report.dart';
 import 'package:boton/screens/layouts/components/costum_app_bar.dart';
 import 'package:boton/screens/layouts/components/custom_drawer.dart';
 import 'package:boton/screens/layouts/components/header.dart';
 import 'package:boton/screens/layouts/components/item_drawer.dart';
+import 'package:boton/screens/report/report.dart';
 import 'package:boton/screens/setting/setting.dart';
 import 'package:flutter/material.dart';
 // صفحات مختلف داشبورد را اینجا وارد می‌کنیم
@@ -35,9 +37,9 @@ class _MainLayoutState extends State<MainLayout> {
       case DrawerSection.dailyTest:
         return MainCirclesBackground(title: 'آزمایشهای روزانه', base: Daily());
       case DrawerSection.activityReport:
-        return PlaceholderPage(title: 'گزارش فعالیت');
+        return ReportDashboardScreen();
       case DrawerSection.financialReport:
-        return PlaceholderPage(title: 'گزارش مالی');
+        return FinancialDashboardScreen();
       case DrawerSection.managers:
         return PlaceholderPage(title: 'مدیریت');
       case DrawerSection.settings:
