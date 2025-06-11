@@ -75,14 +75,14 @@ class SnackbarHelper {
         message,
         textAlign: TextAlign.right,
         style: const TextStyle(
-          color: Colors.white70, // کمی شفاف‌تر برای خوانایی بهتر
+          color: Colors.black, // کمی شفاف‌تر برای خوانایی بهتر
           fontSize: 14,
         ),
       ),
       snackPosition: SnackPosition.TOP, // نمایش در بالای صفحه
       backgroundColor: color.withOpacity(0.4), // پس‌زمینه نیمه‌شفاف
       barBlur: 15.0, // افکت اصلی بلور و شیشه‌ای شدن
-      overlayBlur: 1.5, // بلور کردن محتوای زیر اسنک‌بار
+      overlayBlur: 0.5, // بلور کردن محتوای زیر اسنک‌بار
 
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -91,7 +91,7 @@ class SnackbarHelper {
       borderColor: color.withOpacity(0.8), // یک حاشیه برای تاکید بیشتر
       borderWidth: 1.5,
 
-      duration: const Duration(seconds: 2), // مدت زمان نمایش
+      duration: const Duration(milliseconds: 1500), // مدت زمان نمایش
       isDismissible: true,
       forwardAnimationCurve: Curves.easeOutBack,
       reverseAnimationCurve: Curves.easeInBack,

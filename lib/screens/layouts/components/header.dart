@@ -30,6 +30,14 @@ class _MainCirclesBackgroundState extends State<MainCirclesBackground> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    double opacity = 0.0;
+    double position = -1000;
+    // کد شما که می‌خواهید در هر فراخوانی build اجرا شود
+    loadAnimations();
+  }
+
   Widget build(BuildContext context) {
     return Stack(
       children: [

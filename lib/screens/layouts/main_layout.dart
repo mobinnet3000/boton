@@ -1,6 +1,7 @@
 // lib/layouts/main_layout.dart
 import 'package:boton/controller/drawer_controller.dart';
 import 'package:boton/controller/menu_controller.dart';
+import 'package:boton/screens/daily/daily.dart';
 import 'package:boton/screens/layouts/components/costum_app_bar.dart';
 import 'package:boton/screens/layouts/components/custom_drawer.dart';
 import 'package:boton/screens/layouts/components/header.dart';
@@ -31,10 +32,7 @@ class _MainLayoutState extends State<MainLayout> {
       case DrawerSection.projects:
         return MainCirclesBackground(title: "پروژه ها ", base: ProjectsPage());
       case DrawerSection.dailyTest:
-        return MainCirclesBackground(
-          title: "گزارش روزانه",
-          base: PlaceholderPage(title: 'گزارش روزانه'),
-        );
+        return MainCirclesBackground(title: 'آزمایشهای روزانه', base: Daily());
       case DrawerSection.activityReport:
         return PlaceholderPage(title: 'گزارش فعالیت');
       case DrawerSection.financialReport:

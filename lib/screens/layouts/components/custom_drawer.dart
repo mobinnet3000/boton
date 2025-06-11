@@ -26,7 +26,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
       Padding6 = 25,
       Padding7 = 25,
       Padding8 = 25;
-  
+
   @override
   void initState() {
     super.initState();
@@ -87,7 +87,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         DrawerSection.managers,
                         DrawerSection.settings,
                         DrawerSection.support,
-
                       ].contains(menuController.selectedSection.value)
                       ? Opacity1
                       : Opacity1,
@@ -101,7 +100,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               opacity: Opacity2,
               padding: Padding2,
               menuController: menuController,
-              text:  'پروژه‌ها',
+              text: 'پروژه‌ها',
               icon: Icons.folder_copy_outlined,
               selection: DrawerSection.projects,
             ),
@@ -109,7 +108,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               opacity: Opacity3,
               padding: Padding3,
               menuController: menuController,
-              text:  'گزارش روزانه',
+              text: 'آزمایشهای روزانه',
               icon: Icons.today_outlined,
               selection: DrawerSection.dailyTest,
             ),
@@ -117,7 +116,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               opacity: Opacity4,
               padding: Padding4,
               menuController: menuController,
-              text:  'گزارش فعالیت',
+              text: 'گزارش فعالیت',
               icon: Icons.history_edu_outlined,
               selection: DrawerSection.activityReport,
             ),
