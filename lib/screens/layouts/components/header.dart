@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MainCirclesBackground extends StatefulWidget {
-  final Widget child;
+  final Widget title;
   final Color backgroundColor;
   final double position;
   final int duration;
@@ -9,7 +9,7 @@ class MainCirclesBackground extends StatefulWidget {
 
   const MainCirclesBackground({
     super.key,
-    required this.child,
+    required this.title,
     this.backgroundColor = Colors.orange ,
     this.position = -930,
     this.duration = 300,
@@ -64,7 +64,7 @@ class _MainCirclesBackgroundState extends State<MainCirclesBackground> {
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: [widget.child],
+                children: [widget.title],
               ),
             ),
           ),
