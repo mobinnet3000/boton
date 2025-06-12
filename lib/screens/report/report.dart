@@ -31,14 +31,16 @@ import 'dart:math';
 //   }
 // }
 
-class ReportDashboardScreen extends StatefulWidget {
+class ProfessionalDashboardScreen extends StatefulWidget {
   const ReportDashboardScreen({super.key});
 
   @override
-  _ReportDashboardScreenState createState() => _ReportDashboardScreenState();
+  _ProfessionalDashboardScreenState createState() =>
+      _ProfessionalDashboardScreenState();
 }
 
-class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
+class _ProfessionalDashboardScreenState
+    extends State<ProfessionalDashboardScreen> {
   // --- MOCK DATA ---
   final int totalProjects = 124;
   final int completedProjects = 98;
@@ -446,9 +448,13 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
     );
   }
 
+  /// ===================================================================
+  /// FIXED: Horizontally Scrollable DataTable
+  /// ===================================================================
   Widget _buildProjectsTable() {
-    return SizedBox(
-      width: double.infinity,
+    // Wrap the DataTable with a SingleChildScrollView for horizontal scrolling
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
       child: DataTable(
         headingRowColor: MaterialStateProperty.all(Colors.grey[100]),
         columns: const [
