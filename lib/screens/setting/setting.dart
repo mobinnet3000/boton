@@ -44,6 +44,8 @@ enum ConcreteMode { fixed, formula }
 // }
 
 class TabsScreenImproved extends StatefulWidget {
+  const TabsScreenImproved({super.key});
+
   @override
   _TabsScreenImprovedState createState() => _TabsScreenImprovedState();
 }

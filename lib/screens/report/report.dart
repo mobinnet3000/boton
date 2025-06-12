@@ -32,6 +32,8 @@ import 'dart:math';
 // }
 
 class ReportDashboardScreen extends StatefulWidget {
+  const ReportDashboardScreen({super.key});
+
   @override
   _ReportDashboardScreenState createState() => _ReportDashboardScreenState();
 }
@@ -261,7 +263,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
         ),
         _buildKpiCard(
           'درآمد (میلیون)',
-          '${(totalIncome / 1000000).toStringAsFixed(1)}',
+          (totalIncome / 1000000).toStringAsFixed(1),
           Icons.attach_money,
           Colors.teal,
         ),
