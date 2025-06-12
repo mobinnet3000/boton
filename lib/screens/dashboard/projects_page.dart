@@ -40,7 +40,7 @@ class ProjectListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ProjectController controller = Get.put(ProjectController());
+    final ProjectControllerrr controller = Get.put(ProjectControllerrr());
     return Column(
       children: [
         Padding(
@@ -90,7 +90,7 @@ class ProjectListPage extends StatelessWidget {
 class _SortableHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ProjectController controller = Get.find();
+    final ProjectControllerrr controller = Get.find();
     return Obx(
       () => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -112,7 +112,7 @@ class _SortableHeader extends StatelessWidget {
 
   Widget _buildHeaderItem(
     BuildContext context,
-    ProjectController controller,
+    ProjectControllerrr controller,
     String title,
     int index,
   ) {
@@ -144,7 +144,7 @@ class _SortableHeader extends StatelessWidget {
 class _PaginationControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ProjectController controller = Get.find();
+    final ProjectControllerrr controller = Get.find();
     return Obx(
       () => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

@@ -78,10 +78,10 @@
 // lib/controllers/project_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:boton/models/project_model.dart';
+import 'package:boton/models/project.dart';
 import 'package:boton/utils/snackbar_helper.dart';
 
-class ProjectController extends GetxController {
+class ProjectControllerrr extends GetxController {
   var allProjects = <Project>[].obs;
   var displayedProjects = <Project>[].obs;
   var searchQuery = ''.obs;

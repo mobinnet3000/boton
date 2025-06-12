@@ -2,7 +2,7 @@
 import 'package:boton/screens/project_single/project_single_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:boton/models/project_model.dart';
+import 'package:boton/models/project.dart';
 
 class ProjectListItemCard extends StatelessWidget {
   final Project project;

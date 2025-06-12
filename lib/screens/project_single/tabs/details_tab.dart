@@ -1,4 +1,4 @@
-import 'package:boton/models/project_model.dart';
+import 'package:boton/models/project.dart';
 import 'package:flutter/material.dart';
 // Assume project_model.dart is in this path
 // import '../../models/project_model.dart';

@@ -1,4 +1,7 @@
 // lib/layouts/main_layout.dart
+import 'package:boton/controller/base_controller.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 import 'package:boton/controller/drawer_controller.dart';
 import 'package:boton/controller/menu_controller.dart';
 import 'package:boton/screens/daily/daily.dart';
@@ -71,14 +74,22 @@ class _MainLayoutState extends State<MainLayout> {
   //   SupportPage(), // <-- تغییر اصلی اینجاست: PlaceholderPage با SupportPage جایگزین شد
   // ];
   final MenuControllerr menuController = Get.put(MenuControllerr());
+  final ProjectController controller = Get.put(ProjectController());
+
 
   @override
   Widget build(BuildContext context) {
     // با استفاده از MediaQuery اندازه صفحه را تشخیص می‌دهیم
     final isLargeScreen = MediaQuery.of(context).size.width > 800;
+    print(controller);
+    print(controller.user);
+    print(controller.user.value);
+    // print(controller.user.value!.firstName);
+    print(controller.projects);
 
-    return Scaffold(
-      appBar: CustomAppBar(title: 'پنل مدیریت آزمایشگاه بتن'),
+    return Obx(() => controller.isLoading.value ? SpinKitSpinningLines(color: Colors.blueGrey,lineWidth: 5,size: 100,) : Scaffold(
+      appBar: CustomAppBar(title: controller.user.value!.labName 
+      ),
       // دراور فقط برای صفحات کوچک استفاده می‌شود
       drawer: isLargeScreen ? null : Drawer(child: CustomDrawer()),
       body: Row(
@@ -130,6 +141,7 @@ class _MainLayoutState extends State<MainLayout> {
           ),
         ],
       ),
-    );
-  }
+    )
+,);
+      }
 }
