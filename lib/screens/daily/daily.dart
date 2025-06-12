@@ -21,12 +21,14 @@ class shecast {
 }
 
 class Daily extends StatefulWidget {
+  const Daily({super.key});
+
   @override
   _PersianCalendarPageState createState() => _PersianCalendarPageState();
 }
 
 class _PersianCalendarPageState extends State<Daily> {
-  DateTime _focusedDay = DateTime.now();
+  final DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   List<shecast> _patientsForSelectedDay = [];
 
@@ -104,10 +106,11 @@ class _PersianCalendarPageState extends State<Daily> {
                       },
                     ),
                   ),
-                  Container(
+                  SizedBox(
                     height: 500,
                     child: FListing(
                       patientsForSelectedDay: _patientsForSelectedDay,
+                      allSamples: samples, // <-- لیست کامل نمونه‌ها را اینجا پاس دهید
                     ),
                   ),
                 ],
@@ -136,6 +139,7 @@ class _PersianCalendarPageState extends State<Daily> {
                   flex: 3,
                   child: FListing(
                     patientsForSelectedDay: _patientsForSelectedDay,
+                    allSamples: samples, // <-- لیست کامل نمونه‌ها را اینجا پاس دهید
                   ),
                 ),
               ],
@@ -146,104 +150,87 @@ class _PersianCalendarPageState extends State<Daily> {
     );
   }
 }
-
 class FListing extends StatelessWidget {
-  const FListing({super.key, required List<shecast> patientsForSelectedDay})
-    : _patientsForSelectedDay = patientsForSelectedDay;
+  const FListing({
+    super.key,
+    required this.patientsForSelectedDay,
+    required this.allSamples,
+  });
 
-  final List<shecast> _patientsForSelectedDay;
+  final List<shecast> patientsForSelectedDay;
+  final List<shecast> allSamples;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       child:
-          _patientsForSelectedDay.isEmpty
-              ? Center(child: Text('هیچ جلسه‌ای برای این روز وجود ندارد'))
+          // 'patientsForSelectedDay' به جای '_patientsForSelectedDay'
+          patientsForSelectedDay.isEmpty 
+              ? const Center(child: Text('هیچ جلسه‌ای برای این روز وجود ندارد'))
               : ListView.builder(
-                itemCount: _patientsForSelectedDay.length,
-                itemBuilder: (context, index) {
-                  final p = _patientsForSelectedDay[index];
-                  // final jalaliDate = _formatJalali(p.dateTime);
-                  // final timeStr =
-                  //     '${p.dateTime.hour.toString().padLeft(2, '0')}:${p.dateTime.minute.toString().padLeft(2, '0')}';
-                  // final durHours = p.sessionDuration.inHours;
-                  // final durMinutes =
-                  //     p.sessionDuration.inMinutes % 60;
-
-                  return Card(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
-                    ),
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ListTile(
-                      title: Text(
-                        p.project,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                  // 'patientsForSelectedDay' به جای '_patientsForSelectedDay'
+                  itemCount: patientsForSelectedDay.length,
+                  itemBuilder: (context, index) {
+                    // 'patientsForSelectedDay' به جای '_patientsForSelectedDay'
+                    final p = patientsForSelectedDay[index];
+                    
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 4),
-                          Text(
-                            'نوع نمونه‌گیری: تست ${p.after} ${p.sampeling}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[700],
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ListTile(
+                        title: Text(
+                          p.project,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 4),
+                            Text(
+                              'نوع نمونه‌گیری: تست ${p.after} ${p.sampeling}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[700],
+                              ),
                             ),
-                          ),
-                          // Text(
-                          //   'روز و نمونه شکست: 14 روزه',
-                          //   style: TextStyle(
-                          //     fontSize: 14,
-                          //     color: Colors.grey[700],
-                          //   ),
-                          // ),
-                          Text(
-                            'تعداد قالب:${p.tedad} عدد',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[700],
+                            Text(
+                              'تعداد قالب:${p.tedad} عدد',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[700],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                        leading: Icon(
+                          Icons.build,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                        onTap: () {
+                          final String projectName = p.project;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('در حال آماده‌سازی برای ناوبری به پروژه: $projectName'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        },
                       ),
-                      leading: Icon(
-                        Icons.build,
-                        color: Theme.of(context).primaryColor,
-                      ), // آیکن مناسب برای پروژه
-                      trailing: const Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        size: 16,
-                        color: Colors.grey,
-                      ),
-                      onTap: () {
-                        // --- منطق جدید onTap ---
-
-                        // ۱. ابتدا اسنک‌بار موفقیت‌آمیز را نمایش می‌دهیم
-                        SnackbarHelper.showSuccess(
-                          title: 'پروژه انتخاب شد',
-                          message: 'در حال باز کردن پروژه ${p.project}',
-                        );
-
-                        // ۲. با یک تأخیر کوتاه، به صفحه جزئیات می‌رویم
-                        // این تأخیر به کاربر فرصت می‌دهد تا اسنک‌بار را ببیند
-                        // Future.delayed(const Duration(milliseconds: 400), () {
-                        //   final projectData = Project(id: index.toString(), name: projectName);
-                        //   Get.to(
-                        //     () => ProjectSinglePage(project: projectData),
-                        //     transition: Transition.rightToLeftWithFade,
-                        //   );
-                        // });
-                      },
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                ),
     );
   }
 }

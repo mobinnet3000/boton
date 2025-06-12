@@ -38,6 +38,7 @@ class _MainCirclesBackgroundState extends State<MainCirclesBackground> {
     loadAnimations();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [

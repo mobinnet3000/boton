@@ -32,6 +32,8 @@ import 'dart:math';
 // }
 
 class FinancialDashboardScreen extends StatefulWidget {
+  const FinancialDashboardScreen({super.key});
+
   @override
   _FinancialDashboardScreenState createState() =>
       _FinancialDashboardScreenState();
