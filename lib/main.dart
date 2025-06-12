@@ -3,7 +3,6 @@ import 'package:boton/screens/login/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:boton/screens/login/login_page.dart'; // مسیر صفحه لاگین شما
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:boton/constants/routs.dart';
 
 void main() {

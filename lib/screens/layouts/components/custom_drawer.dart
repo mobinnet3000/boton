@@ -144,7 +144,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               menuController: menuController,
               text: 'تنظیمات',
               icon: Icons.settings_outlined,
-              selection: DrawerSection.managers,
+              selection: DrawerSection.settings,
             ),
             DrawerItems(
               opacity: Opacity8,
