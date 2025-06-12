@@ -1,7 +1,8 @@
 // lib/widgets/common/custom_animated_tab_bar.dart
 import 'package:flutter/material.dart';
 
-class CustomAnimatedTabBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAnimatedTabBar extends StatelessWidget
+    implements PreferredSizeWidget {
   final TabController controller;
   final List<Tab> tabs;
 
@@ -22,6 +23,8 @@ class CustomAnimatedTabBar extends StatelessWidget implements PreferredSizeWidge
           borderRadius: BorderRadius.circular(25.0),
         ),
         child: TabBar(
+          isScrollable: true,
+
           controller: controller,
           // این بخش مهم‌ترین قسمت برای استایل جدید است
           indicator: BoxDecoration(
@@ -38,7 +41,10 @@ class CustomAnimatedTabBar extends StatelessWidget implements PreferredSizeWidge
           indicatorSize: TabBarIndicatorSize.tab,
           labelColor: Colors.black87,
           unselectedLabelColor: Colors.white,
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
           unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
           tabs: tabs,
         ),

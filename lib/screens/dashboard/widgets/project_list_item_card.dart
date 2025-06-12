@@ -8,7 +8,11 @@ class ProjectListItemCard extends StatelessWidget {
   final Project project;
   final VoidCallback onDelete;
 
-  const ProjectListItemCard({super.key, required this.project, required this.onDelete});
+  const ProjectListItemCard({
+    super.key,
+    required this.project,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,11 @@ class ProjectListItemCard extends StatelessWidget {
       ),
       color: Colors.white, // رنگ صریح سفید برای کارت
       child: InkWell(
-        onTap: () => Get.to(() => ProjectSinglePage(project: project), transition: Transition.rightToLeftWithFade),
+        onTap:
+            () => Get.to(
+              () => ProjectSinglePage(project: project),
+              transition: Transition.rightToLeftWithFade,
+            ),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -31,28 +39,58 @@ class ProjectListItemCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.foundation, color: Theme.of(context).primaryColor, size: 40),
+                  Icon(
+                    Icons.foundation,
+                    color: Theme.of(context).primaryColor,
+                    size: 40,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(project.name, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                        Text(
+                          project.name,
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
                         const SizedBox(height: 4),
-                        Text('کارفرما: ${project.clientName}', style: TextStyle(color: Colors.grey.shade700)),
+                        Text(
+                          'کارفرما: ${project.clientName}',
+                          style: TextStyle(color: Colors.grey.shade700),
+                        ),
                       ],
                     ),
                   ),
-                  Chip(label: Text(project.mainTestType), backgroundColor: Colors.blue.shade50)
+                  Chip(
+                    label: Text(project.projectid),
+                    backgroundColor: Colors.blue.shade50,
+                  ),
                 ],
               ),
               const Divider(height: 24),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildInfoChip(Icons.engineering_outlined, project.supervisorName),
-                  _buildInfoChip(Icons.layers_outlined, '${project.floorCount} طبقه'),
-                  _buildInfoChip(Icons.location_city_outlined, 'منطقه ${project.municipalDistrict}'),
+                  Expanded(
+                    child: _buildInfoChip(
+                      Icons.engineering_outlined,
+                      project.supervisorName,
+                    ),
+                  ),
+                  SizedBox(width: 8.0), // برای ایجاد فاصله بین آیتم‌ها
+                  Expanded(
+                    child: _buildInfoChip(
+                      Icons.layers_outlined,
+                      '${project.floorCount} طبقه',
+                    ),
+                  ),
+                  SizedBox(width: 8.0), // برای ایجاد فاصله بین آیتم‌ها
+                  Expanded(
+                    child: _buildInfoChip(
+                      Icons.location_city_outlined,
+                      'منطقه ${project.municipalDistrict}',
+                    ),
+                  ),
                 ],
               ),
             ],

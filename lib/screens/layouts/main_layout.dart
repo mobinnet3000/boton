@@ -37,7 +37,7 @@ class _MainLayoutState extends State<MainLayout> {
       case DrawerSection.dailyTest:
         return MainCirclesBackground(title: 'آزمایشهای روزانه', base: Daily());
       case DrawerSection.activityReport:
-        return ReportDashboardScreen();
+        return ProfessionalDashboardScreen();
       case DrawerSection.financialReport:
         return FinancialDashboardScreen();
       case DrawerSection.managers:

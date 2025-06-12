@@ -21,7 +21,7 @@ class Project {
   final String description;
   final String projectGroup;
   final String contractDate;
-  final String mainTestType;
+  final String projectid;
   final String municipalDistrict; // <-- فیلد جدید
 
   Project({
@@ -45,7 +45,7 @@ class Project {
     this.description = 'توضیحاتی ثبت نشده است.',
     this.projectGroup = 'جاری',
     this.contractDate = 'ثبت نشده',
-    this.mainTestType = 'مقاومت فشاری',
+    this.projectid = 'مقاومت فشاری',
     this.municipalDistrict = 'نامشخص',
   });
 }

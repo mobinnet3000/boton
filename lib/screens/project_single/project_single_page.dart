@@ -15,7 +15,8 @@ class ProjectSinglePage extends StatefulWidget {
   State<ProjectSinglePage> createState() => _ProjectSinglePageState();
 }
 
-class _ProjectSinglePageState extends State<ProjectSinglePage> with SingleTickerProviderStateMixin {
+class _ProjectSinglePageState extends State<ProjectSinglePage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   static const List<Tab> _tabs = [
@@ -25,7 +26,7 @@ class _ProjectSinglePageState extends State<ProjectSinglePage> with SingleTicker
     Tab(text: 'مالی'),
     Tab(text: 'گزارش فعالیت'),
   ];
-  
+
   @override
   void initState() {
     super.initState();
@@ -44,10 +45,7 @@ class _ProjectSinglePageState extends State<ProjectSinglePage> with SingleTicker
       appBar: AppBar(
         title: Text('پروژه: ${widget.project.name}'),
         // به جای TabBar قدیمی، از ویجت سفارشی خودمان استفاده می‌کنیم
-        bottom: CustomAnimatedTabBar(
-          controller: _tabController,
-          tabs: _tabs,
-        ),
+        bottom: CustomAnimatedTabBar(controller: _tabController, tabs: _tabs),
       ),
       body: TabBarView(
         controller: _tabController,

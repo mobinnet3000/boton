@@ -17,7 +17,7 @@ class _DetailsTabState extends State<DetailsTab> {
   @override
   void initState() {
     super.initState();
-    _selectedTestType = widget.project.mainTestType;
+    _selectedTestType = widget.project.projectid;
   }
 
   @override
@@ -41,20 +41,60 @@ class _DetailsTabState extends State<DetailsTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionTitle('مشخصات کارفرما'),
-        InfoDisplayField(label: 'نام', value: project.clientName, icon: Icons.person_outline),
-        InfoDisplayField(label: 'شماره تماس', value: project.clientPhone, icon: Icons.phone_outlined),
+        InfoDisplayField(
+          label: 'نام',
+          value: project.clientName,
+          icon: Icons.person_outline,
+        ),
+        InfoDisplayField(
+          label: 'شماره تماس',
+          value: project.clientPhone,
+          icon: Icons.phone_outlined,
+        ),
         const Divider(height: 30),
         _buildSectionTitle('مشخصات مهندس ناظر'),
-        InfoDisplayField(label: 'نام', value: project.supervisorName, icon: Icons.engineering_outlined),
-        InfoDisplayField(label: 'شماره تماس', value: project.supervisorPhone, icon: Icons.phone_outlined),
+        InfoDisplayField(
+          label: 'نام',
+          value: project.supervisorName,
+          icon: Icons.engineering_outlined,
+        ),
+        InfoDisplayField(
+          label: 'شماره تماس',
+          value: project.supervisorPhone,
+          icon: Icons.phone_outlined,
+        ),
         const Divider(height: 30),
         _buildSectionTitle('مشخصات پروژه'),
-        InfoDisplayField(label: 'نوع آزمون اصلی', value: project.mainTestType, icon: Icons.science_outlined),
-        InfoDisplayField(label: 'نوع پروژه', value: project.projectType, icon: Icons.business_outlined),
-        InfoDisplayField(label: 'آدرس', value: project.address, icon: Icons.location_on_outlined),
-        InfoDisplayField(label: 'تعداد طبقه', value: '${project.floorCount} طبقه', icon: Icons.layers_outlined),
-        InfoDisplayField(label: 'تاریخ عقد قرارداد', value: project.contractDate, icon: Icons.calendar_today_outlined),
-        InfoDisplayField(label: 'توضیحات', value: project.description, icon: Icons.description_outlined),
+        InfoDisplayField(
+          label: 'نوع آزمون اصلی',
+          value: project.projectid,
+          icon: Icons.science_outlined,
+        ),
+        InfoDisplayField(
+          label: 'نوع پروژه',
+          value: project.projectType,
+          icon: Icons.business_outlined,
+        ),
+        InfoDisplayField(
+          label: 'آدرس',
+          value: project.address,
+          icon: Icons.location_on_outlined,
+        ),
+        InfoDisplayField(
+          label: 'تعداد طبقه',
+          value: '${project.floorCount} طبقه',
+          icon: Icons.layers_outlined,
+        ),
+        InfoDisplayField(
+          label: 'تاریخ عقد قرارداد',
+          value: project.contractDate,
+          icon: Icons.calendar_today_outlined,
+        ),
+        InfoDisplayField(
+          label: 'توضیحات',
+          value: project.description,
+          icon: Icons.description_outlined,
+        ),
       ],
     );
   }
@@ -65,13 +105,33 @@ class _DetailsTabState extends State<DetailsTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionTitle('مشخصات پروژه'),
-        const Text('نوع آزمون اصلی پروژه:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-        RadioListTile<String>(title: const Text('مقاومت فشاری'), value: 'مقاومت فشاری', groupValue: _selectedTestType, onChanged: (v) => setState(() => _selectedTestType = v!)),
-        RadioListTile<String>(title: const Text('چکش اشمیت'), value: 'چکش اشمیت', groupValue: _selectedTestType, onChanged: (v) => setState(() => _selectedTestType = v!)),
+        const Text(
+          'نوع آزمون اصلی پروژه:',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        RadioListTile<String>(
+          title: const Text('مقاومت فشاری'),
+          value: 'مقاومت فشاری',
+          groupValue: _selectedTestType,
+          onChanged: (v) => setState(() => _selectedTestType = v!),
+        ),
+        RadioListTile<String>(
+          title: const Text('چکش اشمیت'),
+          value: 'چکش اشمیت',
+          groupValue: _selectedTestType,
+          onChanged: (v) => setState(() => _selectedTestType = v!),
+        ),
         const SizedBox(height: 16),
-        TextFormField(initialValue: project.address, decoration: const InputDecoration(labelText: 'آدرس پروژه')),
+        TextFormField(
+          initialValue: project.address,
+          decoration: const InputDecoration(labelText: 'آدرس پروژه'),
+        ),
         const SizedBox(height: 16),
-        TextFormField(initialValue: project.floorCount.toString(), decoration: const InputDecoration(labelText: 'تعداد طبقات'), keyboardType: TextInputType.number),
+        TextFormField(
+          initialValue: project.floorCount.toString(),
+          decoration: const InputDecoration(labelText: 'تعداد طبقات'),
+          keyboardType: TextInputType.number,
+        ),
       ],
     );
   }
@@ -81,7 +141,11 @@ class _DetailsTabState extends State<DetailsTab> {
       padding: const EdgeInsets.only(bottom: 12.0, top: 16.0),
       child: Text(
         title,
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).primaryColor,
+        ),
       ),
     );
   }
