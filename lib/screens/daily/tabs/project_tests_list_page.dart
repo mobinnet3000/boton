@@ -1,7 +1,9 @@
 // pages/project_tests_list_page.dart
 
 import 'package:boton/models/concrete_sample_model.dart';
+import 'package:boton/screens/daily/tabs/test_result_entry_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl; // برای فرمت تاریخ
 import 'package:shamsi_date/shamsi_date.dart'; // برای نمایش تاریخ شمسی
 // import 'package:get/get.dart'; // اگر از GetX استفاده می‌کنید
@@ -10,11 +12,10 @@ import 'package:shamsi_date/shamsi_date.dart'; // برای نمایش تاریخ
 // import 'models/concrete_sample.dart';
 // import 'pages/test_result_entry_page.dart';
 
-
 class ProjectTestsListPage extends StatefulWidget {
   // فرض می‌کنیم لیستی از نمونه‌های مربوط به یک پروژه به این صفحه فرستاده می‌شود
   final List<ConcreteSample> samples;
-  
+
   const ProjectTestsListPage({super.key, required this.samples});
 
   @override
@@ -39,8 +40,10 @@ class _ProjectTestsListPageState extends State<ProjectTestsListPage> {
   // تابع برای ناوبری به صفحه ثبت نتایج
   void _navigateToTestEntry(ConcreteSample sample) async {
     // با استفاده از GetX یا Navigator.push
-    /*
-    final updatedSample = await Get.to(() => TestResultEntryPage(sample: sample));
+
+    final updatedSample = await Get.to(
+      () => TestResultEntryPage(sample: sample),
+    );
 
     if (updatedSample != null) {
       setState(() {
@@ -51,10 +54,10 @@ class _ProjectTestsListPageState extends State<ProjectTestsListPage> {
         }
       });
     }
-    */
-     // نمایش یک پیام موقت
-     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('صفحه ثبت نتایج برای ${sample.id} باز می‌شود'))
+
+    // نمایش یک پیام موقت
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('صفحه ثبت نتایج برای ${sample.id} باز می‌شود')),
     );
   }
 
@@ -74,11 +77,10 @@ class _ProjectTestsListPageState extends State<ProjectTestsListPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // بخش اطلاعات بالای صفحه
-            if (projectInfo != null)
-              _buildProjectHeader(projectInfo),
-            
+            if (projectInfo != null) _buildProjectHeader(projectInfo),
+
             const SizedBox(height: 20),
-            
+
             // جدول نمایش آزمایش‌ها
             Container(
               width: double.infinity,
@@ -92,22 +94,29 @@ class _ProjectTestsListPageState extends State<ProjectTestsListPage> {
                   DataColumn(label: Text('باقیمانده (روز)')),
                   DataColumn(label: Text('مقاومت')),
                 ],
-                rows: _samples.map((sample) {
-                  return DataRow(
-                    cells: [
-                      DataCell(
-                        Text('${sample.samplingLocation} (${sample.moldCount} قالب)'),
-                        onTap: () => _navigateToTestEntry(sample),
-                      ),
-                      DataCell(Text('${sample.currentAge} روزه')),
-                      DataCell(Text(_toPersianDate(sample.requiredBreakDate))),
-                      DataCell(Text(sample.remainingDays.toString())),
-                      DataCell(Text(sample.cubicStrength?.toString() ?? '-')),
-                    ]
-                  );
-                }).toList(),
+                rows:
+                    _samples.map((sample) {
+                      return DataRow(
+                        cells: [
+                          DataCell(
+                            Text(
+                              '${sample.samplingLocation} (${sample.moldCount} قالب)',
+                            ),
+                            onTap: () => _navigateToTestEntry(sample),
+                          ),
+                          DataCell(Text('${sample.currentAge} روزه')),
+                          DataCell(
+                            Text(_toPersianDate(sample.requiredBreakDate)),
+                          ),
+                          DataCell(Text(sample.remainingDays.toString())),
+                          DataCell(
+                            Text(sample.cubicStrength?.toString() ?? '-'),
+                          ),
+                        ],
+                      );
+                    }).toList(),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -122,7 +131,10 @@ class _ProjectTestsListPageState extends State<ProjectTestsListPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('شماره پرونده: ${projectInfo.projectCaseNumber}', style: TextStyle(fontSize: 16)),
+            Text(
+              'شماره پرونده: ${projectInfo.projectCaseNumber}',
+              style: TextStyle(fontSize: 16),
+            ),
             SizedBox(height: 8),
             Row(
               children: [
@@ -131,18 +143,29 @@ class _ProjectTestsListPageState extends State<ProjectTestsListPage> {
                   onTap: () {
                     // TODO: ناوبری به صفحه خود پروژه
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('رفتن به صفحه پروژه ${projectInfo.projectName}'))
+                      SnackBar(
+                        content: Text(
+                          'رفتن به صفحه پروژه ${projectInfo.projectName}',
+                        ),
+                      ),
                     );
                   },
                   child: Text(
                     projectInfo.projectName,
-                    style: TextStyle(fontSize: 16, color: Colors.blue, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
             SizedBox(height: 8),
-            Text('نام کارفرما: ${projectInfo.clientName}', style: TextStyle(fontSize: 16)),
+            Text(
+              'نام کارفرما: ${projectInfo.clientName}',
+              style: TextStyle(fontSize: 16),
+            ),
           ],
         ),
       ),

@@ -1,5 +1,5 @@
-import 'package:boton/controller/drawer_controller.dart';
-import 'package:boton/controller/menu_controller.dart';
+import 'package:boton/controllers/drawer_controller.dart';
+import 'package:boton/controllers/menu_controller.dart';
 import 'package:flutter/material.dart';
 
 class DrawerItems extends StatelessWidget {

@@ -1,4 +1,4 @@
-import 'package:boton/controller/base_controller.dart';
+import 'package:boton/controllers/base_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart'; // برای فرمت کردن تاریخ
@@ -12,16 +12,16 @@ class BreakageView extends StatelessWidget {
     final ProjectController controller = Get.put(ProjectController());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('لیست شکست قالب‌ها'),
-      ),
+      appBar: AppBar(title: const Text('لیست شکست قالب‌ها')),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
         if (controller.breakageGroups.isEmpty) {
-          return const Center(child: Text('هیچ قالبی برای شکست در آینده نزدیک وجود ندارد.'));
+          return const Center(
+            child: Text('هیچ قالبی برای شکست در آینده نزدیک وجود ندارد.'),
+          );
         }
 
         return ListView.builder(
@@ -42,7 +42,11 @@ class BreakageView extends StatelessWidget {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                        const Icon(
+                          Icons.calendar_today,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           // نمایش تاریخ به فرمت خوانا
@@ -54,7 +58,11 @@ class BreakageView extends StatelessWidget {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(Icons.inventory_2_outlined, size: 16, color: Colors.grey),
+                        const Icon(
+                          Icons.inventory_2_outlined,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           '${group.molds.length} قالب آماده شکست',

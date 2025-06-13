@@ -1,9 +1,9 @@
-import 'package:boton/models/project.dart';
 import 'package:flutter/material.dart';
-// Assume project_model.dart is in this path
-// import '../../models/project_model.dart';
+// ✅ ایمپورت مدل صحیح و یکپارچه پروژه
+import 'package:boton/models/project_model.dart';
 
 class DetailsTab extends StatefulWidget {
+  // ✅ نوع پروژه، از مدل صحیح خوانده می‌شود
   final Project project;
   const DetailsTab({super.key, required this.project});
 
@@ -15,29 +15,25 @@ class _DetailsTabState extends State<DetailsTab> {
   bool _isEditing = false;
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers for the edit form, initialized in initState
-  late TextEditingController _nameController;
+  // ----- کنترلرها برای فرم ویرایش -----
+  // این کنترلرها بر اساس مدل جدید Project تعریف شده‌اند
+  late TextEditingController _projectNameController;
+  late TextEditingController _fileNumberController;
   late TextEditingController _clientNameController;
   late TextEditingController _clientPhoneController;
   late TextEditingController _supervisorNameController;
   late TextEditingController _supervisorPhoneController;
-  late TextEditingController _applicantNameController;
-  late TextEditingController _applicantPhoneController;
+  late TextEditingController _requesterNameController;
+  late TextEditingController _requesterPhoneController;
   late TextEditingController _addressController;
-  late TextEditingController _contractorController;
-  late TextEditingController _contractNumberController;
+  late TextEditingController _municipalityZoneController;
   late TextEditingController _floorCountController;
-  late TextEditingController _totalCostController;
-  late TextEditingController _concreteProducerController;
-  late TextEditingController _descriptionController;
-  late TextEditingController _contractDateController;
-  late TextEditingController _municipalDistrictController;
+  late TextEditingController _occupiedAreaController;
+  late TextEditingController _moldTypeController;
 
-  // State for Dropdowns and Radios
-  late String? _selectedProjectType;
+  // State for Dropdowns
+  late String? _selectedUsageType;
   late String? _selectedCementType;
-  late String? _selectedStrength;
-  late String _selectedTestType;
 
   @override
   void initState() {
@@ -47,76 +43,74 @@ class _DetailsTabState extends State<DetailsTab> {
 
   void _initializeControllers() {
     final project = widget.project;
-    _nameController = TextEditingController(text: project.name);
+
+    // ✅ مقداردهی کنترلرها با فیلدهای مدل جدید
+    _projectNameController = TextEditingController(text: project.projectName);
+    _fileNumberController = TextEditingController(text: project.fileNumber);
     _clientNameController = TextEditingController(text: project.clientName);
-    _clientPhoneController = TextEditingController(text: project.clientPhone);
+    _clientPhoneController = TextEditingController(
+      text: project.clientPhoneNumber,
+    );
     _supervisorNameController = TextEditingController(
       text: project.supervisorName,
     );
     _supervisorPhoneController = TextEditingController(
-      text: project.supervisorPhone,
+      text: project.supervisorPhoneNumber,
     );
-    _applicantNameController = TextEditingController(
-      text: project.applicantName,
+    _requesterNameController = TextEditingController(
+      text: project.requesterName,
     );
-    _applicantPhoneController = TextEditingController(
-      text: project.applicantPhone,
+    _requesterPhoneController = TextEditingController(
+      text: project.requesterPhoneNumber,
     );
     _addressController = TextEditingController(text: project.address);
-    _contractorController = TextEditingController(text: project.contractor);
-    _contractNumberController = TextEditingController(
-      text: project.contractNumber,
+    _municipalityZoneController = TextEditingController(
+      text: project.municipalityZone,
     );
     _floorCountController = TextEditingController(
       text: project.floorCount.toString(),
     );
-    _totalCostController = TextEditingController(
-      text: project.totalCost.toString(),
+    _occupiedAreaController = TextEditingController(
+      text: project.occupiedArea.toString(),
     );
-    _concreteProducerController = TextEditingController(
-      text: project.concreteProducer,
-    );
-    _descriptionController = TextEditingController(text: project.description);
-    _contractDateController = TextEditingController(text: project.contractDate);
-    _municipalDistrictController = TextEditingController(
-      text: project.municipalDistrict,
-    );
+    _moldTypeController = TextEditingController(text: project.moldType);
 
-    _selectedProjectType = project.projectType;
+    _selectedUsageType = project.projectUsageType;
     _selectedCementType = project.cementType;
-    _selectedStrength = project.characteristicStrength;
-    _selectedTestType = project.projectid;
   }
 
   @override
   void dispose() {
-    // Dispose all controllers to prevent memory leaks
-    _nameController.dispose();
+    // ✅ آزادسازی تمام کنترلرهای جدید برای جلوگیری از نشت حافظه
+    _projectNameController.dispose();
+    _fileNumberController.dispose();
     _clientNameController.dispose();
     _clientPhoneController.dispose();
     _supervisorNameController.dispose();
     _supervisorPhoneController.dispose();
-    _applicantNameController.dispose();
-    _applicantPhoneController.dispose();
+    _requesterNameController.dispose();
+    _requesterPhoneController.dispose();
     _addressController.dispose();
-    _contractorController.dispose();
-    _contractNumberController.dispose();
+    _municipalityZoneController.dispose();
     _floorCountController.dispose();
-    _totalCostController.dispose();
-    _concreteProducerController.dispose();
-    _descriptionController.dispose();
-    _contractDateController.dispose();
-    _municipalDistrictController.dispose();
+    _occupiedAreaController.dispose();
+    _moldTypeController.dispose();
     super.dispose();
   }
 
   void _toggleEditMode() {
     setState(() {
       if (_isEditing) {
-        // If we were editing, save the changes
+        // اگر در حالت ویرایش بودیم، تغییرات را ذخیره کن
         if (_formKey.currentState!.validate()) {
-          // Here you would typically save the updated project to your database or state management
-          // For now, we just show a snackbar
+          // TODO: در اینجا باید پروژه آپدیت شده را به کنترلر اصلی ارسال کنی
+          // Project updatedProject = widget.project.copyWith(
+          //   projectName: _projectNameController.text,
+          //   ... سایر فیلدها
+          // );
+          // final mainController = Get.find<ProjectController>();
+          // mainController.updateProject(updatedProject);
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('تغییرات با موفقیت ذخیره شد'),
@@ -126,25 +120,10 @@ class _DetailsTabState extends State<DetailsTab> {
           _isEditing = false;
         }
       } else {
-        // If we were not editing, just enter edit mode
+        // در غیر این صورت، وارد حالت ویرایش شو
         _isEditing = true;
       }
     });
-  }
-
-  Future<void> _selectDate() async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) {
-      setState(() {
-        _contractDateController.text =
-            "${picked.year}/${picked.month}/${picked.day}";
-      });
-    }
   }
 
   @override
@@ -165,7 +144,7 @@ class _DetailsTabState extends State<DetailsTab> {
     );
   }
 
-  // ==================== DISPLAY MODE WIDGETS ====================
+  // ==================== ویجت‌های حالت نمایش ====================
   Widget _buildDisplayInfo() {
     final project = widget.project;
     return Column(
@@ -174,7 +153,16 @@ class _DetailsTabState extends State<DetailsTab> {
         _buildDisplayCard(
           title: 'اطلاعات پایه',
           children: [
-            _buildDisplayRow('نام پروژه:', project.name, Icons.title),
+            _buildDisplayRow(
+              'نام پروژه:',
+              project.projectName,
+              Icons.business_center_outlined,
+            ),
+            _buildDisplayRow(
+              'شماره پرونده:',
+              project.fileNumber,
+              Icons.article_outlined,
+            ),
             _buildDisplayRow(
               'آدرس:',
               project.address,
@@ -182,18 +170,18 @@ class _DetailsTabState extends State<DetailsTab> {
             ),
             _buildDisplayRow(
               'منطقه شهرداری:',
-              project.municipalDistrict,
+              project.municipalityZone,
               Icons.map_outlined,
             ),
             _buildDisplayRow(
-              'نوع پروژه:',
-              project.projectType,
-              Icons.business_outlined,
+              'کاربری پروژه:',
+              project.projectUsageType,
+              Icons.category_outlined,
             ),
           ],
         ),
         _buildDisplayCard(
-          title: 'اشخاص و کارفرما',
+          title: 'اشخاص پروژه',
           children: [
             _buildDisplayRow(
               'نام کارفرما:',
@@ -202,7 +190,7 @@ class _DetailsTabState extends State<DetailsTab> {
             ),
             _buildDisplayRow(
               'تماس کارفرما:',
-              project.clientPhone,
+              project.clientPhoneNumber,
               Icons.phone_outlined,
             ),
             _buildDisplayRow(
@@ -212,23 +200,33 @@ class _DetailsTabState extends State<DetailsTab> {
             ),
             _buildDisplayRow(
               'تماس ناظر:',
-              project.supervisorPhone,
+              project.supervisorPhoneNumber,
+              Icons.phone_outlined,
+            ),
+            _buildDisplayRow(
+              'نام درخواست دهنده:',
+              project.requesterName,
+              Icons.person_pin_outlined,
+            ),
+            _buildDisplayRow(
+              'تماس درخواست دهنده:',
+              project.requesterPhoneNumber,
               Icons.phone_outlined,
             ),
           ],
         ),
         _buildDisplayCard(
-          title: 'جزئیات فنی و قرارداد',
+          title: 'جزئیات فنی',
           children: [
             _buildDisplayRow(
-              'آزمون اصلی:',
-              project.projectid,
-              Icons.science_outlined,
+              'تعداد طبقات:',
+              project.floorCount.toString(),
+              Icons.layers_outlined,
             ),
             _buildDisplayRow(
-              'تعداد طبقات:',
-              '${project.floorCount}',
-              Icons.layers_outlined,
+              'سطح زیربنا (متر مربع):',
+              project.occupiedArea.toString(),
+              Icons.square_foot_outlined,
             ),
             _buildDisplayRow(
               'نوع سیمان:',
@@ -236,19 +234,9 @@ class _DetailsTabState extends State<DetailsTab> {
               Icons.grain_outlined,
             ),
             _buildDisplayRow(
-              'مقاومت مشخصه:',
-              project.characteristicStrength,
-              Icons.speed_outlined,
-            ),
-            _buildDisplayRow(
-              'شماره قرارداد:',
-              project.contractNumber,
-              Icons.article_outlined,
-            ),
-            _buildDisplayRow(
-              'تاریخ قرارداد:',
-              project.contractDate,
-              Icons.calendar_today_outlined,
+              'نوع قالب:',
+              project.moldType,
+              Icons.view_in_ar_outlined,
             ),
           ],
         ),
@@ -256,6 +244,118 @@ class _DetailsTabState extends State<DetailsTab> {
     );
   }
 
+  // ==================== ویجت‌های حالت ویرایش ====================
+  Widget _buildEditForm() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        key: const ValueKey('edit'),
+        children: [
+          _buildSectionCard(
+            title: 'اطلاعات پایه پروژه',
+            children: [
+              _buildTextFormField(
+                controller: _projectNameController,
+                label: 'نام پروژه',
+                icon: Icons.business_center_outlined,
+              ),
+              _buildTextFormField(
+                controller: _fileNumberController,
+                label: 'شماره پرونده',
+                icon: Icons.article_outlined,
+              ),
+              _buildTextFormField(
+                controller: _addressController,
+                label: 'آدرس پروژه',
+                icon: Icons.location_on_outlined,
+              ),
+              _buildTextFormField(
+                controller: _municipalityZoneController,
+                label: 'منطقه شهرداری',
+                icon: Icons.map_outlined,
+              ),
+              _buildDropdownFormField(
+                value: _selectedUsageType,
+                label: 'کاربری پروژه',
+                items: ['مسکونی', 'تجاری', 'اداری', 'صنعتی', 'سایر'],
+                onChanged:
+                    (value) => setState(() => _selectedUsageType = value),
+              ),
+            ],
+          ),
+          _buildSectionCard(
+            title: 'اشخاص پروژه',
+            children: [
+              _buildTextFormField(
+                controller: _clientNameController,
+                label: 'نام کارفرما',
+                icon: Icons.person_outline,
+              ),
+              _buildTextFormField(
+                controller: _clientPhoneController,
+                label: 'شماره تماس کارفرما',
+                icon: Icons.phone_outlined,
+                keyboardType: TextInputType.phone,
+              ),
+              _buildTextFormField(
+                controller: _supervisorNameController,
+                label: 'نام مهندس ناظر',
+                icon: Icons.engineering_outlined,
+              ),
+              _buildTextFormField(
+                controller: _supervisorPhoneController,
+                label: 'شماره تماس ناظر',
+                icon: Icons.phone_outlined,
+                keyboardType: TextInputType.phone,
+              ),
+              _buildTextFormField(
+                controller: _requesterNameController,
+                label: 'نام درخواست‌کننده',
+                icon: Icons.person_pin_outlined,
+              ),
+              _buildTextFormField(
+                controller: _requesterPhoneController,
+                label: 'شماره تماس درخواست‌کننده',
+                icon: Icons.phone_outlined,
+                keyboardType: TextInputType.phone,
+              ),
+            ],
+          ),
+          _buildSectionCard(
+            title: 'جزئیات فنی',
+            children: [
+              _buildTextFormField(
+                controller: _floorCountController,
+                label: 'تعداد طبقات',
+                icon: Icons.layers_outlined,
+                keyboardType: TextInputType.number,
+              ),
+              _buildTextFormField(
+                controller: _occupiedAreaController,
+                label: 'سطح زیربنا (متر مربع)',
+                icon: Icons.square_foot_outlined,
+                keyboardType: TextInputType.number,
+              ),
+              _buildDropdownFormField(
+                value: _selectedCementType,
+                label: 'نوع سیمان',
+                items: ['تیپ ۱', 'تیپ ۲', 'تیپ ۳', 'تیپ ۴', 'تیپ ۵', 'سایر'],
+                onChanged:
+                    (value) => setState(() => _selectedCementType = value),
+              ),
+              _buildTextFormField(
+                controller: _moldTypeController,
+                label: 'نوع قالب',
+                icon: Icons.view_in_ar_outlined,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ==================== ویجت‌های کمکی (Helper Widgets) ====================
   Widget _buildDisplayCard({
     required String title,
     required List<Widget> children,
@@ -300,138 +400,6 @@ class _DetailsTabState extends State<DetailsTab> {
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               textAlign: TextAlign.end,
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ==================== EDIT MODE WIDGETS (similar to AddProjectPage) ====================
-  Widget _buildEditForm() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        key: const ValueKey('edit'),
-        children: [
-          _buildSectionCard(
-            title: 'اطلاعات پایه پروژه',
-            children: [
-              _buildTextFormField(
-                controller: _nameController,
-                label: 'نام پروژه',
-                icon: Icons.title,
-              ),
-              _buildTextFormField(
-                controller: _addressController,
-                label: 'آدرس پروژه',
-                icon: Icons.location_on_outlined,
-              ),
-              _buildTextFormField(
-                controller: _municipalDistrictController,
-                label: 'منطقه شهرداری',
-                icon: Icons.map_outlined,
-              ),
-              _buildDropdownFormField(
-                value: _selectedProjectType,
-                label: 'نوع پروژه',
-                items: ['ساختمانی', 'راه‌سازی', 'صنعتی', 'سایر'],
-                onChanged:
-                    (value) => setState(() => _selectedProjectType = value),
-              ),
-            ],
-          ),
-          _buildSectionCard(
-            title: 'اشخاص و کارفرما',
-            children: [
-              _buildTextFormField(
-                controller: _clientNameController,
-                label: 'نام کارفرما',
-                icon: Icons.person_outline,
-              ),
-              _buildTextFormField(
-                controller: _clientPhoneController,
-                label: 'شماره تماس کارفرما',
-                icon: Icons.phone_outlined,
-                keyboardType: TextInputType.phone,
-              ),
-              _buildTextFormField(
-                controller: _supervisorNameController,
-                label: 'نام مهندس ناظر',
-                icon: Icons.engineering_outlined,
-              ),
-              _buildTextFormField(
-                controller: _supervisorPhoneController,
-                label: 'شماره تماس ناظر',
-                icon: Icons.phone_outlined,
-                keyboardType: TextInputType.phone,
-              ),
-              _buildTextFormField(
-                controller: _applicantNameController,
-                label: 'نام درخواست‌کننده',
-                icon: Icons.person_pin_outlined,
-              ),
-              _buildTextFormField(
-                controller: _applicantPhoneController,
-                label: 'شماره تماس درخواست‌کننده',
-                icon: Icons.phone_outlined,
-                keyboardType: TextInputType.phone,
-              ),
-            ],
-          ),
-          _buildSectionCard(
-            title: 'جزئیات فنی',
-            children: [
-              _buildTextFormField(
-                controller: _floorCountController,
-                label: 'تعداد طبقات',
-                icon: Icons.layers_outlined,
-                keyboardType: TextInputType.number,
-              ),
-              _buildDropdownFormField(
-                value: _selectedCementType,
-                label: 'نوع سیمان',
-                items: ['تیپ ۱', 'تیپ ۲', 'تیپ ۳', 'تیپ ۴', 'تیپ ۵', 'سایر'],
-                onChanged:
-                    (value) => setState(() => _selectedCementType = value),
-              ),
-              _buildDropdownFormField(
-                value: _selectedStrength,
-                label: 'مقاومت مشخصه',
-                items: ['C20', 'C25', 'C30', 'C35', 'C40', 'C50'],
-                onChanged: (value) => setState(() => _selectedStrength = value),
-              ),
-              _buildTextFormField(
-                controller: _concreteProducerController,
-                label: 'تولیدکننده بتن',
-                icon: Icons.factory_outlined,
-              ),
-            ],
-          ),
-          _buildSectionCard(
-            title: 'نوع آزمون اصلی',
-            children: [
-              RadioListTile<String>(
-                title: const Text('مقاومت فشاری'),
-                value: 'مقاومت فشاری',
-                groupValue: _selectedTestType,
-                onChanged:
-                    (value) => setState(() => _selectedTestType = value!),
-              ),
-              RadioListTile<String>(
-                title: const Text('چکش اشمیت'),
-                value: 'چکش اشمیت',
-                groupValue: _selectedTestType,
-                onChanged:
-                    (value) => setState(() => _selectedTestType = value!),
-              ),
-              RadioListTile<String>(
-                title: const Text('التراسونیک'),
-                value: 'التراسونیک',
-                groupValue: _selectedTestType,
-                onChanged:
-                    (value) => setState(() => _selectedTestType = value!),
-              ),
-            ],
           ),
         ],
       ),

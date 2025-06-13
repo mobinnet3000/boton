@@ -2,35 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math';
 
-// void main() {
-//   runApp(FixedFinancialDashboardApp());
-// }
-//
-// class FixedFinancialDashboardApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Fixed Financial Dashboard',
-//       debugShowCheckedModeBanner: false,
-//       theme: ThemeData(
-//         primaryColor: Color(0xFF047857),
-//         scaffoldBackgroundColor: Color(0xFFF0F2F5),
-//         fontFamily: 'Vazir',
-//         cardTheme: CardTheme(
-//           elevation: 2.0,
-//           color: Colors.white,
-//           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-//           margin: EdgeInsets.zero,
-//         ),
-//       ),
-//       home: Directionality(
-//         textDirection: TextDirection.rtl,
-//         child: AdvancedFinancialDashboardScreen(),
-//       ),
-//     );
-//   }
-// }
-
 class FinancialDashboardScreen extends StatefulWidget {
   const FinancialDashboardScreen({super.key});
 

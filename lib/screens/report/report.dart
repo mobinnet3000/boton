@@ -2,35 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math';
 
-// void main() {
-//   runApp(ProDashboardApp());
-// }
-//
-// class ProDashboardApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Professional Lab Dashboard',
-//       debugShowCheckedModeBanner: false,
-//       theme: ThemeData(
-//         primaryColor: Color(0xFF1E3A8A), // Darker Blue
-//         scaffoldBackgroundColor: Color(0xFFF0F2F5), // Light grey background
-//         fontFamily: 'Vazir',
-//         cardTheme: CardTheme(
-//           elevation: 2.0,
-//           color: Colors.white,
-//           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-//           margin: EdgeInsets.zero,
-//         ),
-//       ),
-//       home: Directionality(
-//         textDirection: TextDirection.rtl,
-//         child: ProfessionalDashboardScreen(),
-//       ),
-//     );
-//   }
-// }
-
 class ProfessionalDashboardScreen extends StatefulWidget {
   // const ReportDashboardScreen({super.key});
 

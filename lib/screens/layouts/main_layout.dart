@@ -1,9 +1,9 @@
 // lib/layouts/main_layout.dart
-import 'package:boton/controller/base_controller.dart';
+import 'package:boton/controllers/base_controller.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-import 'package:boton/controller/drawer_controller.dart';
-import 'package:boton/controller/menu_controller.dart';
+import 'package:boton/controllers/drawer_controller.dart';
+import 'package:boton/controllers/menu_controller.dart';
 import 'package:boton/screens/daily/daily.dart';
 import 'package:boton/screens/finance/finance_report.dart';
 import 'package:boton/screens/layouts/components/costum_app_bar.dart';
@@ -76,7 +76,6 @@ class _MainLayoutState extends State<MainLayout> {
   final MenuControllerr menuController = Get.put(MenuControllerr());
   final ProjectController controller = Get.put(ProjectController());
 
-
   @override
   Widget build(BuildContext context) {
     // با استفاده از MediaQuery اندازه صفحه را تشخیص می‌دهیم
@@ -87,61 +86,78 @@ class _MainLayoutState extends State<MainLayout> {
     // print(controller.user.value!.firstName);
     print(controller.projects);
 
-    return Obx(() => controller.isLoading.value ? SpinKitSpinningLines(color: Colors.blueGrey,lineWidth: 5,size: 100,) : Scaffold(
-      appBar: CustomAppBar(title: controller.user.value!.labName 
-      ),
-      // دراور فقط برای صفحات کوچک استفاده می‌شود
-      drawer: isLargeScreen ? null : Drawer(child: CustomDrawer()),
-      body: Row(
-        children: [
-          // منوی ثابت کناری (NavigationRail) فقط در صفحات بزرگ نمایش داده می‌شود
-          if (isLargeScreen)
-            // NavigationRail(
-            //     selectedIndex: _selectedIndex,
-            //     extended: _isRailExpanded, // کنترل باز و بسته بودن
-            //     onDestinationSelected: (index) {
-            //       setState(() {
-            //         () => _selectedIndex = index;
-            //         menuController.selectSection(ml[index]);
-            //       });
-            //     },
-            //     leading: IconButton(
-            //       icon: Icon(_isRailExpanded ? Icons.menu_open : Icons.menu),
-            //       onPressed: () {
-            //         setState(() => _isRailExpanded = !_isRailExpanded);
-            //       },
-            //     ),
-            //     destinations: DrawerItems.getDestinationss(),
-            //   ),
-            AnimatedContainer(
-              duration: Duration(milliseconds: 300), // مدت زمان انیمیشن
-              curve: Curves.easeInOut, // نوع منحنی انیمیشن
-              child: NavigationRail(
-                selectedIndex: _selectedIndex,
-                extended: _isRailExpanded, // کنترل باز و بسته بودن
-                onDestinationSelected: (index) {
-                  setState(() => _selectedIndex = index);
-                  menuController.selectSection(ml[index]);
-                },
-                leading: IconButton(
-                  icon: Icon(_isRailExpanded ? Icons.menu_open : Icons.menu),
-                  onPressed: () {
-                    setState(() => _isRailExpanded = !_isRailExpanded);
-                  },
+    return Obx(
+      () =>
+          controller.isLoading.value
+              ? SpinKitSpinningLines(
+                color: Colors.blueGrey,
+                lineWidth: 5,
+                size: 100,
+              )
+              : Scaffold(
+                appBar: CustomAppBar(
+                  title: "controller.user.value!.labName ?? 'asdasd',",
                 ),
-                destinations: DrawerItems.getDestinationss(),
+                // دراور فقط برای صفحات کوچک استفاده می‌شود
+                drawer: isLargeScreen ? null : Drawer(child: CustomDrawer()),
+                body: Row(
+                  children: [
+                    // منوی ثابت کناری (NavigationRail) فقط در صفحات بزرگ نمایش داده می‌شود
+                    if (isLargeScreen)
+                      // NavigationRail(
+                      //     selectedIndex: _seletedIndex,
+                      //     extended: _isRailExpanded, // کنترل باز و بسته بودن
+                      //     onDestinationSelected: (index) {
+                      //       setState(() {
+                      //         () => _selectedIndex = index;
+                      //         menuController.selectSection(ml[index]);
+                      //       });
+                      //     },
+                      //     leading: IconButton(
+                      //       icon: Icon(_isRailExpanded ? Icons.menu_open : Icons.menu),
+                      //       onPressed: () {
+                      //         setState(() => _isRailExpanded = !_isRailExpanded);
+                      //       },
+                      //     ),
+                      //     destinations: DrawerItems.getDestinationss(),
+                      //   ),
+                      AnimatedContainer(
+                        duration: Duration(
+                          milliseconds: 300,
+                        ), // مدت زمان انیمیشن
+                        curve: Curves.easeInOut, // نوع منحنی انیمیشن
+                        child: NavigationRail(
+                          selectedIndex: _selectedIndex,
+                          extended: _isRailExpanded, // کنترل باز و بسته بودن
+                          onDestinationSelected: (index) {
+                            setState(() => _selectedIndex = index);
+                            menuController.selectSection(ml[index]);
+                          },
+                          leading: IconButton(
+                            icon: Icon(
+                              _isRailExpanded ? Icons.menu_open : Icons.menu,
+                            ),
+                            onPressed: () {
+                              setState(
+                                () => _isRailExpanded = !_isRailExpanded,
+                              );
+                            },
+                          ),
+                          destinations: DrawerItems.getDestinationss(),
+                        ),
+                      ),
+
+                    const VerticalDivider(thickness: 1, width: 1),
+
+                    // محتوای اصلی صفحه
+                    Expanded(
+                      child: Obx(
+                        () => getBody(menuController.selectedSection.value),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-
-          const VerticalDivider(thickness: 1, width: 1),
-
-          // محتوای اصلی صفحه
-          Expanded(
-            child: Obx(() => getBody(menuController.selectedSection.value)),
-          ),
-        ],
-      ),
-    )
-,);
-      }
+    );
+  }
 }

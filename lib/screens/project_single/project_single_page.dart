@@ -1,4 +1,5 @@
 // lib/pages/project_single/project_single_page.dart
+import 'package:boton/models/project_model.dart';
 import 'package:flutter/material.dart';
 import 'package:boton/models/project.dart';
 import 'package:boton/components/custom_animated_tab_bar.dart'; // ایمپورت کامپوننت جدید
@@ -43,7 +44,7 @@ class _ProjectSinglePageState extends State<ProjectSinglePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('پروژه: ${widget.project.name}'),
+        title: Text('پروژه: ${widget.project.projectName}'),
         // به جای TabBar قدیمی، از ویجت سفارشی خودمان استفاده می‌کنیم
         bottom: CustomAnimatedTabBar(controller: _tabController, tabs: _tabs),
       ),
@@ -51,7 +52,7 @@ class _ProjectSinglePageState extends State<ProjectSinglePage>
         controller: _tabController,
         children: [
           DetailsTab(project: widget.project),
-          const ConcreteTab(),
+          ConcreteTab(project: widget.project),
           const Center(child: Text('صفحه میلگرد')),
           const FinancialTab(),
           const ActivityReportTab(),

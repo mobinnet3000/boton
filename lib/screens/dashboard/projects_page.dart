@@ -1,9 +1,10 @@
 // lib/pages/dashboard/projects_page.dart
-import 'package:boton/controller/project_controller.dart';
+import 'package:boton/controllers/project_controller.dart';
 import 'package:boton/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'widgets/project_list_item_card.dart';
+import 'package:boton/models/project_model.dart';
 
 class ProjectsPage extends StatelessWidget {
   const ProjectsPage({super.key});
@@ -40,7 +41,7 @@ class ProjectListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ProjectControllerrr controller = Get.put(ProjectControllerrr());
+    final ProjectListController controller = Get.put(ProjectListController());
     return Column(
       children: [
         Padding(
@@ -90,7 +91,7 @@ class ProjectListPage extends StatelessWidget {
 class _SortableHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ProjectControllerrr controller = Get.find();
+    final ProjectListController controller = Get.find();
     return Obx(
       () => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -112,7 +113,7 @@ class _SortableHeader extends StatelessWidget {
 
   Widget _buildHeaderItem(
     BuildContext context,
-    ProjectControllerrr controller,
+    ProjectListController controller,
     String title,
     int index,
   ) {
@@ -144,7 +145,7 @@ class _SortableHeader extends StatelessWidget {
 class _PaginationControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ProjectControllerrr controller = Get.find();
+    final ProjectListController controller = Get.find();
     return Obx(
       () => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -211,59 +212,90 @@ class AddProjectPage extends StatefulWidget {
 class _AddProjectPageState extends State<AddProjectPage> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers for all fields
-  final _nameController = TextEditingController();
+  // ✅ کنترلرها بر اساس مدل جدید Project
+  final _projectNameController = TextEditingController();
+  final _fileNumberController = TextEditingController();
   final _clientNameController = TextEditingController();
   final _clientPhoneController = TextEditingController();
   final _supervisorNameController = TextEditingController();
   final _supervisorPhoneController = TextEditingController();
-  final _applicantNameController = TextEditingController();
-  final _applicantPhoneController = TextEditingController();
+  final _requesterNameController = TextEditingController();
+  final _requesterPhoneController = TextEditingController();
   final _addressController = TextEditingController();
-  final _contractorController = TextEditingController();
-  final _contractNumberController = TextEditingController();
+  final _municipalityZoneController = TextEditingController();
   final _floorCountController = TextEditingController();
-  final _totalCostController = TextEditingController();
-  final _concreteProducerController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _contractDateController = TextEditingController();
-  final _municipalDistrictController = TextEditingController();
+  final _occupiedAreaController = TextEditingController();
+  final _moldTypeController = TextEditingController();
 
-  // Values for Dropdowns and Radios
-  String? _selectedProjectType = 'ساختمانی';
+  // ✅ مقادیر برای Dropdowns بر اساس مدل جدید
+  String? _selectedUsageType = 'مسکونی';
   String? _selectedCementType = 'تیپ ۲';
-  String? _selectedStrength = 'C25';
-  String _selectedTestType = 'مقاومت فشاری';
 
   @override
   void dispose() {
-    // Dispose all controllers
-    _nameController.dispose();
+    // ✅ آزادسازی تمام کنترلرها
+    _projectNameController.dispose();
+    _fileNumberController.dispose();
     _clientNameController.dispose();
     _clientPhoneController.dispose();
     _supervisorNameController.dispose();
-    // ... dispose all other controllers
+    _supervisorPhoneController.dispose();
+    _requesterNameController.dispose();
+    _requesterPhoneController.dispose();
+    _addressController.dispose();
+    _municipalityZoneController.dispose();
+    _floorCountController.dispose();
+    _occupiedAreaController.dispose();
+    _moldTypeController.dispose();
     super.dispose();
   }
 
-  Future<void> _selectDate() async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) {
-      setState(() {
-        _contractDateController.text =
-            "${picked.year}/${picked.month}/${picked.day}";
-      });
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      // TODO: در یک برنامه واقعی، ownerId باید از کنترلر کاربر گرفته شود
+      // final authController = Get.find<AuthController>();
+      // final ownerId = authController.user.id;
+      const ownerId = 1; // مقدار تستی
+
+      // ✅ ساخت آبجکت Project بر اساس مدل جدید
+      final newProject = Project(
+        id: 0, // سرور معمولا ID را مشخص می‌کند، پس 0 یا -1 ارسال می‌کنیم
+        projectName: _projectNameController.text,
+        fileNumber: _fileNumberController.text,
+        clientName: _clientNameController.text,
+        clientPhoneNumber: _clientPhoneController.text,
+        supervisorName: _supervisorNameController.text,
+        supervisorPhoneNumber: _supervisorPhoneController.text,
+        requesterName: _requesterNameController.text,
+        requesterPhoneNumber: _requesterPhoneController.text,
+        address: _addressController.text,
+        municipalityZone: _municipalityZoneController.text,
+        projectUsageType: _selectedUsageType ?? '',
+        floorCount: int.tryParse(_floorCountController.text) ?? 0,
+        occupiedArea: double.tryParse(_occupiedAreaController.text) ?? 0.0,
+        cementType: _selectedCementType ?? '',
+        moldType: _moldTypeController.text,
+        ownerId: ownerId,
+        samples: const [], // پروژه جدید نمونه‌ای ندارد
+      );
+
+      // TODO: آبجکت ساخته شده را به کنترلر اصلی برای ارسال به API بده
+      // final projectController = Get.find<ProjectController>();
+      // projectController.createProject(newProject);
+
+      SnackbarHelper.showSuccess(message: 'پروژه جدید با موفقیت افزوده شد.');
+      Get.back(); // بازگشت به صفحه قبل
+    } else {
+      SnackbarHelper.showError(
+        message: 'لطفاً تمام فیلدهای ستاره‌دار را پر کنید.',
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('افزودن پروژه جدید')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -275,64 +307,71 @@ class _AddProjectPageState extends State<AddProjectPage> {
                 title: 'اطلاعات پایه پروژه',
                 children: [
                   _buildTextFormField(
-                    controller: _nameController,
-                    label: 'نام پروژه',
-                    icon: Icons.title,
+                    controller: _projectNameController,
+                    label: 'نام پروژه*',
+                    icon: Icons.business_center_outlined,
+                  ),
+                  _buildTextFormField(
+                    controller: _fileNumberController,
+                    label: 'شماره پرونده*',
+                    icon: Icons.article_outlined,
                   ),
                   _buildTextFormField(
                     controller: _addressController,
-                    label: 'آدرس پروژه',
+                    label: 'آدرس پروژه*',
                     icon: Icons.location_on_outlined,
                   ),
                   _buildTextFormField(
-                    controller: _municipalDistrictController,
-                    label: 'منطقه شهرداری',
+                    controller: _municipalityZoneController,
+                    label: 'منطقه شهرداری*',
                     icon: Icons.map_outlined,
                   ),
                   _buildDropdownFormField(
-                    value: _selectedProjectType,
-                    label: 'نوع پروژه',
-                    items: ['ساختمانی', 'راه‌سازی', 'صنعتی', 'سایر'],
+                    value: _selectedUsageType,
+                    label: 'کاربری پروژه',
+                    items: ['مسکونی', 'تجاری', 'اداری', 'صنعتی', 'سایر'],
                     onChanged:
-                        (value) => setState(() => _selectedProjectType = value),
+                        (value) => setState(() => _selectedUsageType = value),
                   ),
                 ],
               ),
               _buildSectionCard(
-                title: 'اشخاص و کارفرما',
+                title: 'اشخاص پروژه',
                 children: [
                   _buildTextFormField(
                     controller: _clientNameController,
-                    label: 'نام کارفرما',
+                    label: 'نام کارفرما*',
                     icon: Icons.person_outline,
                   ),
                   _buildTextFormField(
                     controller: _clientPhoneController,
-                    label: 'شماره تماس کارفرما',
+                    label: 'شماره تماس کارفرما*',
                     icon: Icons.phone_outlined,
                     keyboardType: TextInputType.phone,
                   ),
                   _buildTextFormField(
                     controller: _supervisorNameController,
-                    label: 'نام مهندس ناظر',
+                    label: 'نام مهندس ناظر*',
                     icon: Icons.engineering_outlined,
                   ),
                   _buildTextFormField(
                     controller: _supervisorPhoneController,
-                    label: 'شماره تماس ناظر',
+                    label: 'شماره تماس ناظر*',
                     icon: Icons.phone_outlined,
                     keyboardType: TextInputType.phone,
                   ),
                   _buildTextFormField(
-                    controller: _applicantNameController,
+                    controller: _requesterNameController,
                     label: 'نام درخواست‌کننده',
                     icon: Icons.person_pin_outlined,
+                    isRequired: false,
                   ),
                   _buildTextFormField(
-                    controller: _applicantPhoneController,
+                    controller: _requesterPhoneController,
                     label: 'شماره تماس درخواست‌کننده',
                     icon: Icons.phone_outlined,
                     keyboardType: TextInputType.phone,
+                    isRequired: false,
                   ),
                 ],
               ),
@@ -341,9 +380,22 @@ class _AddProjectPageState extends State<AddProjectPage> {
                 children: [
                   _buildTextFormField(
                     controller: _floorCountController,
-                    label: 'تعداد طبقات',
+                    label: 'تعداد طبقات*',
                     icon: Icons.layers_outlined,
                     keyboardType: TextInputType.number,
+                  ),
+                  _buildTextFormField(
+                    controller: _occupiedAreaController,
+                    label: 'سطح زیربنا (متر مربع)*',
+                    icon: Icons.square_foot_outlined,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                  ),
+                  _buildTextFormField(
+                    controller: _moldTypeController,
+                    label: 'نوع قالب*',
+                    icon: Icons.view_in_ar_outlined,
                   ),
                   _buildDropdownFormField(
                     value: _selectedCementType,
@@ -359,107 +411,11 @@ class _AddProjectPageState extends State<AddProjectPage> {
                     onChanged:
                         (value) => setState(() => _selectedCementType = value),
                   ),
-                  _buildDropdownFormField(
-                    value: _selectedStrength,
-                    label: 'مقاومت مشخصه',
-                    items: ['C20', 'C25', 'C30', 'C35', 'C40', 'C50'],
-                    onChanged:
-                        (value) => setState(() => _selectedStrength = value),
-                  ),
-                  _buildTextFormField(
-                    controller: _concreteProducerController,
-                    label: 'تولیدکننده بتن',
-                    icon: Icons.factory_outlined,
-                  ),
-                ],
-              ),
-              _buildSectionCard(
-                title: 'نوع آزمون اصلی',
-                children: [
-                  RadioListTile<String>(
-                    title: const Text('مقاومت فشاری'),
-                    value: 'مقاومت فشاری',
-                    groupValue: _selectedTestType,
-                    onChanged:
-                        (value) => setState(() => _selectedTestType = value!),
-                  ),
-                  RadioListTile<String>(
-                    title: const Text('چکش اشمیت'),
-                    value: 'چکش اشمیت',
-                    groupValue: _selectedTestType,
-                    onChanged:
-                        (value) => setState(() => _selectedTestType = value!),
-                  ),
-                  RadioListTile<String>(
-                    title: const Text('التراسونیک'),
-                    value: 'التراسونیک',
-                    groupValue: _selectedTestType,
-                    onChanged:
-                        (value) => setState(() => _selectedTestType = value!),
-                  ),
-                ],
-              ),
-              _buildSectionCard(
-                title: 'اطلاعات قرارداد و مالی',
-                children: [
-                  _buildTextFormField(
-                    controller: _contractorController,
-                    label: 'پیمانکار',
-                    icon: Icons.handshake_outlined,
-                  ),
-                  _buildTextFormField(
-                    controller: _contractNumberController,
-                    label: 'شماره قرارداد',
-                    icon: Icons.article_outlined,
-                  ),
-                  _buildTextFormField(
-                    controller: _contractDateController,
-                    label: 'تاریخ قرارداد',
-                    icon: Icons.calendar_today_outlined,
-                    onTap: _selectDate,
-                    readOnly: true,
-                  ),
-                  _buildTextFormField(
-                    controller: _totalCostController,
-                    label: 'هزینه کل پروژه (تومان)',
-                    icon: Icons.monetization_on_outlined,
-                    keyboardType: TextInputType.number,
-                  ),
-                ],
-              ),
-              _buildSectionCard(
-                title: 'توضیحات تکمیلی',
-                children: [
-                  _buildTextFormField(
-                    controller: _descriptionController,
-                    label: 'توضیحات',
-                    icon: Icons.notes_outlined,
-                    maxLines: 4,
-                  ),
                 ],
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Here you can create the Project object and save it
-                    // For example:
-                    // final newProject = Project(
-                    //   id: DateTime.now().toIso8601String(),
-                    //   name: _nameController.text,
-                    //   clientName: _clientNameController.text,
-                    //   // ... and so on for all fields
-                    // );
-                    // print('New project created: ${newProject.name}');
-                    // SnackbarHelper.showSuccess(message: 'پروژه جدید با موفقیت افزوده شد.');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('پروژه افزوده شد'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  }
-                },
+                onPressed: _submitForm,
                 icon: const Icon(Icons.add_circle_outline),
                 label: const Text('افزودن پروژه'),
                 style: ElevatedButton.styleFrom(
@@ -477,7 +433,7 @@ class _AddProjectPageState extends State<AddProjectPage> {
     );
   }
 
-  // Helper widget to build styled cards for sections
+  // ویجت‌های کمکی
   Widget _buildSectionCard({
     required String title,
     required List<Widget> children,
@@ -505,15 +461,13 @@ class _AddProjectPageState extends State<AddProjectPage> {
     );
   }
 
-  // Helper widget for styled TextFormFields
   Widget _buildTextFormField({
     required TextEditingController controller,
     required String label,
     required IconData icon,
     int maxLines = 1,
     TextInputType keyboardType = TextInputType.text,
-    bool readOnly = false,
-    VoidCallback? onTap,
+    bool isRequired = true,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -521,8 +475,6 @@ class _AddProjectPageState extends State<AddProjectPage> {
         controller: controller,
         maxLines: maxLines,
         keyboardType: keyboardType,
-        readOnly: readOnly,
-        onTap: onTap,
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon),
@@ -531,7 +483,7 @@ class _AddProjectPageState extends State<AddProjectPage> {
           ),
         ),
         validator: (value) {
-          if (value == null || value.isEmpty) {
+          if (isRequired && (value == null || value.isEmpty)) {
             return '$label نمی‌تواند خالی باشد.';
           }
           return null;
@@ -540,7 +492,6 @@ class _AddProjectPageState extends State<AddProjectPage> {
     );
   }
 
-  // Helper widget for styled DropdownButtonFormFields
   Widget _buildDropdownFormField({
     required String? value,
     required String label,
@@ -562,6 +513,12 @@ class _AddProjectPageState extends State<AddProjectPage> {
               return DropdownMenuItem<String>(value: item, child: Text(item));
             }).toList(),
         onChanged: onChanged,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return '$label را انتخاب کنید.';
+          }
+          return null;
+        },
       ),
     );
   }

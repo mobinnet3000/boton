@@ -1,4 +1,5 @@
 // lib/pages/dashboard/widgets/project_list_item_card.dart
+import 'package:boton/models/project_model.dart';
 import 'package:boton/screens/project_single/project_single_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -50,7 +51,7 @@ class ProjectListItemCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          project.name,
+                          project.projectName,
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
@@ -63,7 +64,7 @@ class ProjectListItemCard extends StatelessWidget {
                     ),
                   ),
                   Chip(
-                    label: Text(project.projectid),
+                    label: Text(project.fileNumber),
                     backgroundColor: Colors.blue.shade50,
                   ),
                 ],
@@ -88,7 +89,7 @@ class ProjectListItemCard extends StatelessWidget {
                   Expanded(
                     child: _buildInfoChip(
                       Icons.location_city_outlined,
-                      'منطقه ${project.municipalDistrict}',
+                      'منطقه ${project.municipalityZone}',
                     ),
                   ),
                 ],

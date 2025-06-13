@@ -8,41 +8,6 @@ import 'dart:math';
 // enum for Concrete calculation mode
 enum ConcreteMode { fixed, formula }
 
-// class StyledAppWithoutAppBar extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Flutter No-AppBar Tabs',
-//       debugShowCheckedModeBanner: false,
-//       theme: ThemeData(
-//         primarySwatch: Colors.indigo,
-//         fontFamily: 'Vazir', // Make sure to add Vazir font to your project
-//         scaffoldBackgroundColor: Colors.grey[100],
-//         inputDecorationTheme: InputDecorationTheme(
-//           filled: true,
-//           fillColor: Colors.white,
-//           border: OutlineInputBorder(
-//             borderRadius: BorderRadius.circular(12.0),
-//             borderSide: BorderSide.none,
-//           ),
-//           prefixIconColor: Colors.indigo[400],
-//         ),
-//         cardTheme: CardTheme(
-//           elevation: 4.0,
-//           shape: RoundedRectangleBorder(
-//             borderRadius: BorderRadius.circular(15.0),
-//           ),
-//           margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
-//         ),
-//       ),
-//       home: Directionality(
-//         textDirection: TextDirection.rtl,
-//         child: TabsScreenWithoutAppBar(),
-//       ),
-//     );
-//   }
-// }
-
 class TabsScreenImproved extends StatefulWidget {
   const TabsScreenImproved({super.key});
 

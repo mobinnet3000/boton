@@ -2,44 +2,25 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class User {
-  /// شناسه منحصر به فرد کاربر
-  final String id;
-  
-  /// شماره تماس کاربر
-  final String phoneNumber;
-  
-  /// نام
+  final int id;
+  final String username;
   final String firstName;
-  
-  /// نام خانوادگی
   final String lastName;
-  
-  /// نام آزمایشگاه
+  final String email;
   final String labName;
-  
-  /// شماره تلفن ثابت آزمایشگاه
   final String labPhoneNumber;
-  
-  /// شماره موبایل آزمایشگاه
   final String labMobileNumber;
-  
-  /// آدرس آزمایشگاه
   final String labAddress;
-  
-  /// استان
   final String province;
-  
-  /// شهر
   final String city;
-  
-  /// آیدی تلگرام (می‌تواند خالی باشد)
   final String? telegramId;
 
   const User({
     required this.id,
-    required this.phoneNumber,
+    required this.username,
     required this.firstName,
     required this.lastName,
+    required this.email,
     required this.labName,
     required this.labPhoneNumber,
     required this.labMobileNumber,
@@ -48,16 +29,16 @@ class User {
     required this.city,
     this.telegramId,
   });
-  
-  /// یک getter برای نمایش نام کامل
+
   String get fullName => '$firstName $lastName';
 
-  /// متد copyWith برای کپی کردن آبجکت با تغییر برخی مقادیر
+  // متد copyWith بدون تغییر باقی می‌ماند
   User copyWith({
-    String? id,
-    String? phoneNumber,
+    int? id,
+    String? username,
     String? firstName,
     String? lastName,
+    String? email,
     String? labName,
     String? labPhoneNumber,
     String? labMobileNumber,
@@ -68,9 +49,10 @@ class User {
   }) {
     return User(
       id: id ?? this.id,
-      phoneNumber: phoneNumber ?? this.phoneNumber,
+      username: username ?? this.username,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
       labName: labName ?? this.labName,
       labPhoneNumber: labPhoneNumber ?? this.labPhoneNumber,
       labMobileNumber: labMobileNumber ?? this.labMobileNumber,
@@ -81,37 +63,59 @@ class User {
     );
   }
 
-  /// تبدیل آبجکت به جیسان (Map) برای ذخیره‌سازی
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'phoneNumber': phoneNumber,
-      'firstName': firstName,
-      'lastName': lastName,
-      'labName': labName,
-      'labPhoneNumber': labPhoneNumber,
-      'labMobileNumber': labMobileNumber,
-      'labAddress': labAddress,
-      'province': province,
-      'city': city,
-      'telegramId': telegramId,
-    };
+  /// *** متد اصلاح شده اینجاست ***
+  factory User.fromJson(Map<String, dynamic> json) {
+    // 'json' در اینجا خود آبجکت user است.
+    // دیگر نیازی به جستجوی json['user'] نیست.
+
+    final labProfileData = json['lab_profile'] as Map<String, dynamic>?;
+
+    if (labProfileData == null) {
+      // اگر پروفایل آزمایشگاه وجود نداشته باشد، یک خطای واضح‌تر می‌دهیم
+      throw const FormatException(
+        'اطلاعات "lab_profile" در داده‌های کاربر یافت نشد.',
+      );
+    }
+
+    return User(
+      id: json['id'] as int,
+      username: json['username'] as String,
+      firstName: json['first_name'] as String,
+      lastName: json['last_name'] as String,
+      email: json['email'] as String,
+      labName: labProfileData['lab_name'] as String,
+      labPhoneNumber: labProfileData['lab_phone_number'] as String,
+      labMobileNumber: labProfileData['lab_mobile_number'] as String,
+      labAddress: labProfileData['lab_address'] as String,
+      province: labProfileData['province'] as String,
+      city: labProfileData['city'] as String,
+      telegramId: labProfileData['telegram_id'] as String?,
+    );
   }
 
-  /// ساخت آبجکت از روی جیسان (Map)
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] as String,
-      phoneNumber: json['phoneNumber'] as String,
-      firstName: json['firstName'] as String,
-      lastName: json['lastName'] as String,
-      labName: json['labName'] as String,
-      labPhoneNumber: json['labPhoneNumber'] as String,
-      labMobileNumber: json['labMobileNumber'] as String,
-      labAddress: json['labAddress'] as String,
-      province: json['province'] as String,
-      city: json['city'] as String,
-      telegramId: json['telegramId'] as String?,
-    );
+  // متد toJson بدون تغییر باقی می‌ماند
+  Map<String, dynamic> toJson() {
+    return {
+      'user': {
+        'id': id,
+        'username': username,
+        'first_name': firstName,
+        'last_name': lastName,
+        'email': email,
+        'lab_profile': {
+          'lab_name': labName,
+          'lab_phone_number': labPhoneNumber,
+          'lab_mobile_number': labMobileNumber,
+          'lab_address': labAddress,
+          'province': province,
+          'city': city,
+          'telegram_id': telegramId,
+          'first_name': firstName,
+          'last_name': lastName,
+          'email': email,
+          'user': id,
+        },
+      },
+    };
   }
 }

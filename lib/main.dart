@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:boton/screens/login/login_page.dart'; // مسیر صفحه لاگین شما
 import 'package:boton/constants/routs.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,16 +23,13 @@ class MyApp extends StatelessWidget {
       // بخش پشتیبانی از زبان فارسی و راست‌چین کردن (RTL)
       //======================================================================
       locale: Locale('fa', 'IR'),
-      // fallbackLocale: const Locale('fa', 'IR'),
-      // supportedLocales: const [
-      //   Locale('fa', 'IR'),
-      //   Locale('en', 'US'),
-      // ],
-      // localizationsDelegates: const [
-      //   GlobalMaterialLocalizations.delegate,
-      //   GlobalWidgetsLocalizations.delegate,
-      //   GlobalCupertinoLocalizations.delegate,
-      // ],
+      fallbackLocale: const Locale('fa', 'IR'),
+      supportedLocales: const [Locale('fa', 'IR'), Locale('en', 'US')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
 
       //======================================================================
       // بخش تم (Theme) مدرن و اصلاح‌شده برای ثبات رنگ‌ها

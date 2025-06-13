@@ -1,25 +1,34 @@
-import 'package:boton/utils/snackbar_helper.dart';
+import 'package:boton/controllers/base_controller.dart';
+import 'package:boton/models/mold_model.dart';
+import 'package:boton/pages/mold_detail_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:jalali_table_calendar_plus/jalali_table_calendar_plus.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:shamsi_date/shamsi_date.dart';
+import 'package:intl/intl.dart';
 
-class shecast {
+//======================================================================
+// ۱. مدل CalendarEvent اصلاح شده
+//======================================================================
+class CalendarEvent {
   final String project;
   final DateTime dateTime;
-  final String sampeling;
   final String after;
   final int tedad;
+  final List<Mold> molds; // ✅ این فیلد برای نگهداری قالب‌ها اضافه شد
 
-  shecast({
+  CalendarEvent({
     required this.project,
     required this.dateTime,
-    required this.sampeling,
     required this.after,
     required this.tedad,
+    required this.molds, // ✅ در کانستراکتور هم اضافه شد
   });
 }
 
+//======================================================================
+// ۲. ویجت اصلی صفحه
+//======================================================================
 class Daily extends StatefulWidget {
   const Daily({super.key});
 
@@ -28,59 +37,85 @@ class Daily extends StatefulWidget {
 }
 
 class _PersianCalendarPageState extends State<Daily> {
+  late final ProjectController _controller;
   final DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  List<shecast> _patientsForSelectedDay = [];
-
-  List<shecast> samples = List.generate(100, (index) {
-    final month = (index % 2 == 0) ? 5 : 6; // خرداد (3) یا تیر (4)
-    final day = (index % 30) + 1; // روزهای 1 تا 30
-
-    return shecast(
-      project: "پروژه ${index + 1}",
-      dateTime: DateTime(2025, month, day),
-      sampeling:
-          index % 3 == 0 ? "فنداسیون" : (index % 3 == 1 ? "دیوار" : "سقف"),
-      after: "${(index % 5) + 3} روزه",
-      tedad: (index % 5) + 1,
-    );
-  });
-
-  String _formatJalali(DateTime dt) {
-    final f = Jalali.fromDateTime(dt);
-    return '${f.year}/${f.month.toString().padLeft(2, '0')}/${f.day.toString().padLeft(2, '0')}';
-  }
-
-  List<shecast> _getPatientsForDay(DateTime day) {
-    return samples.where((p) => isSameDay(p.dateTime, day)).toList();
-  }
-
-  Map<DateTime, List<shecast>> mapByDate(List<shecast> slist) {
-    Map<DateTime, List<shecast>> events = {};
-
-    for (var samp in slist) {
-      final dateKey = DateTime(
-        samp.dateTime.year,
-        samp.dateTime.month,
-        samp.dateTime.day,
-      );
-
-      if (events.containsKey(dateKey)) {
-        events[dateKey]!.add(samp);
-      } else {
-        events[dateKey] = [samp];
-      }
-    }
-
-    return events;
-  }
-
-  // List<shecast> get allPatients => patients;
+  List<CalendarEvent> _calendarEvents = [];
+  List<CalendarEvent> _eventsForSelectedDay = [];
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
+
+    // پیدا کردن کنترلر با GetX
+    // مطمئن شوید که ProjectController قبلا در جایی از برنامه put شده باشد
+    if (Get.isRegistered<ProjectController>()) {
+      _controller = Get.find<ProjectController>();
+      _processControllerData();
+
+      // گوش دادن به تغییرات در breakageGroups
+      _controller.breakageGroups.listen((_) {
+        if (mounted) {
+          _processControllerData();
+        }
+      });
+    } else {
+      // هندل کردن حالتی که کنترلر وجود ندارد
+      print("ProjectController not found!");
+    }
+  }
+
+  void _processControllerData() {
+    final newEvents =
+        _controller.breakageGroups
+            .map((group) {
+              if (group.molds.isEmpty) return null;
+              return CalendarEvent(
+                project: group.projectName,
+                dateTime: group.deadline,
+                after: "${group.molds.first.ageInDays} روزه",
+                tedad: group.molds.length,
+                molds: group.molds, // ✅ لیست قالب‌ها اینجا پاس داده می‌شود
+              );
+            })
+            .whereType<CalendarEvent>()
+            .toList();
+
+    if (mounted) {
+      setState(() {
+        _calendarEvents = newEvents;
+        if (_selectedDay != null) {
+          _eventsForSelectedDay = _getEventsForDay(_selectedDay!);
+        }
+      });
+    }
+  }
+
+  List<CalendarEvent> _getEventsForDay(DateTime day) {
+    return _calendarEvents
+        .where((event) => isSameDay(event.dateTime, day))
+        .toList();
+  }
+
+  Map<DateTime, List<CalendarEvent>> _mapEventsByDate(
+    List<CalendarEvent> eventList,
+  ) {
+    // ... این متد بدون تغییر باقی می‌ماند ...
+    Map<DateTime, List<CalendarEvent>> events = {};
+    for (var event in eventList) {
+      final dateKey = DateTime(
+        event.dateTime.year,
+        event.dateTime.month,
+        event.dateTime.day,
+      );
+      if (events.containsKey(dateKey)) {
+        events[dateKey]!.add(event);
+      } else {
+        events[dateKey] = [event];
+      }
+    }
+    return events;
   }
 
   @override
@@ -88,176 +123,219 @@ class _PersianCalendarPageState extends State<Daily> {
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 800) {
-            return SingleChildScrollView(
-              child: Column(
+          // استفاده از Obx برای واکنش به isLoading کنترلر
+          return Obx(() {
+            if (Get.isRegistered<ProjectController>() &&
+                Get.find<ProjectController>().isLoading.isTrue) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final isDesktop = constraints.maxWidth >= 800;
+            final calendarWidget = Calen(
+              focusedDay: _focusedDay,
+              events: _mapEventsByDate(_calendarEvents),
+              allCalendarEvents: _calendarEvents,
+              onDaySelected: (day) {
+                setState(() {
+                  _selectedDay = day;
+                  _eventsForSelectedDay = _getEventsForDay(day);
+                });
+              },
+            );
+
+            // ✅ ویجت لیستینگ حالا context را هم دریافت می‌کند تا بتواند BottomSheet را نمایش دهد
+            final listingWidget = FListing(
+              eventsForSelectedDay: _eventsForSelectedDay,
+              buildContext: context,
+            );
+
+            if (isDesktop) {
+              return Row(
                 children: [
-                  Container(
-                    constraints: BoxConstraints(maxWidth: 600),
-                    width: double.infinity,
-                    child: calen(
-                      focusedDay: _focusedDay,
-                      events: mapByDate(samples),
-                      onDaySelected: (day) {
-                        setState(() {
-                          _selectedDay = day;
-                          _patientsForSelectedDay = _getPatientsForDay(day);
-                        });
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    height: 500,
-                    child: FListing(
-                      patientsForSelectedDay: _patientsForSelectedDay,
-                      allSamples: samples, // <-- لیست کامل نمونه‌ها را اینجا پاس دهید
-                    ),
-                  ),
+                  Expanded(flex: 2, child: calendarWidget),
+                  Expanded(flex: 3, child: listingWidget),
                 ],
-              ),
-            );
-          } else {
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // سمت چپ: تقویم
-                Expanded(
-                  flex: 2,
-                  child: calen(
-                    focusedDay: _focusedDay,
-                    events: mapByDate(samples),
-                    onDaySelected: (day) {
-                      setState(() {
-                        _selectedDay = day;
-                        _patientsForSelectedDay = _getPatientsForDay(day);
-                      });
-                    },
-                  ),
+              );
+            } else {
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 600),
+                      child: calendarWidget,
+                    ),
+                    SizedBox(height: 500, child: listingWidget),
+                  ],
                 ),
-                // سمت راست: لیست جلسات
-                Expanded(
-                  flex: 3,
-                  child: FListing(
-                    patientsForSelectedDay: _patientsForSelectedDay,
-                    allSamples: samples, // <-- لیست کامل نمونه‌ها را اینجا پاس دهید
-                  ),
-                ),
-              ],
-            );
-          }
+              );
+            }
+          });
         },
       ),
     );
   }
 }
+
+//======================================================================
+// ۳. ویجت لیستینگ که منطق نمایش قالب‌ها به آن اضافه شده
+//======================================================================
 class FListing extends StatelessWidget {
   const FListing({
     super.key,
-    required this.patientsForSelectedDay,
-    required this.allSamples,
+    required this.eventsForSelectedDay,
+    required this.buildContext,
   });
 
-  final List<shecast> patientsForSelectedDay;
-  final List<shecast> allSamples;
+  final List<CalendarEvent> eventsForSelectedDay;
+  final BuildContext buildContext; // context برای نمایش BottomSheet
+
+  // متد برای نمایش پنل پایینی لیست قالب‌ها
+  void _showMoldListSheet(BuildContext context, CalendarEvent event) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'قالب‌های پروژه: ${event.project}',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              Text(
+                'آزمون ${event.after}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const Divider(height: 24),
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: event.molds.length,
+                  itemBuilder: (context, index) {
+                    final mold = event.molds[index];
+                    return Card(
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          child: Text(mold.ageInDays.toString()),
+                        ),
+                        title: Text('شناسه: ${mold.sampleIdentifier}'),
+                        subtitle: Text(
+                          'ددلاین: ${DateFormat('yyyy/MM/dd').format(mold.deadline)}',
+                        ),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: () {
+                          // بستن BottomSheet
+                          Navigator.pop(ctx);
+                          // رفتن به صفحه جزئیات قالب
+                          Get.to(() => MoldDetailPage(mold: mold));
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8),
       child:
-          // 'patientsForSelectedDay' به جای '_patientsForSelectedDay'
-          patientsForSelectedDay.isEmpty 
-              ? const Center(child: Text('هیچ جلسه‌ای برای این روز وجود ندارد'))
+          eventsForSelectedDay.isEmpty
+              ? const Center(
+                child: Text('هیچ آزمونی برای این روز ثبت نشده است'),
+              )
               : ListView.builder(
-                  // 'patientsForSelectedDay' به جای '_patientsForSelectedDay'
-                  itemCount: patientsForSelectedDay.length,
-                  itemBuilder: (context, index) {
-                    // 'patientsForSelectedDay' به جای '_patientsForSelectedDay'
-                    final p = patientsForSelectedDay[index];
-                    
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 6,
+                itemCount: eventsForSelectedDay.length,
+                itemBuilder: (context, index) {
+                  final event = eventsForSelectedDay[index];
+                  return Card(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        event.project,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 4),
+                          Text(
+                            'نوع تست: ${event.after}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          Text(
+                            'تعداد قالب: ${event.tedad} عدد',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                        ],
                       ),
-                      child: ListTile(
-                        title: Text(
-                          p.project,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 4),
-                            Text(
-                              'نوع نمونه‌گیری: تست ${p.after} ${p.sampeling}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[700],
-                              ),
-                            ),
-                            Text(
-                              'تعداد قالب:${p.tedad} عدد',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[700],
-                              ),
-                            ),
-                          ],
-                        ),
-                        leading: Icon(
-                          Icons.build,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        trailing: const Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 16,
-                          color: Colors.grey,
-                        ),
-                        onTap: () {
-                          final String projectName = p.project;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('در حال آماده‌سازی برای ناوبری به پروژه: $projectName'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                        },
+                      leading: Icon(
+                        Icons.build_circle_outlined,
+                        color: Theme.of(context).primaryColor,
                       ),
-                    );
-                  },
-                ),
+                      trailing: const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 16,
+                        color: Colors.grey,
+                      ),
+                      // ✅✅✅ تغییر اصلی اینجاست ✅✅✅
+                      onTap: () {
+                        // با کلیک روی هر رویداد، لیست قالب‌های آن نمایش داده می‌شود
+                        _showMoldListSheet(buildContext, event);
+                      },
+                    ),
+                  );
+                },
+              ),
     );
   }
 }
 
-class calen extends StatefulWidget {
-  const calen({
+//======================================================================
+// ۴. ویجت تقویم (بدون تغییر)
+//======================================================================
+
+class Calen extends StatelessWidget {
+  const Calen({
     super.key,
-    // required List<shecast> patientsForSelectedDay,
     required this.focusedDay,
     required this.events,
+    required this.allCalendarEvents,
     required this.onDaySelected,
   });
 
-  // final List<shecast> _patientsForSelectedDay;
   final DateTime focusedDay;
-  final void Function(DateTime)? onDaySelected;
   final Map<DateTime, List<dynamic>>? events;
+  final List<CalendarEvent> allCalendarEvents; // لیست کامل برای جستجو
+  final void Function(DateTime)? onDaySelected;
 
-  @override
-  State<calen> createState() => _calenState();
-}
-
-class _calenState extends State<calen> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(color: Colors.black, width: 2),
@@ -266,80 +344,47 @@ class _calenState extends State<calen> {
             end: Alignment.bottomRight,
             colors: [Colors.purple.shade300, Colors.blue.shade400],
           ),
-          borderRadius: BorderRadius.circular(12), // حاشیه گرد
+          borderRadius: BorderRadius.circular(12),
         ),
         child: JalaliTableCalendar(
-          customHolyDays: [],
-          direction: TextDirection.rtl,
-          initialDate: widget.focusedDay,
-          range: false,
-          useOfficialHolyDays: true,
-          option: JalaliTableCalendarOption(
-            showHeader: true, // نمایش هدر تقویم
-            showHeaderArrows: true, // نمایش فلش‌های ناوبری برای تغییر ماه
-            headerStyle: TextStyle(
-              color: Colors.white, // رنگ متن هدر
-              fontSize: 20, // اندازه قلم
-              fontWeight: FontWeight.bold, // ضخامت قلم
-              letterSpacing: 1.2, // فاصله بین حروف
-            ),
-            daysOfWeekStyle: TextStyle(
-              color: Colors.blueGrey[800], // رنگ روزهای هفته (ملایم و مدرن)
-              fontSize: 16, // اندازه قلم روزهای هفته
-              fontWeight: FontWeight.w600, // ضخامت قلم روزهای هفته
-            ),
-            daysStyle: TextStyle(
-              color: Colors.black87, // رنگ روزهای ماه (تیره و خوانا)
-              fontSize: 16, // اندازه قلم روزهای ماه
-              fontWeight: FontWeight.w400, // ضخامت قلم روزهای ماه
-            ),
-            currentDayColor:
-                Colors.teal[400], // رنگ روز جاری (آبی فیروزه‌ای ملایم)
-            selectedDayColor:
-                Colors.deepPurple[600], // رنگ روز انتخاب شده (بنفش تیره)
-            selectedDayShapeColor:
-                Colors.deepPurple[200], // رنگ حاشیه روز انتخاب شده (بنفش روشن)
-            daysOfWeekTitles: [
-              'ش',
-              'ی',
-              'د',
-              'س',
-              'چ',
-              'پ',
-              'ج',
-            ], // عنوان روزهای هفته به فارسی
-            headerPadding: EdgeInsets.symmetric(
-              vertical: 10,
-              horizontal: 15,
-            ), // حاشیه هدر
-          ),
+          initialDate: focusedDay,
+          onDaySelected: onDaySelected,
+          events: events,
+          marker: (date, eventsReceivedFromPackage) {
+            // ما eventsReceivedFromPackage را نادیده می‌گیریم!
+            // و در لیست خودمان جستجو می‌کنیم.
+            final correctEventsForThisDay =
+                allCalendarEvents
+                    .where((event) => isSameDay(event.dateTime, date))
+                    .toList();
 
-          events: widget.events,
-          onDaySelected: widget.onDaySelected,
-          marker: (date, event) {
-            if (event.isNotEmpty) {
-              // print(
-              //   event[0].last
-              //       .fold(0, (sum, item) => sum + item.tedad)
-              //       .toString(),
-              // );
-              return Positioned(
-                top: -2,
-                left: 1,
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.teal,
-                  ),
-                  child: Text(
-                    event[0].last
-                        .fold(0, (sum, item) => sum + item.tedad)
-                        .toString(),
-                  ),
-                  // child: Text(event[0].last.length.toString()),
-                ),
+            if (correctEventsForThisDay.isNotEmpty) {
+              final totalMolds = correctEventsForThisDay.fold<int>(
+                0,
+                (sum, item) => sum + item.tedad,
               );
+
+              if (totalMolds > 0) {
+                return Positioned(
+                  top: -2,
+                  left: 1,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.teal,
+                    ),
+                    child: Text(
+                      totalMolds.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                );
+              }
             }
             return null;
           },
