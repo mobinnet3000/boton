@@ -260,6 +260,7 @@ class _AddProjectPageState extends State<AddProjectPage> {
       // ✅ ساخت آبجکت Project بر اساس مدل جدید
       final newProject = Project(
         id: 0, // سرور معمولا ID را مشخص می‌کند، پس 0 یا -1 ارسال می‌کنیم
+        createdAt: DateTime.now(), // تاریخ فعلی را به عنوان پیش‌فرض قرار می‌دهیم
         projectName: _projectNameController.text,
         fileNumber: _fileNumberController.text,
         clientName: _clientNameController.text,

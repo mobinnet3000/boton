@@ -57,6 +57,10 @@ class Project {
   /// لیستی از نمونه‌های گرفته شده برای این پروژه
   final List<Sample> samples;
 
+ // تاریخ ساخت پروژه
+   final DateTime createdAt;
+
+
   const Project({
     required this.id,
     required this.fileNumber,
@@ -75,6 +79,8 @@ class Project {
     required this.occupiedArea,
     required this.moldType,
     required this.ownerId,
+    required this.createdAt, 
+
     this.samples = const [],
   });
 
@@ -82,6 +88,7 @@ class Project {
   Project copyWith({
     int? id,
     String? fileNumber,
+    DateTime? createdAt,
     String? projectName,
     String? clientName,
     String? clientPhoneNumber,
@@ -102,6 +109,7 @@ class Project {
     return Project(
       id: id ?? this.id,
       fileNumber: fileNumber ?? this.fileNumber,
+      createdAt: createdAt ?? this.createdAt,
       projectName: projectName ?? this.projectName,
       clientName: clientName ?? this.clientName,
       clientPhoneNumber: clientPhoneNumber ?? this.clientPhoneNumber,
@@ -127,6 +135,7 @@ class Project {
     return {
       'id': id,
       'file_number': fileNumber,
+      'created_at': createdAt.toIso8601String(), // <<-- ۳. اضافه کردن createdAt به JSON خروجی
       'project_name': projectName,
       'client_name': clientName,
       'client_phone_number': clientPhoneNumber,
@@ -150,6 +159,7 @@ class Project {
   factory Project.fromJson(Map<String, dynamic> json) {
     return Project(
       id: json['id'] as int,
+      createdAt: DateTime.parse(json['created_at'] as String), 
       fileNumber: json['file_number'] as String,
       projectName: json['project_name'] as String,
       clientName: json['client_name'] as String,

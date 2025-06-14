@@ -3,7 +3,7 @@ import 'package:boton/models/project_model.dart';
 import 'package:boton/screens/project_single/project_single_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:boton/models/project.dart';
+import 'package:intl/intl.dart'; 
 
 class ProjectListItemCard extends StatelessWidget {
   final Project project;
@@ -59,6 +59,11 @@ class ProjectListItemCard extends StatelessWidget {
                         Text(
                           'کارفرما: ${project.clientName}',
                           style: TextStyle(color: Colors.grey.shade700),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'تاریخ ساخت: ${DateFormat('yyyy/MM/dd').format(project.createdAt)}',
+                          style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                         ),
                       ],
                     ),
