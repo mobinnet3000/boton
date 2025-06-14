@@ -1,7 +1,6 @@
 // lib/pages/project_single/project_single_page.dart
 import 'package:boton/models/project_model.dart';
 import 'package:flutter/material.dart';
-import 'package:boton/models/project.dart';
 import 'package:boton/components/custom_animated_tab_bar.dart'; // ایمپورت کامپوننت جدید
 import 'tabs/details_tab.dart';
 import 'tabs/concrete_tab.dart';
@@ -54,7 +53,7 @@ class _ProjectSinglePageState extends State<ProjectSinglePage>
           DetailsTab(project: widget.project),
           ConcreteTab(project: widget.project),
           const Center(child: Text('صفحه میلگرد')),
-          const FinancialTab(),
+          FinancialTab(project: widget.project),
           const ActivityReportTab(),
         ],
       ),
