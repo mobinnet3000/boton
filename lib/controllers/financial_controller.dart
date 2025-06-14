@@ -32,17 +32,4 @@ class FinancialController extends GetxController {
   
   double get paymentProgress => (project.contractPrice > 0) ? totalIncome / project.contractPrice : 0.0;
 
-  Future<void> addTransaction(Transaction newTransaction) async {
-    // TODO: اینجا باید درخواست POST به /api/transactions/ ارسال شود
-    // await ApiService.createTransaction(newTransaction);
-    
-    // برای نمایش فوری در UI، به صورت لوکال اضافه می‌کنیم
-    // در حالت واقعی، بعد از پاسخ موفق سرور، لیست را دوباره از سرور می‌گیریم
-    transactions.insert(0, newTransaction);
-    if (newTransaction.type == TransactionType.income) {
-      project.totalIncome += newTransaction.amount;
-    } else {
-      project.totalExpense += newTransaction.amount;
-    }
-  }
 }

@@ -226,6 +226,7 @@ class _AddProjectPageState extends State<AddProjectPage> {
   final _floorCountController = TextEditingController();
   final _occupiedAreaController = TextEditingController();
   final _moldTypeController = TextEditingController();
+  final _contractPriceController = TextEditingController();
 
   // ✅ مقادیر برای Dropdowns بر اساس مدل جدید
   String? _selectedUsageType = 'مسکونی';
@@ -247,6 +248,8 @@ class _AddProjectPageState extends State<AddProjectPage> {
     _floorCountController.dispose();
     _occupiedAreaController.dispose();
     _moldTypeController.dispose();
+    _contractPriceController.dispose();
+
     super.dispose();
   }
 
@@ -278,6 +281,11 @@ class _AddProjectPageState extends State<AddProjectPage> {
         moldType: _moldTypeController.text,
         ownerId: ownerId,
         samples: const [], // پروژه جدید نمونه‌ای ندارد
+        contractPrice: double.tryParse(_contractPriceController.text) ?? 0.0,
+        totalIncome: 0.0,   // پروژه جدید واریزی ندارد
+        totalExpense: 0.0,  // پروژه جدید هزینه‌ای ندارد
+        balance: 0.0,       // مانده حساب صفر است
+        transactions: const [], // پروژه جدید تراکنشی ندارد
       );
 
       // TODO: آبجکت ساخته شده را به کنترلر اصلی برای ارسال به API بده

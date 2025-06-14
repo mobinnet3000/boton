@@ -63,14 +63,13 @@ class FinancialTab extends StatelessWidget {
               if (formKey.currentState!.validate()) {
                 final newTransaction = Transaction(
                   id: 0, // سرور ID را مشخص می‌کند
-                  projectId: controller.project.id, // اتصال به پروژه فعلی
+                  projectId: project.id,
                   type: type,
                   description: descriptionController.text,
                   amount: double.parse(amountController.text),
                   date: DateTime.now(),
                 );
                 // ! <<-- فراخوانی متد کنترلر به جای setState --!
-                controller.addTransaction(newTransaction);
                 Navigator.of(ctx).pop();
               }
             },

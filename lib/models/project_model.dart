@@ -1,4 +1,5 @@
 import 'package:boton/models/Sample_model.dart'; // فرض بر این است که این import صحیح است
+import 'package:boton/models/transaction_model.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
@@ -58,8 +59,12 @@ class Project {
   final List<Sample> samples;
 
  // تاریخ ساخت پروژه
-   final DateTime createdAt;
-
+  final DateTime createdAt;
+  final double contractPrice;
+  final double totalIncome;
+  final double totalExpense;
+  final double balance;
+  final List<Transaction> transactions;
 
   const Project({
     required this.id,
@@ -80,7 +85,11 @@ class Project {
     required this.moldType,
     required this.ownerId,
     required this.createdAt, 
-
+    required this.contractPrice,
+    required this.totalIncome,
+    required this.totalExpense,
+    required this.balance,
+    required this.transactions,
     this.samples = const [],
   });
 
@@ -114,8 +123,7 @@ class Project {
       clientName: clientName ?? this.clientName,
       clientPhoneNumber: clientPhoneNumber ?? this.clientPhoneNumber,
       supervisorName: supervisorName ?? this.supervisorName,
-      supervisorPhoneNumber:
-          supervisorPhoneNumber ?? this.supervisorPhoneNumber,
+      supervisorPhoneNumber:supervisorPhoneNumber ?? this.supervisorPhoneNumber,
       requesterName: requesterName ?? this.requesterName,
       requesterPhoneNumber: requesterPhoneNumber ?? this.requesterPhoneNumber,
       municipalityZone: municipalityZone ?? this.municipalityZone,
@@ -127,6 +135,11 @@ class Project {
       moldType: moldType ?? this.moldType,
       ownerId: ownerId ?? this.ownerId,
       samples: samples ?? this.samples,
+      contractPrice: contractPrice ?? this.contractPrice,
+      totalIncome: totalIncome ?? this.totalIncome,
+      totalExpense: totalExpense ?? this.totalExpense,
+      balance: balance ?? this.balance,
+      transactions: transactions ?? this.transactions,
     );
   }
 
@@ -183,6 +196,12 @@ class Project {
                     Sample.fromJson(sampleJson as Map<String, dynamic>),
               )
               .toList(),
+      contractPrice: double.parse(json['contract_price'].toString()),
+      totalIncome: double.parse(json['total_income'].toString()),
+      totalExpense: double.parse(json['total_expense'].toString()),
+      balance: double.parse(json['balance'].toString()),
+      transactions: (json['transactions'] as List<dynamic>?)?.map((tx) => Transaction.fromJson(tx)).toList() ?? [],
+
     );
   }
 }
