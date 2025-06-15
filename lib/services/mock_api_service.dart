@@ -7,8 +7,7 @@ class MockApiService {
     await Future.delayed(const Duration(seconds: 1));
 
     // داده‌ی JSON اینجا قرار می‌گیرد تا از کنترلر جدا باشد
-    const String fakeJsonResponse = """
-{
+    const String fakeJsonResponse = """{
     "user": {
         "id": 4,
         "username": "finaluser",
@@ -33,16 +32,43 @@ class MockApiService {
     "projects": [
         {
             "id": 1,
+            "created_at": "2025-06-10T10:00:00Z",
+            "file_number": "P-101",
+            "project_name": "پروژه برج میلاد (با تراکنش)",
+            "client_name": "شهرداری تهران",
+            "client_phone_number": "0211111",
+            "supervisor_name": "مهندس رضایی",
+            "supervisor_phone_number": "0912111",
+            "requester_name": "درخواست دهنده ۱",
+            "requester_phone_number": "0910111",
+            "municipality_zone": "منطقه ۲",
+            "address": "بزرگراه همت",
+            "project_usage_type": "تجاری",
+            "floor_count": 20,
+            "cement_type": "تیپ ۵",
+            "occupied_area": 2500.0,
+            "mold_type": "فلزی",
+            "contract_price": "1200000000.00",
+            "owner": 3,
             "samples": [
                 {
                     "id": 7,
+                    "date": "2025-09-10T10:00:00Z",
+                    "test_type": "فشاری",
+                    "sampling_volume": "4 m3",
+                    "cement_grade": "C25",
+                    "category": "فونداسیون",
+                    "weather_condition": "معتدل",
+                    "concrete_factory": "بتن شرق",
+                    "project": 1,
                     "series": [
                         {
                             "id": 14,
+                            "name": "سری نمونه 1",
                             "molds": [],
                             "concrete_temperature": 29.0,
                             "ambient_temperature": 31.0,
-                            "slump": 7,
+                            "slump": 7.0,
                             "range": "7",
                             "air_percentage": 5.0,
                             "has_additive": false,
@@ -50,6 +76,7 @@ class MockApiService {
                         },
                         {
                             "id": 15,
+                            "name": "سری نمونه 2",
                             "molds": [
                                 {
                                     "id": 7,
@@ -60,9 +87,7 @@ class MockApiService {
                                     "completed_at": null,
                                     "deadline": "2025-09-17T10:00:00Z",
                                     "sample_identifier": "W-7-1",
-                                    "extra_data": {
-                                        "note": "first mold"
-                                    },
+                                    "extra_data": { "note": "first mold" },
                                     "series": 15
                                 }
                             ],
@@ -74,456 +99,59 @@ class MockApiService {
                             "has_additive": false,
                             "sample": 7
                         }
-                    ],
-                    "date": "2025-09-10T10:00:00Z",
-                    "test_type": "فشاری",
-                    "sampling_volume": "4 m3",
-                    "cement_grade": "C25",
-                    "category": "فنداسیون",
-                    "weather_condition": "معتدل",
-                    "concrete_factory": "بتن شرق",
-                    "project": 1
-                },
-                {
-                    "id": 8,
-                    "series": [
-                        {
-                            "id": 16,
-                            "molds": [],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 8
-                        },
-                        {
-                            "id": 17,
-                            "molds": [
-                                {
-                                    "id": 5,
-                                    "age_in_days": 7,
-                                    "mass": 8.1,
-                                    "breaking_load": 0.0,
-                                    "created_at": "2025-06-12T21:56:05.591504Z",
-                                    "completed_at": null,
-                                    "deadline": "2025-09-17T10:00:00Z",
-                                    "sample_identifier": "W-7-1",
-                                    "extra_data": {
-                                        "note": "first mold"
-                                    },
-                                    "series": 17
-                                }
-                            ],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 8
-                        }
-                    ],
-                    "date": "2025-09-10T10:00:00Z",
-                    "test_type": "فشاری",
-                    "sampling_volume": "4 m3",
-                    "cement_grade": "C25",
-                    "category": "دیوار برشی",
-                    "weather_condition": "معتدل",
-                    "concrete_factory": "بتن شرق",
-                    "project": 1
+                    ]
                 }
             ],
-            "file_number": "P-101",
-            "project_name": "تست من",
-            "client_name": "کارفرما ۱",
-            "client_phone_number": "0211111",
-            "supervisor_name": "ناظر ۱",
-            "supervisor_phone_number": "0912111",
-            "requester_name": "درخواست دهنده ۱",
-            "requester_phone_number": "0910111",
-            "municipality_zone": "منطقه ۱",
-            "address": "آدرس پروژه ۱",
-            "project_usage_type": "تجاری",
-            "floor_count": 8,
-            "cement_type": "تیپ ۵",
-            "occupied_area": 1200.0,
-            "mold_type": "فلزی",
-            "owner": 3
-        },
-        {
-            "id": 2,
-            "samples": [
-                {
-                    "id": 5,
-                    "series": [
-                        {
-                            "id": 11,
-                            "molds": [],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 5
-                        }
-                    ],
-                    "date": "2025-09-10T10:00:00Z",
-                    "test_type": "فشاری",
-                    "sampling_volume": "4 m3",
-                    "cement_grade": "C25",
-                    "category": "دیوار برشی",
-                    "weather_condition": "معتدل",
-                    "concrete_factory": "بتن شرق",
-                    "project": 2
-                },
-                {
-                    "id": 6,
-                    "series": [
-                        {
-                            "id": 12,
-                            "molds": [
-                                {
-                                    "id": 8,
-                                    "age_in_days": 7,
-                                    "mass": 8.1,
-                                    "breaking_load": 0.0,
-                                    "created_at": "2025-06-12T21:56:20.783506Z",
-                                    "completed_at": null,
-                                    "deadline": "2025-09-17T10:00:00Z",
-                                    "sample_identifier": "W-7-1",
-                                    "extra_data": {
-                                        "note": "first mold"
-                                    },
-                                    "series": 12
-                                }
-                            ],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 6
-                        },
-                        {
-                            "id": 13,
-                            "molds": [],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 6
-                        }
-                    ],
-                    "date": "2025-09-10T10:00:00Z",
-                    "test_type": "فشاری",
-                    "sampling_volume": "4 m3",
-                    "cement_grade": "C25",
-                    "category": "دیوار برشی",
-                    "weather_condition": "معتدل",
-                    "concrete_factory": "بتن شرق",
-                    "project": 2
-                }
-            ],
-            "file_number": "P-101",
-            "project_name": "اولین پروژه از CRUD",
-            "client_name": "کارفرما ۱",
-            "client_phone_number": "0211111",
-            "supervisor_name": "ناظر ۱",
-            "supervisor_phone_number": "0912111",
-            "requester_name": "درخواست دهنده ۱",
-            "requester_phone_number": "0910111",
-            "municipality_zone": "منطقه ۱",
-            "address": "آدرس پروژه ۱",
-            "project_usage_type": "تجاری",
-            "floor_count": 8,
-            "cement_type": "تیپ ۵",
-            "occupied_area": 1200.0,
-            "mold_type": "فلزی",
-            "owner": 3
-        },
-        {
-            "id": 3,
-            "samples": [],
-            "file_number": "P-101",
-            "project_name": "دومینن پروژه از CRUD",
-            "client_name": "کارفرما ۱",
-            "client_phone_number": "0211111",
-            "supervisor_name": "ناظر ۱",
-            "supervisor_phone_number": "0912111",
-            "requester_name": "درخواست دهنده ۱",
-            "requester_phone_number": "0910111",
-            "municipality_zone": "منطقه ۱",
-            "address": "آدرس پروژه ۱",
-            "project_usage_type": "تجاری",
-            "floor_count": 8,
-            "cement_type": "تیپ ۵",
-            "occupied_area": 1200.0,
-            "mold_type": "فلزی",
-            "owner": 3
-        },
-        {
-            "id": 4,
-            "samples": [
+            "transactions": [
                 {
                     "id": 1,
-                    "series": [],
-                    "date": "2025-09-10T10:00:00Z",
-                    "test_type": "فشاری",
-                    "sampling_volume": "4 m3",
-                    "cement_grade": "C25",
-                    "category": "دیوار برشی",
-                    "weather_condition": "معتدل",
-                    "concrete_factory": "بتن شرق",
-                    "project": 4
+                    "project": 1,
+                    "type": "income",
+                    "description": "پرداخت اولیه قرارداد",
+                    "amount": "500000000.00",
+                    "date": "2025-06-11T10:00:00Z"
                 },
                 {
                     "id": 2,
-                    "series": [
-                        {
-                            "id": 4,
-                            "molds": [],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 2
-                        },
-                        {
-                            "id": 5,
-                            "molds": [],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 2
-                        }
-                    ],
-                    "date": "2025-09-10T10:00:00Z",
-                    "test_type": "فشاری",
-                    "sampling_volume": "4 m3",
-                    "cement_grade": "C25",
-                    "category": "دیوار برشی",
-                    "weather_condition": "معتدل",
-                    "concrete_factory": "بتن شرق",
-                    "project": 4
-                },
-                {
-                    "id": 3,
-                    "series": [
-                        {
-                            "id": 6,
-                            "molds": [],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 3
-                        },
-                        {
-                            "id": 7,
-                            "molds": [],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 3
-                        }
-                    ],
-                    "date": "2025-09-10T10:00:00Z",
-                    "test_type": "فشاری",
-                    "sampling_volume": "4 m3",
-                    "cement_grade": "C25",
-                    "category": "دیوار برشی",
-                    "weather_condition": "معتدل",
-                    "concrete_factory": "بتن شرق",
-                    "project": 4
-                },
-                {
-                    "id": 4,
-                    "series": [
-                        {
-                            "id": 1,
-                            "molds": [],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 4
-                        },
-                        {
-                            "id": 2,
-                            "molds": [],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 4
-                        },
-                        {
-                            "id": 3,
-                            "molds": [
-                                {
-                                    "id": 1,
-                                    "age_in_days": 7,
-                                    "mass": 8.1,
-                                    "breaking_load": 0.0,
-                                    "created_at": "2025-06-12T20:26:42.210696Z",
-                                    "completed_at": null,
-                                    "deadline": "2025-09-17T10:00:00Z",
-                                    "sample_identifier": "W-7-1",
-                                    "extra_data": {
-                                        "note": "first mold"
-                                    },
-                                    "series": 3
-                                },
-                                {
-                                    "id": 2,
-                                    "age_in_days": 7,
-                                    "mass": 8.1,
-                                    "breaking_load": 0.0,
-                                    "created_at": "2025-06-12T20:26:43.736665Z",
-                                    "completed_at": null,
-                                    "deadline": "2025-09-17T10:00:00Z",
-                                    "sample_identifier": "W-7-1",
-                                    "extra_data": {
-                                        "note": "first mold"
-                                    },
-                                    "series": 3
-                                },
-                                {
-                                    "id": 3,
-                                    "age_in_days": 7,
-                                    "mass": 8.1,
-                                    "breaking_load": 0.0,
-                                    "created_at": "2025-06-12T20:26:45.298508Z",
-                                    "completed_at": null,
-                                    "deadline": "2025-09-17T10:00:00Z",
-                                    "sample_identifier": "W-7-1",
-                                    "extra_data": {
-                                        "note": "first mold"
-                                    },
-                                    "series": 3
-                                },
-                                {
-                                    "id": 4,
-                                    "age_in_days": 7,
-                                    "mass": 8.1,
-                                    "breaking_load": 0.0,
-                                    "created_at": "2025-06-12T20:26:46.706690Z",
-                                    "completed_at": null,
-                                    "deadline": "2025-09-17T10:00:00Z",
-                                    "sample_identifier": "W-7-1",
-                                    "extra_data": {
-                                        "note": "first mold"
-                                    },
-                                    "series": 3
-                                }
-                            ],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 4
-                        },
-                        {
-                            "id": 8,
-                            "molds": [],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 4
-                        },
-                        {
-                            "id": 9,
-                            "molds": [],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 4
-                        },
-                        {
-                            "id": 10,
-                            "molds": [
-                                {
-                                    "id": 6,
-                                    "age_in_days": 7,
-                                    "mass": 8.1,
-                                    "breaking_load": 0.0,
-                                    "created_at": "2025-06-12T21:56:09.533945Z",
-                                    "completed_at": null,
-                                    "deadline": "2025-09-17T10:00:00Z",
-                                    "sample_identifier": "W-7-1",
-                                    "extra_data": {
-                                        "note": "first mold"
-                                    },
-                                    "series": 10
-                                }
-                            ],
-                            "concrete_temperature": 29.0,
-                            "ambient_temperature": 31.0,
-                            "slump": 7.5,
-                            "range": "7-9",
-                            "air_percentage": 2.0,
-                            "has_additive": false,
-                            "sample": 4
-                        }
-                    ],
-                    "date": "2025-09-10T10:00:00Z",
-                    "test_type": "فشاری",
-                    "sampling_volume": "4 m3",
-                    "cement_grade": "C25",
-                    "category": "دیوار برشی",
-                    "weather_condition": "معتدل",
-                    "concrete_factory": "بتن شرق",
-                    "project": 4
+                    "project": 1,
+                    "type": "expense",
+                    "description": "هزینه تجهیز کارگاه",
+                    "amount": "50000000.00",
+                    "date": "2025-06-15T14:00:00Z"
                 }
             ],
-            "file_number": "P-101",
-            "project_name": "اولین پروژه از CRUD",
-            "client_name": "کارفرما ۱",
-            "client_phone_number": "0211111",
-            "supervisor_name": "ناظر ۱",
-            "supervisor_phone_number": "0912111",
-            "requester_name": "درخواست دهنده ۱",
-            "requester_phone_number": "0910111",
-            "municipality_zone": "منطقه ۱",
-            "address": "آدرس پروژه ۱",
-            "project_usage_type": "تجاری",
-            "floor_count": 8,
-            "cement_type": "تیپ ۵",
-            "occupied_area": 1200.0,
-            "mold_type": "فلزی",
-            "owner": 3
+            "total_income": 500000000.0,
+            "total_expense": 50000000.0,
+            "balance": 450000000.0
+        },
+        {
+            "id": 2,
+            "created_at": "2025-05-01T12:00:00Z",
+            "file_number": "P-102",
+            "project_name": "پروژه مسکونی الهیه",
+            "client_name": "شرکت آرمان سازه",
+            "client_phone_number": "02122222222",
+            "supervisor_name": "مهندس شریفی",
+            "supervisor_phone_number": "09122222222",
+            "requester_name": "آقای کریمی",
+            "requester_phone_number": "09102222222",
+            "municipality_zone": "منطقه 1",
+            "address": "تهران، الهیه",
+            "project_usage_type": "مسکونی",
+            "floor_count": 15,
+            "cement_type": "تیپ 1",
+            "occupied_area": 800.0,
+            "mold_type": "چوبی",
+            "contract_price": "750000000.00",
+            "owner": 3,
+            "samples": [],
+            "transactions": [],
+            "total_income": 0.0,
+            "total_expense": 0.0,
+            "balance": 0.0
         }
     ]
 }
-
 """;
     final Map<String, dynamic> data = json.decode(fakeJsonResponse);
     return ApiResponse.fromJson(data);
