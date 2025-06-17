@@ -7,8 +7,9 @@ import 'package:shamsi_date/shamsi_date.dart';
 // ✅ مدل‌های خودتان را import کنید
 import '../../../../../models/mold_model.dart';
 import '../../../../../models/sampling_serie_model.dart';
+import '../../../../../controllers/base_controller.dart'; // کنترلر GetX شما
 
-/// ویجت اصلی صفحه جزئیات یک سری نمونه‌گیری
+/// ویجت اصلی صفحه جزئیات یک سری نمونه‌گیری (بدون تغییر)
 class SerieDetailPage extends StatelessWidget {
   final SamplingSerie serie;
   final int projectId;
@@ -26,31 +27,22 @@ class SerieDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('جزئیات سری: ${serie.name}'),
+        elevation: 0,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(12.0),
-        // ✅ حالا لیست آیتم‌ها، همان لیست قالب‌های (molds) موجود در سری است
         itemCount: serie.molds.length,
         itemBuilder: (context, index) {
           final mold = serie.molds[index];
           return MoldDataTile(
-            // ✅ کل شیء mold به ویجت فرزند پاس داده می‌شود
-            key: ValueKey(mold.id), // استفاده از id برای پایداری ویجت
+            key: ValueKey(mold.id),
             mold: mold,
             onSave: (Map<String, dynamic> updatedData) async {
-              // ✅ اینجا متد کنترلر را برای ذخیره داده‌ها فراخوانی می‌کنید
+              // ... منطق ذخیره‌سازی شما بدون تغییر باقی می‌ماند
               print('Saving data for mold id ${mold.id}...');
               print('Data: $updatedData');
-
-              // کد نهایی شما شبیه به این خواهد بود:
-              // await Get.find<ProjectController>().updateMoldResult(
-              //   projectId: projectId,
-              //   sampleId: sampleId,
-              //   serieId: serie.id,
-              //   moldId: mold.id,
-              //   resultData: updatedData,
-              // );
-
+              // await Get.find<ProjectController>().updateMoldResult(...);
               Get.snackbar(
                 'موفقیت',
                 'اطلاعات شکست برای قالب ${mold.ageInDays} روزه ثبت شد.',
@@ -66,9 +58,8 @@ class SerieDetailPage extends StatelessWidget {
   }
 }
 
-
 // -----------------------------------------------------------------------------
-// ویجت آکاردئونی برای نمایش و ویرایش اطلاعات یک قالب (کاملاً سازگار شده)
+// ✅✅✅ ویجت آکاردئونی با منطق نهایی و کاملاً صحیح ✅✅✅
 // -----------------------------------------------------------------------------
 class MoldDataTile extends StatefulWidget {
   final Mold mold;
@@ -90,30 +81,27 @@ class _MoldDataTileState extends State<MoldDataTile> {
   late final TextEditingController _loadController;
   late final TextEditingController _breakDateController;
 
-  late bool _isBreakTime;
+  late bool _isMarkedAsDone;
   DateTime? _selectedBreakDate;
 
   @override
   void initState() {
     super.initState();
-    // ✅ بررسی اینکه آیا زمان شکست (deadline) فرا رسیده است یا خیر
-    _isBreakTime = DateTime.now().isAfter(widget.mold.deadline) ||
-        DateUtils.isSameDay(DateTime.now(), widget.mold.deadline);
+    _isMarkedAsDone = widget.mold.isDone;
+    _selectedBreakDate = widget.mold.completedAt;
 
-    // مقداردهی اولیه کنترلرها با داده‌های موجود در شیء mold
-    // اگر مقدار اولیه 0.0 بود، فیلد را خالی نمایش می‌دهیم
     _massController = TextEditingController(
         text: widget.mold.mass > 0 ? widget.mold.mass.toString() : '');
     _loadController = TextEditingController(
         text: widget.mold.breakingLoad > 0
             ? widget.mold.breakingLoad.toString()
             : '');
-    
-    _selectedBreakDate = widget.mold.completedAt;
     _breakDateController = TextEditingController(
       text: _selectedBreakDate != null ? _toPersianDate(_selectedBreakDate!) : '',
     );
   }
+  
+  // سایر متدها (_dispose, _toPersianDate, _getTileColor, etc.) بدون تغییر هستند...
 
   @override
   void dispose() {
@@ -128,11 +116,26 @@ class _MoldDataTileState extends State<MoldDataTile> {
     return '${f.yyyy}/${f.mm}/${f.dd}';
   }
 
+  Color _getTileColor(BuildContext context) {
+    if (widget.mold.isDone) return Colors.green.withOpacity(0.12);
+    final now = DateTime.now();
+    if (DateUtils.isSameDay(now, widget.mold.deadline)) return Colors.orange.withOpacity(0.15);
+    if (now.isAfter(widget.mold.deadline)) return Colors.red.withOpacity(0.12);
+    return Theme.of(context).cardColor;
+  }
+  
+  Color _getLeadingColor(BuildContext context) {
+    if (widget.mold.isDone) return Colors.green;
+    final now = DateTime.now();
+    if (DateUtils.isSameDay(now, widget.mold.deadline)) return Colors.orange.shade700;
+    if (now.isAfter(widget.mold.deadline)) return Colors.red;
+    return Colors.grey.shade400;
+  }
+
   Future<void> _selectBreakDate() async {
     final pickedDate = await showDatePicker(
       context: context,
       initialDate: _selectedBreakDate ?? DateTime.now(),
-      // ✅ تاریخ شروع از زمان ساخت قالب است
       firstDate: widget.mold.createdAt,
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
@@ -145,107 +148,104 @@ class _MoldDataTileState extends State<MoldDataTile> {
   }
 
   void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      // ✅ ساخت یک Map از داده‌های جدید برای ارسال به کنترلر
-      final updatedData = {
-        'mass': double.tryParse(_massController.text) ?? 0.0,
-        'breaking_load': double.tryParse(_loadController.text) ?? 0.0,
-        // ✅ تاریخ تکمیل (شکست) را به فرمت استاندارد ISO 8601 می‌فرستیم
-        'completed_at': _selectedBreakDate?.toIso8601String(),
-      };
-      widget.onSave(updatedData);
+    if (!_formKey.currentState!.validate()) return;
+    
+    if (_isMarkedAsDone && _selectedBreakDate == null) {
+      _selectedBreakDate = DateTime.now();
     }
+    
+    final updatedData = {
+      'mass': double.tryParse(_massController.text) ?? 0.0,
+      'breaking_load': double.tryParse(_loadController.text) ?? 0.0,
+      'completed_at': _isMarkedAsDone ? _selectedBreakDate?.toIso8601String() : null,
+    };
+    widget.onSave(updatedData);
   }
+
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    // ✅ وضعیت ثبت شده بر اساس فیلد completedAt مشخص می‌شود
-    final isSubmitted = widget.mold.completedAt != null;
-
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       clipBehavior: Clip.antiAlias,
+      color: _getTileColor(context),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: _getTileColor(context).withOpacity(0.5), width: 1),
+      ),
       child: ExpansionTile(
         leading: CircleAvatar(
-          backgroundColor: isSubmitted
-              ? Colors.green
-              : (_isBreakTime ? theme.primaryColor : Colors.grey.shade400),
-          foregroundColor: Colors.white,
-          child: Text(
-            widget.mold.ageInDays.toString(),
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+          backgroundColor: _getLeadingColor(context).withOpacity(0.15),
+          child: Text(widget.mold.ageInDays.toString(), style: TextStyle(fontWeight: FontWeight.bold, color: _getLeadingColor(context))),
         ),
-        title: Text(
-          'قالب ${widget.mold.ageInDays} روزه',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text('تاریخ شکست مطلوب: ${_toPersianDate(widget.mold.deadline)}'),
-        trailing: isSubmitted ? const Icon(Icons.check_circle, color: Colors.green) : null,
+        title: Text('قالب ${widget.mold.ageInDays} روزه', style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text('موعد شکست: ${_toPersianDate(widget.mold.deadline)}'),
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildInfoRow('شناسه نمونه:', widget.mold.sampleIdentifier),
                   _buildInfoRow('تاریخ نمونه‌گیری:', _toPersianDate(widget.mold.createdAt)),
-                  const Divider(height: 24),
+                  _buildInfoRow('شناسه نمونه:', widget.mold.sampleIdentifier),
+                  const Divider(height: 1),
                   
-                  // فیلدهای ورود اطلاعات
+                  SwitchListTile(
+                    title: const Text('ثبت نتایج شکست', style: TextStyle(fontWeight: FontWeight.bold)),
+                    value: _isMarkedAsDone,
+                    onChanged: (newValue) {
+                      setState(() {
+                        _isMarkedAsDone = newValue;
+                        if (!newValue) {
+                          _selectedBreakDate = null;
+                          _breakDateController.clear();
+                          _massController.clear();
+                          _loadController.clear();
+                        }
+                      });
+                    },
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  const Divider(height: 1),
+                  const SizedBox(height: 16),
+                  
                   TextFormField(
                     controller: _breakDateController,
-                    decoration: const InputDecoration(
-                      labelText: 'تاریخ شکست واقعی',
-                      prefixIcon: Icon(Icons.calendar_today_outlined),
-                    ),
+                    decoration: const InputDecoration(labelText: 'تاریخ واقعی شکست', prefixIcon: Icon(Icons.calendar_today_outlined)),
                     readOnly: true,
-                    onTap: _isBreakTime ? _selectBreakDate : null, // ✅ قفل کردن فیلد
+                    // ✅✅✅ تغییر کلیدی اینجا اعمال شد ✅✅✅
+                    enabled: _isMarkedAsDone,
+                    onTap: _isMarkedAsDone ? _selectBreakDate : null, 
                     validator: (v) => v!.isEmpty ? 'تاریخ الزامی است' : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _massController,
-                    decoration: const InputDecoration(
-                      labelText: 'جرم نمونه (گرم)',
-                      prefixIcon: Icon(Icons.scale_outlined),
-                    ),
+                    decoration: const InputDecoration(labelText: 'جرم نمونه (گرم)', prefixIcon: Icon(Icons.scale_outlined)),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    enabled: _isBreakTime, // ✅ قفل کردن فیلد
+                    enabled: _isMarkedAsDone, 
                     validator: (v) => v!.isEmpty ? 'جرم الزامی است' : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _loadController,
-                    decoration: const InputDecoration(
-                      labelText: 'بار گسیختگی (kN)',
-                      prefixIcon: Icon(Icons.line_weight_rounded),
-                    ),
+                    decoration: const InputDecoration(labelText: 'بار گسیختگی (kN)', prefixIcon: Icon(Icons.line_weight_rounded)),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    enabled: _isBreakTime, // ✅ قفل کردن فیلد
+                    enabled: _isMarkedAsDone,
                     validator: (v) => v!.isEmpty ? 'بار گسیختگی الزامی است' : null,
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
-                    onPressed: _isBreakTime ? _submitForm : null, // ✅ قفل کردن دکمه
+                    onPressed: _isMarkedAsDone ? _submitForm : null,
                     icon: const Icon(Icons.save_alt_outlined),
-                    label: const Text('ثبت نتایج شکست'),
+                    label: const Text('ذخیره نتایج'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
-                  if (!_isBreakTime)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12.0),
-                      child: Text(
-                        'امکان ثبت نتایج قبل از رسیدن به تاریخ شکست وجود ندارد.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.red.shade700),
-                      ),
-                    ),
                 ],
               ),
             ),
@@ -257,12 +257,12 @@ class _MoldDataTileState extends State<MoldDataTile> {
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: const TextStyle(color: Colors.black54)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold,)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );
