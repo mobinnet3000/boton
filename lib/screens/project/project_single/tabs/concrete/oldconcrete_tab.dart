@@ -2,7 +2,6 @@ import 'package:boton/controllers/base_controller.dart';
 import 'package:boton/models/Sample_model.dart';
 import 'package:boton/models/project_model.dart';
 import 'package:boton/models/sampling_serie_model.dart';
-import 'package:boton/screens/project/project_single/tabs/concrete/serie_detail_page.dart';
 import 'package:boton/screens/project/project_single/tabs/concrete/series_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -175,17 +174,17 @@ class AddConcreteView extends StatelessWidget {
                               maxLines: 2,
                             ),
                             onTap: () {
-                              // ✅✅✅ این بخش برای ناوبری استفاده می‌شود ✅✅✅
-                              Navigator.of(context).pop(); // اول BottomSheet را ببند
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (ctx) => SerieDetailPage(
-                                    serie: serie, // پاس دادن کل شیء سری
-                                    projectId: project.id,
-                                    sampleId: sample.id,
-                                  ),
-                                ),
-                              );
+                              // // ✅✅✅ این بخش را تغییر دهید ✅✅✅
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder:
+                              //         (context) => SerieDetailPage(
+                              //           serie: serie,
+                              //           sampleCategory: 'asdasdasd',
+                              //         ),
+                              //   ),
+                              // );
                             },
                           ),
                         );

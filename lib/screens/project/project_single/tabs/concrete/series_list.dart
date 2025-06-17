@@ -2,6 +2,7 @@ import 'package:boton/models/Sample_model.dart';
 import 'package:boton/models/project_model.dart';
 import 'package:boton/models/sampling_serie_model.dart';
 import 'package:boton/screens/project/project_single/tabs/concrete/concrete_tab.dart';
+import 'package:boton/screens/project/project_single/tabs/concrete/serie_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 
@@ -93,17 +94,17 @@ class ConcreteListView extends StatelessWidget {
             subtitle: Text(deadlineInfo),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
-              // ✅✅✅ این بخش را تغییر دهید ✅✅✅
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder:
-              //         (context) => SerieDetailPage(
-              //           serie: serie,
-              //           sampleCategory: parentSample.category,
-              //         ),
-              //   ),
-              // );
+              // ✅✅✅ این بخش کامل می‌شود ✅✅✅
+              Navigator.of(context).pop(); // اول BottomSheet را می‌بندیم
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => SerieDetailPage(
+                    serie: serie,
+                    projectId: project.id,
+                    sampleId: parentSample.id, // شیء sample در اینجا در دسترس است
+                  ),
+                ),
+              );
             },
           ),
         );
