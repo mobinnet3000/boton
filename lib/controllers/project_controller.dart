@@ -20,6 +20,8 @@ class ProjectListController extends GetxController {
   /// لیست کامل پروژه‌های دریافت شده از کنترلر اصلی
   var allProjects = <Project>[].obs;
 
+  var isLoading = false.obs;
+
   /// لیستی که پس از فیلتر، مرتب‌سازی و صفحه‌بندی در UI نمایش داده می‌شود
   var displayedProjects = <Project>[].obs;
 
@@ -181,5 +183,29 @@ class ProjectListController extends GetxController {
         // متد `ever` به طور خودکار این کنترلر را آپدیت خواهد کرد.
       },
     );
+  }
+
+
+
+  
+ Future<void> loadInitialData() async {
+    try {
+      // ✅ ۲. قبل از شروع فراخوانی API، وضعیت لودینگ را true می‌کنیم
+      isLoading.value = true;
+      
+      // شبیه‌سازی فراخوانی API (کد واقعی شما جایگزین شود)
+      // final data = await _apiService.fetchAllData();
+      // projects.value = data.projects;
+      await Future.delayed(const Duration(seconds: 2)); // این خط را با کد واقعی API جایگزین کنید
+
+      print("Data reloaded successfully!");
+
+    } catch (e) {
+      // مدیریت خطا
+      print("Error reloading data: $e");
+    } finally {
+      // ✅ ۳. در هر صورت (چه موفقیت چه خطا)، وضعیت لودینگ را false می‌کنیم
+      isLoading.value = false;
+    }
   }
 }
