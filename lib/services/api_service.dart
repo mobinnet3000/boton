@@ -4,6 +4,7 @@ import 'package:boton/models/ProjectForCreation_model.dart';
 import 'package:boton/models/Sample_model.dart';
 import 'package:boton/models/project_model.dart';
 import 'package:boton/models/sampling_serie_model.dart';
+import 'package:boton/models/transaction_model.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:dio/dio.dart';
@@ -128,6 +129,26 @@ class ApiService {
     } on DioException catch (e) {
       // مدیریت خطاهای شبکه و نمایش پیام واضح‌تر
       print('Dio Error creating sample: ${e.response?.data ?? e.message}');
+      throw Exception('خطا در ارتباط با سرور هنگام ایجاد نمونه.');
+    }
+  }
+
+  Future<Transaction> createTrans(Map<String, dynamic> sampleData) async {
+    try {
+      // ارسال درخواست POST به اندپوینت نمونه‌ها
+      final response = await _dio.post('/api/transactions/', data: sampleData);
+
+      if (response.statusCode == 201) {
+        // پاسخ موفقیت‌آمیز را به مدل Sample تبدیل کرده و برمی‌گردانیم
+        return Transaction.fromJson(response.data);
+      } else {
+        throw Exception('Failed to create transactions on server');
+      }
+    } on DioException catch (e) {
+      // مدیریت خطاهای شبکه و نمایش پیام واضح‌تر
+      print(
+        'Dio Error creating transactions: ${e.response?.data ?? e.message}',
+      );
       throw Exception('خطا در ارتباط با سرور هنگام ایجاد نمونه.');
     }
   }

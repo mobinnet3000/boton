@@ -225,100 +225,106 @@ class _DetailsTabState extends State<DetailsTab> {
         ) ??
         widget.project;
 
-    return Column(
-      key: const ValueKey('display'),
-      children: [
-        _buildDisplayCard(
-          title: 'اطلاعات پایه',
+    return Container(
+      constraints: BoxConstraints(maxWidth: 1000),
+      child: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          key: const ValueKey('display'),
           children: [
-            _buildDisplayRow(
-              'نام پروژه:',
-              project.projectName,
-              Icons.business_center_outlined,
+            _buildDisplayCard(
+              title: 'اطلاعات پایه',
+              children: [
+                _buildDisplayRow(
+                  'نام پروژه:',
+                  project.projectName,
+                  Icons.business_center_outlined,
+                ),
+                _buildDisplayRow(
+                  'شماره پرونده:',
+                  project.fileNumber,
+                  Icons.article_outlined,
+                ),
+                _buildDisplayRow(
+                  'آدرس:',
+                  project.address,
+                  Icons.location_on_outlined,
+                ),
+                _buildDisplayRow(
+                  'منطقه شهرداری:',
+                  project.municipalityZone,
+                  Icons.map_outlined,
+                ),
+                _buildDisplayRow(
+                  'کاربری پروژه:',
+                  project.projectUsageType,
+                  Icons.category_outlined,
+                ),
+              ],
             ),
-            _buildDisplayRow(
-              'شماره پرونده:',
-              project.fileNumber,
-              Icons.article_outlined,
+            _buildDisplayCard(
+              title: 'اشخاص پروژه',
+              children: [
+                _buildDisplayRow(
+                  'نام کارفرما:',
+                  project.clientName,
+                  Icons.person_outline,
+                ),
+                _buildDisplayRow(
+                  'تماس کارفرما:',
+                  project.clientPhoneNumber,
+                  Icons.phone_outlined,
+                ),
+                _buildDisplayRow(
+                  'نام ناظر:',
+                  project.supervisorName,
+                  Icons.engineering_outlined,
+                ),
+                _buildDisplayRow(
+                  'تماس ناظر:',
+                  project.supervisorPhoneNumber,
+                  Icons.phone_outlined,
+                ),
+                _buildDisplayRow(
+                  'نام درخواست دهنده:',
+                  project.requesterName,
+                  Icons.person_pin_outlined,
+                ),
+                _buildDisplayRow(
+                  'تماس درخواست دهنده:',
+                  project.requesterPhoneNumber,
+                  Icons.phone_outlined,
+                ),
+              ],
             ),
-            _buildDisplayRow(
-              'آدرس:',
-              project.address,
-              Icons.location_on_outlined,
-            ),
-            _buildDisplayRow(
-              'منطقه شهرداری:',
-              project.municipalityZone,
-              Icons.map_outlined,
-            ),
-            _buildDisplayRow(
-              'کاربری پروژه:',
-              project.projectUsageType,
-              Icons.category_outlined,
+            _buildDisplayCard(
+              title: 'جزئیات فنی',
+              children: [
+                _buildDisplayRow(
+                  'تعداد طبقات:',
+                  project.floorCount.toString(),
+                  Icons.layers_outlined,
+                ),
+                _buildDisplayRow(
+                  'سطح زیربنا (متر مربع):',
+                  project.occupiedArea.toString(),
+                  Icons.square_foot_outlined,
+                ),
+                _buildDisplayRow(
+                  'نوع سیمان:',
+                  project.cementType,
+                  Icons.grain_outlined,
+                ),
+                _buildDisplayRow(
+                  'نوع قالب:',
+                  project.moldType,
+                  Icons.view_in_ar_outlined,
+                ),
+              ],
             ),
           ],
         ),
-        _buildDisplayCard(
-          title: 'اشخاص پروژه',
-          children: [
-            _buildDisplayRow(
-              'نام کارفرما:',
-              project.clientName,
-              Icons.person_outline,
-            ),
-            _buildDisplayRow(
-              'تماس کارفرما:',
-              project.clientPhoneNumber,
-              Icons.phone_outlined,
-            ),
-            _buildDisplayRow(
-              'نام ناظر:',
-              project.supervisorName,
-              Icons.engineering_outlined,
-            ),
-            _buildDisplayRow(
-              'تماس ناظر:',
-              project.supervisorPhoneNumber,
-              Icons.phone_outlined,
-            ),
-            _buildDisplayRow(
-              'نام درخواست دهنده:',
-              project.requesterName,
-              Icons.person_pin_outlined,
-            ),
-            _buildDisplayRow(
-              'تماس درخواست دهنده:',
-              project.requesterPhoneNumber,
-              Icons.phone_outlined,
-            ),
-          ],
-        ),
-        _buildDisplayCard(
-          title: 'جزئیات فنی',
-          children: [
-            _buildDisplayRow(
-              'تعداد طبقات:',
-              project.floorCount.toString(),
-              Icons.layers_outlined,
-            ),
-            _buildDisplayRow(
-              'سطح زیربنا (متر مربع):',
-              project.occupiedArea.toString(),
-              Icons.square_foot_outlined,
-            ),
-            _buildDisplayRow(
-              'نوع سیمان:',
-              project.cementType,
-              Icons.grain_outlined,
-            ),
-            _buildDisplayRow(
-              'نوع قالب:',
-              project.moldType,
-              Icons.view_in_ar_outlined,
-            ),
-          ],
-        ),
-      ],
+      ),
     );
   }
 

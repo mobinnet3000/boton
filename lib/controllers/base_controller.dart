@@ -185,6 +185,31 @@ class ProjectController extends GetxController {
     }
   }
 
+  Future<void> addtrans(Map<String, dynamic> transData, int projectId) async {
+    try {
+      isLoading(true); // نمایش لودینگ
+      // ۱. متد سرویس را برای ارسال داده به سرور فراخوانی می‌کنیم
+      final newSample = await _apiService.createTrans(transData);
+
+      // ۲. پروژه مورد نظر را در لیست پروژه‌های کنترلر پیدا می‌کنیم
+      // final projectIndex = projects.indexWhere((p) => p.id == projectId);
+      // if (projectIndex != -1) {
+      // ۳. نمونه جدیدی که از سرور آمده را به لیست samples آن پروژه اضافه می‌کنیم
+      // projects[projectIndex].transactions.add(newSample);
+      // ۴. به GetX اطلاع می‌دهیم که لیست پروژه‌ها تغییر کرده تا UI به‌روز شود
+      // projects.refresh();
+      // loadInitialData();
+      // }
+
+      SnackbarHelper.showSuccess(message: 'تراکنش جدید با موفقیت ثبت شد.');
+      loadInitialData();
+    } catch (e) {
+      Get.snackbar('خطا', 'خطا در ثبت نمونه: ${e.toString()}');
+    } finally {
+      isLoading(false); // پنهان کردن لودینگ
+    }
+  }
+
   Future<void> addSerieToSample(
     Map<String, dynamic> serieData,
     int projectId,
