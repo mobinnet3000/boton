@@ -1,9 +1,9 @@
 // lib/pages/dashboard/widgets/project_list_item_card.dart
 import 'package:boton/models/project_model.dart';
-import 'package:boton/screens/project_single/project_single_page.dart';
+import 'package:boton/screens/project/project_single/project_single_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart'; 
+import 'package:intl/intl.dart';
 
 class ProjectListItemCard extends StatelessWidget {
   final Project project;
@@ -63,7 +63,10 @@ class ProjectListItemCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           'تاریخ ساخت: ${DateFormat('yyyy/MM/dd').format(project.createdAt)}',
-                          style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),

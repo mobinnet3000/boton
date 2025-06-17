@@ -16,7 +16,7 @@ class LocationService {
     City(id: 102, name: 'شهریار', provinceId: 1),
     City(id: 103, name: 'قدس', provinceId: 1),
     City(id: 104, name: 'اسلام‌شهر', provinceId: 1),
-    
+
     // شهرهای اصفهان
     City(id: 201, name: 'اصفهان', provinceId: 2),
     City(id: 202, name: 'کاشان', provinceId: 2),
@@ -37,14 +37,18 @@ class LocationService {
   /// لیستی از تمام استان‌ها را برمی‌گرداند
   Future<List<Province>> getProvinces() async {
     // در یک اپ واقعی، اینجا یک درخواست به API زده می‌شود
-    await Future.delayed(const Duration(milliseconds: 500)); // شبیه‌سازی تاخیر شبکه
+    await Future.delayed(
+      const Duration(milliseconds: 500),
+    ); // شبیه‌سازی تاخیر شبکه
     return _provinces;
   }
 
   /// شهرهای مربوط به یک استان خاص را برمی‌گرداند
   Future<List<City>> getCitiesForProvince(int provinceId) async {
     // در یک اپ واقعی، اینجا هم یک درخواست API با آیدی استان زده می‌شود
-    await Future.delayed(const Duration(milliseconds: 500)); // شبیه‌سازی تاخیر شبکه
+    await Future.delayed(
+      const Duration(milliseconds: 500),
+    ); // شبیه‌سازی تاخیر شبکه
     return _cities.where((city) => city.provinceId == provinceId).toList();
   }
 }

@@ -1,0 +1,188 @@
+import 'package:boton/models/ProjectForCreation_model.dart';
+import 'package:boton/models/Sample_model.dart';
+import 'package:boton/models/project_model.dart';
+import 'package:boton/models/sampling_serie_model.dart';
+import 'package:dio/dio.dart';
+import '../models/api_response_model.dart'; // اطمینان حاصل کنید که این مدل را ساخته‌اید
+
+class ApiService {
+  final Dio _dio;
+
+  // سازنده کلاس که یک نمونه از Dio را دریافت می‌کند
+  ApiService(this._dio);
+
+  // متد برای دریافت داده‌های جامع کاربر
+  Future<ApiResponse> getFullUserData() async {
+    try {
+      // ارسال درخواست GET به اندپوینت full-data
+      final response = await _dio.get('http://127.0.0.1:8000/api/full-data/');
+
+      // بررسی موفقیت‌آمیز بودن پاسخ (کد 200)
+      if (response.statusCode == 200) {
+        // تبدیل پاسخ JSON به مدل ApiResponse
+        return ApiResponse.fromJson(response.data);
+      } else {
+        // در صورت بروز خطای غیرمنتظره در پاسخ
+        throw Exception(
+          'Failed to load data, status code: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      // مدیریت خطاهای احتمالی Dio یا خطاهای شبکه
+      // می‌توانید اینجا لاگ بگیرید یا خطای مشخص‌تری را برگردانید
+      print('Error fetching full data: $e');
+      throw Exception('Failed to connect to the server or process data.');
+    }
+  }
+
+  Future<Project> createProject(ProjectForCreation newProjectData) async {
+    try {
+      // درخواست POST به اندپوینت پروژه‌ها ارسال می‌شود.
+      // متد toJson که ساختید، داده‌ها را برای ارسال آماده می‌کند.
+      final response = await _dio.post(
+        'http://127.0.0.1:8000/api/projects/',
+        data: newProjectData.toJson(),
+      );
+
+      // اگر سرور با کد 201 (Created) پاسخ دهد، یعنی پروژه با موفقیت ساخته شده.
+      if (response.statusCode == 201) {
+        // سرور، پروژه کامل (با id و تاریخ) را برمی‌گرداند.
+        // ما آن را به مدل کامل Project تبدیل کرده و برمی‌گردانیم.
+        return Project.fromJson(response.data);
+      } else {
+        // اگر کد وضعیت دیگری دریافت شد، خطا پرتاب می‌کنیم.
+        throw Exception(
+          'Failed to create project. Status Code: ${response.statusCode}',
+        );
+      }
+    } on DioException catch (e) {
+      // مدیریت خطاهای شبکه از Dio
+      print('Dio Error creating project: ${e.response?.data ?? e.message}');
+      throw Exception('خطا در ارتباط با سرور.');
+    } catch (e) {
+      // مدیریت خطاهای دیگر
+      print('Unexpected Error creating project: $e');
+      throw Exception('خطای پیش‌بینی نشده.');
+    }
+  }
+
+  Future<Project> updateProject(int projectId, Project projectToUpdate) async {
+    try {
+      // ما از مدل ProjectForCreation استفاده می‌کنیم تا فقط فیلدهای قابل ویرایش ارسال شوند
+      // این کار باعث می‌شود فیلدهای read-only مانند samples یا transactions ارسال نشوند.
+      final updateData = ProjectForCreation(
+        fileNumber: projectToUpdate.fileNumber,
+        projectName: projectToUpdate.projectName,
+        clientName: projectToUpdate.clientName,
+        clientPhoneNumber: projectToUpdate.clientPhoneNumber,
+        supervisorName: projectToUpdate.supervisorName,
+        supervisorPhoneNumber: projectToUpdate.supervisorPhoneNumber,
+        requesterName: projectToUpdate.requesterName,
+        requesterPhoneNumber: projectToUpdate.requesterPhoneNumber,
+        municipalityZone: projectToUpdate.municipalityZone,
+        address: projectToUpdate.address,
+        projectUsageType: projectToUpdate.projectUsageType,
+        floorCount: projectToUpdate.floorCount,
+        cementType: projectToUpdate.cementType,
+        occupiedArea: projectToUpdate.occupiedArea,
+        moldType: projectToUpdate.moldType,
+        contractPrice: projectToUpdate.contractPrice,
+      );
+
+      // ارسال درخواست PUT به اندپوینت مشخص شده با ID پروژه
+      final response = await _dio.put(
+        '/api/projects/$projectId/',
+        data: updateData.toJson(),
+      );
+
+      if (response.statusCode == 200) {
+        // سرور پروژه کامل و به‌روز شده را برمی‌گرداند
+        return Project.fromJson(response.data);
+      } else {
+        throw Exception(
+          'Failed to update project. Status Code: ${response.statusCode}',
+        );
+      }
+    } on DioException catch (e) {
+      throw Exception('خطا در ارتباط با سرور: ${e.message}');
+    } catch (e) {
+      throw Exception('خطای پیش‌بینی نشده در به‌روزرسانی پروژه.');
+    }
+  }
+
+  Future<Sample> createSample(Map<String, dynamic> sampleData) async {
+    try {
+      // ارسال درخواست POST به اندپوینت نمونه‌ها
+      final response = await _dio.post('/api/samples/', data: sampleData);
+
+      if (response.statusCode == 201) {
+        // پاسخ موفقیت‌آمیز را به مدل Sample تبدیل کرده و برمی‌گردانیم
+        return Sample.fromJson(response.data);
+      } else {
+        throw Exception('Failed to create sample on server');
+      }
+    } on DioException catch (e) {
+      // مدیریت خطاهای شبکه و نمایش پیام واضح‌تر
+      print('Dio Error creating sample: ${e.response?.data ?? e.message}');
+      throw Exception('خطا در ارتباط با سرور هنگام ایجاد نمونه.');
+    }
+  }
+
+  Future<SamplingSerie> createSerie(Map<String, dynamic> serieData) async {
+    try {
+      // ارسال درخواست POST به اندپوینت سری‌ها
+      final response = await _dio.post('api/series/', data: serieData);
+
+      if (response.statusCode == 201) {
+        // پاسخ موفقیت‌آمیز را به مدل SamplingSerie تبدیل کرده و برمی‌گردانیم
+        return SamplingSerie.fromJson(response.data);
+      } else {
+        throw Exception('Failed to create serie on server');
+      }
+    } on DioException catch (e) {
+      // مدیریت خطاهای شبکه و نمایش پیام واضح‌تر
+      final errorMessage =
+          e.response?.data?.toString() ?? e.message ?? 'خطای ناشناخته';
+      print('Dio Error creating serie: $errorMessage');
+      throw Exception('خطا در ایجاد سری: $errorMessage');
+    }
+  }
+}
+
+class DioClient {
+  // توکن احراز هویت که به صورت دستی وارد می‌شود
+  // !! در نسخه نهایی، این توکن باید از حافظه امن خوانده شود !!
+  static const String _manualAuthToken =
+      '1a9a3c2b359a18bdb1ea2a32bb0b3e4dc28128b9'; // <-- توکن خود را اینجا قرار دهید
+
+  // نمونه Singleton از Dio برای استفاده در کل برنامه
+  static final Dio _dio = Dio(
+      BaseOptions(
+        // آدرس پایه سرور شما
+        baseUrl: 'http://127.0.0.1:8000',
+        connectTimeout: const Duration(seconds: 5), // ۵ ثانیه مهلت برای اتصال
+        receiveTimeout: const Duration(
+          seconds: 5,
+        ), // ۳ ثانیه مهلت برای دریافت پاسخ
+        headers: {
+          'Content-Type': 'application/json',
+          // اضافه کردن توکن به هدر تمام درخواست‌ها
+          'Authorization': 'Token $_manualAuthToken',
+        },
+      ),
+    )
+    ..interceptors.add(
+      // Interceptor برای لاگ کردن درخواست‌ها و پاسخ‌ها در کنسول (برای دیباگ)
+      LogInterceptor(
+        request: true,
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: true,
+        responseBody: true,
+        error: true,
+      ),
+    );
+
+  // Getter برای دسترسی به نمونه Dio
+  static Dio get instance => _dio;
+}

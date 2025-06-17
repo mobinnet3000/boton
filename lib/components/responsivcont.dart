@@ -34,7 +34,7 @@
 //       // از یک Box با حداکثر عرض ثابت استفاده می‌کنیم
 //       child: Container(
 //         // این عرض برای فرم‌های لاگین در وب بسیار استاندارد و مناسب است
-//         constraints: const BoxConstraints(maxWidth: 500), 
+//         constraints: const BoxConstraints(maxWidth: 500),
 //         padding: const EdgeInsets.all(16.0), // در همه حالت‌ها یک پدینگ جزئی دارد
 //         child: child,
 //       ),
@@ -48,14 +48,14 @@ import 'package:flutter/material.dart';
 
 class RespCont extends StatelessWidget {
   final Widget child;
-  const RespCont({ super.key, required this.child });
+  const RespCont({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Center(
       child: Container(
         // افزایش عرض حداکثری به یک مقدار بهتر
-        constraints: const BoxConstraints(maxWidth: 580), 
+        constraints: const BoxConstraints(maxWidth: 580),
         padding: const EdgeInsets.all(16.0),
         child: child,
       ),

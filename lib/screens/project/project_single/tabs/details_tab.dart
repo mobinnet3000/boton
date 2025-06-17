@@ -1,9 +1,12 @@
+import 'package:boton/controllers/base_controller.dart';
 import 'package:flutter/material.dart';
-// ✅ ایمپورت مدل صحیح و یکپارچه پروژه
+import 'package:get/get.dart';
+
+// ✅✅ اطمینان حاصل کنید که مسیرهای زیر در پروژه شما صحیح است ✅✅
 import 'package:boton/models/project_model.dart';
+import 'package:boton/controllers/project_controller.dart';
 
 class DetailsTab extends StatefulWidget {
-  // ✅ نوع پروژه، از مدل صحیح خوانده می‌شود
   final Project project;
   const DetailsTab({super.key, required this.project});
 
@@ -15,8 +18,10 @@ class _DetailsTabState extends State<DetailsTab> {
   bool _isEditing = false;
   final _formKey = GlobalKey<FormState>();
 
-  // ----- کنترلرها برای فرم ویرایش -----
-  // این کنترلرها بر اساس مدل جدید Project تعریف شده‌اند
+  // پیدا کردن کنترلر اصلی برنامه با GetX
+  final ProjectController _projectController = Get.find();
+
+  // ----- کنترلرها برای فیلدهای فرم ویرایش -----
   late TextEditingController _projectNameController;
   late TextEditingController _fileNumberController;
   late TextEditingController _clientNameController;
@@ -30,21 +35,27 @@ class _DetailsTabState extends State<DetailsTab> {
   late TextEditingController _floorCountController;
   late TextEditingController _occupiedAreaController;
   late TextEditingController _moldTypeController;
-
-  // State for Dropdowns
-  late String? _selectedUsageType;
-  late String? _selectedCementType;
+  late TextEditingController _projectUsageTypeController;
+  late TextEditingController _cementTypeController;
 
   @override
   void initState() {
     super.initState();
-    _initializeControllers();
+    // مقداردهی اولیه تمام کنترلرها با داده‌های پروژه
+    _initializeControllers(widget.project);
   }
 
-  void _initializeControllers() {
-    final project = widget.project;
+  // این متد تضمین می‌کند که اگر کاربر بین پروژه‌های مختلف جابجا شد،
+  // اطلاعات نمایش داده شده همیشه به‌روز باشد.
+  @override
+  void didUpdateWidget(covariant DetailsTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.project.id != oldWidget.project.id) {
+      _initializeControllers(widget.project);
+    }
+  }
 
-    // ✅ مقداردهی کنترلرها با فیلدهای مدل جدید
+  void _initializeControllers(Project project) {
     _projectNameController = TextEditingController(text: project.projectName);
     _fileNumberController = TextEditingController(text: project.fileNumber);
     _clientNameController = TextEditingController(text: project.clientName);
@@ -74,14 +85,15 @@ class _DetailsTabState extends State<DetailsTab> {
       text: project.occupiedArea.toString(),
     );
     _moldTypeController = TextEditingController(text: project.moldType);
-
-    _selectedUsageType = project.projectUsageType;
-    _selectedCementType = project.cementType;
+    _projectUsageTypeController = TextEditingController(
+      text: project.projectUsageType,
+    );
+    _cementTypeController = TextEditingController(text: project.cementType);
   }
 
   @override
   void dispose() {
-    // ✅ آزادسازی تمام کنترلرهای جدید برای جلوگیری از نشت حافظه
+    // آزادسازی تمام کنترلرها برای جلوگیری از نشت حافظه
     _projectNameController.dispose();
     _fileNumberController.dispose();
     _clientNameController.dispose();
@@ -95,49 +107,108 @@ class _DetailsTabState extends State<DetailsTab> {
     _floorCountController.dispose();
     _occupiedAreaController.dispose();
     _moldTypeController.dispose();
+    _projectUsageTypeController.dispose();
+    _cementTypeController.dispose();
     super.dispose();
   }
 
-  void _toggleEditMode() {
-    setState(() {
-      if (_isEditing) {
-        // اگر در حالت ویرایش بودیم، تغییرات را ذخیره کن
-        if (_formKey.currentState!.validate()) {
-          // TODO: در اینجا باید پروژه آپدیت شده را به کنترلر اصلی ارسال کنی
-          // Project updatedProject = widget.project.copyWith(
-          //   projectName: _projectNameController.text,
-          //   ... سایر فیلدها
-          // );
-          // final mainController = Get.find<ProjectController>();
-          // mainController.updateProject(updatedProject);
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('تغییرات با موفقیت ذخیره شد'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          _isEditing = false;
-        }
-      } else {
-        // در غیر این صورت، وارد حالت ویرایش شو
-        _isEditing = true;
+  /// متد اصلی برای مدیریت حالت ویرایش و ذخیره
+  void _toggleEditMode() async {
+    // اگر در حالت ویرایش هستیم، باید تغییرات را ذخیره کنیم
+    if (_isEditing) {
+      // اگر فرم معتبر نیست، یک پیام خطا نمایش بده و خارج شو
+      if (!_formKey.currentState!.validate()) {
+        Get.snackbar(
+          'خطا',
+          'لطفاً تمام فیلدها را به درستی پر کنید.',
+          backgroundColor: Colors.orange.shade800,
+          colorText: Colors.white,
+        );
+        return;
       }
-    });
+
+      // ساخت آبجکت پروژه با مقادیر جدید از فرم با استفاده از copyWith
+      final updatedProject = widget.project.copyWith(
+        projectName: _projectNameController.text,
+        fileNumber: _fileNumberController.text,
+        clientName: _clientNameController.text,
+        clientPhoneNumber: _clientPhoneController.text,
+        supervisorName: _supervisorNameController.text,
+        supervisorPhoneNumber: _supervisorPhoneController.text,
+        requesterName: _requesterNameController.text,
+        requesterPhoneNumber: _requesterPhoneController.text,
+        address: _addressController.text,
+        municipalityZone: _municipalityZoneController.text,
+        floorCount:
+            int.tryParse(_floorCountController.text) ??
+            widget.project.floorCount,
+        occupiedArea:
+            double.tryParse(_occupiedAreaController.text) ??
+            widget.project.occupiedArea,
+        moldType: _moldTypeController.text,
+        projectUsageType: _projectUsageTypeController.text,
+        cementType: _cementTypeController.text,
+      );
+
+      // فراخوانی متد کنترلر برای آپدیت پروژه در سرور و state برنامه
+      final success = await _projectController.updateProject(updatedProject);
+
+      // فقط اگر عملیات در سرور موفق بود، از حالت ویرایش خارج می‌شویم
+      if (success && mounted) {
+        setState(() {
+          _isEditing = false;
+        });
+      }
+    } else {
+      // در غیر این صورت، فقط وارد حالت ویرایش می‌شویم
+      setState(() {
+        _isEditing = true;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _toggleEditMode,
-        label: Text(_isEditing ? 'ذخیره تغییرات' : 'ویرایش جزئیات'),
-        icon: Icon(_isEditing ? Icons.save_alt_outlined : Icons.edit_outlined),
-      ),
+      floatingActionButton: Obx(() {
+        // دکمه بر اساس وضعیت isUpdatingProject در کنترلر تغییر می‌کند
+        final isLoading = _projectController.isUpdatingProject.value;
+        return FloatingActionButton.extended(
+          onPressed: isLoading ? null : _toggleEditMode,
+          label: Text(
+            isLoading
+                ? 'در حال ذخیره...'
+                : (_isEditing ? 'ذخیره تغییرات' : 'ویرایش جزئیات'),
+          ),
+          icon:
+              isLoading
+                  ? Container(
+                    width: 24,
+                    height: 24,
+                    padding: const EdgeInsets.all(2.0),
+                    child: const CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 3,
+                    ),
+                  )
+                  : Icon(
+                    _isEditing ? Icons.save_alt_outlined : Icons.edit_outlined,
+                  ),
+        );
+      }),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
+        padding: const EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          80,
+        ), // فضا برای دکمه شناور
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
+          transitionBuilder: (child, animation) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          // بر اساس وضعیت _isEditing، فرم یا اطلاعات نمایش داده می‌شود
           child: _isEditing ? _buildEditForm() : _buildDisplayInfo(),
         ),
       ),
@@ -146,7 +217,14 @@ class _DetailsTabState extends State<DetailsTab> {
 
   // ==================== ویجت‌های حالت نمایش ====================
   Widget _buildDisplayInfo() {
-    final project = widget.project;
+    // برای خوانایی بهتر، از یک پروژه به‌روز شده در state استفاده می‌کنیم
+    // این تضمین می‌کند که پس از ویرایش، اطلاعات جدید نمایش داده شود.
+    final project =
+        _projectController.projects.firstWhereOrNull(
+          (p) => p.id == widget.project.id,
+        ) ??
+        widget.project;
+
     return Column(
       key: const ValueKey('display'),
       children: [
@@ -274,12 +352,10 @@ class _DetailsTabState extends State<DetailsTab> {
                 label: 'منطقه شهرداری',
                 icon: Icons.map_outlined,
               ),
-              _buildDropdownFormField(
-                value: _selectedUsageType,
+              _buildTextFormField(
+                controller: _projectUsageTypeController,
                 label: 'کاربری پروژه',
-                items: ['مسکونی', 'تجاری', 'اداری', 'صنعتی', 'سایر'],
-                onChanged:
-                    (value) => setState(() => _selectedUsageType = value),
+                icon: Icons.category_outlined,
               ),
             ],
           ),
@@ -336,12 +412,10 @@ class _DetailsTabState extends State<DetailsTab> {
                 icon: Icons.square_foot_outlined,
                 keyboardType: TextInputType.number,
               ),
-              _buildDropdownFormField(
-                value: _selectedCementType,
+              _buildTextFormField(
+                controller: _cementTypeController,
                 label: 'نوع سیمان',
-                items: ['تیپ ۱', 'تیپ ۲', 'تیپ ۳', 'تیپ ۴', 'تیپ ۵', 'سایر'],
-                onChanged:
-                    (value) => setState(() => _selectedCementType = value),
+                icon: Icons.grain_outlined,
               ),
               _buildTextFormField(
                 controller: _moldTypeController,
@@ -408,7 +482,7 @@ class _DetailsTabState extends State<DetailsTab> {
 
   Widget _buildSectionCard({
     required String title,
-    required List<Widget> children,
+    List<Widget> children = const [],
   }) {
     return Card(
       elevation: 2,
@@ -437,19 +511,13 @@ class _DetailsTabState extends State<DetailsTab> {
     required TextEditingController controller,
     required String label,
     required IconData icon,
-    int maxLines = 1,
     TextInputType keyboardType = TextInputType.text,
-    bool readOnly = false,
-    VoidCallback? onTap,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         controller: controller,
-        maxLines: maxLines,
         keyboardType: keyboardType,
-        readOnly: readOnly,
-        onTap: onTap,
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon),
@@ -458,36 +526,11 @@ class _DetailsTabState extends State<DetailsTab> {
           ),
         ),
         validator: (value) {
-          if (!readOnly && (value == null || value.isEmpty)) {
+          if (value == null || value.isEmpty) {
             return '$label نمی‌تواند خالی باشد.';
           }
           return null;
         },
-      ),
-    );
-  }
-
-  Widget _buildDropdownFormField({
-    required String? value,
-    required String label,
-    required List<String> items,
-    required void Function(String?)? onChanged,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: DropdownButtonFormField<String>(
-        value: value,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
-          ),
-        ),
-        items:
-            items.map((String item) {
-              return DropdownMenuItem<String>(value: item, child: Text(item));
-            }).toList(),
-        onChanged: onChanged,
       ),
     );
   }

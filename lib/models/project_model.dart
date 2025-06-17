@@ -1,73 +1,38 @@
-import 'package:boton/models/Sample_model.dart'; // فرض بر این است که این import صحیح است
+import 'package:boton/models/Sample_model.dart';
+import 'package:boton/models/allmodels.dart';
 import 'package:boton/models/transaction_model.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 @immutable
 class Project {
-  /// شناسه منحصر به فرد پروژه
   final int id;
-
-  /// شماره پرونده
-  final String fileNumber;
-
-  /// نام پروژه
-  final String projectName;
-
-  /// نام کارفرما
-  final String clientName;
-
-  /// شماره تماس کارفرما
-  final String clientPhoneNumber;
-
-  /// نام ناظر
-  final String supervisorName;
-
-  /// شماره تماس ناظر
-  final String supervisorPhoneNumber;
-
-  /// نام درخواست دهنده
-  final String requesterName;
-
-  /// شماره تماس درخواست دهنده
-  final String requesterPhoneNumber;
-
-  /// منطقه شهرداری
-  final String municipalityZone;
-
-  /// آدرس پروژه
-  final String address;
-
-  /// کاربری پروژه (مثلا: مسکونی، تجاری)
-  final String projectUsageType;
-
-  /// تعداد طبقات
-  final int floorCount;
-
-  /// نوع سیمان
-  final String cementType;
-
-  /// سطح زیربنای اشغال شده (به متر مربع)
-  final double occupiedArea;
-
-  /// نوع قالب استفاده شده
-  final String moldType;
-
-  /// شناسه کاربر صاحب پروژه
-  final int ownerId;
-
-  /// لیستی از نمونه‌های گرفته شده برای این پروژه
-  final List<Sample> samples;
-
- // تاریخ ساخت پروژه
   final DateTime createdAt;
+  final String fileNumber;
+  final String projectName;
+  final String clientName;
+  final String clientPhoneNumber;
+  final String supervisorName;
+  final String supervisorPhoneNumber;
+  final String requesterName;
+  final String requesterPhoneNumber;
+  final String municipalityZone;
+  final String address;
+  final String projectUsageType;
+  final int floorCount;
+  final String cementType;
+  final double occupiedArea;
+  final String moldType;
   final double contractPrice;
+  final int ownerId;
+  final List<Sample> samples;
+  final List<Transaction> transactions;
   final double totalIncome;
   final double totalExpense;
   final double balance;
-  final List<Transaction> transactions;
 
   const Project({
     required this.id,
+    required this.createdAt,
     required this.fileNumber,
     required this.projectName,
     required this.clientName,
@@ -83,96 +48,19 @@ class Project {
     required this.cementType,
     required this.occupiedArea,
     required this.moldType,
-    required this.ownerId,
-    required this.createdAt, 
     required this.contractPrice,
+    required this.ownerId,
+    required this.samples,
+    required this.transactions,
     required this.totalIncome,
     required this.totalExpense,
     required this.balance,
-    required this.transactions,
-    this.samples = const [],
   });
 
-  /// متد copyWith برای کپی کردن آبجکت با تغییر برخی مقادیر
-  Project copyWith({
-    int? id,
-    String? fileNumber,
-    DateTime? createdAt,
-    String? projectName,
-    String? clientName,
-    String? clientPhoneNumber,
-    String? supervisorName,
-    String? supervisorPhoneNumber,
-    String? requesterName,
-    String? requesterPhoneNumber,
-    String? municipalityZone,
-    String? address,
-    String? projectUsageType,
-    int? floorCount,
-    String? cementType,
-    double? occupiedArea,
-    String? moldType,
-    int? ownerId,
-    List<Sample>? samples,
-  }) {
-    return Project(
-      id: id ?? this.id,
-      fileNumber: fileNumber ?? this.fileNumber,
-      createdAt: createdAt ?? this.createdAt,
-      projectName: projectName ?? this.projectName,
-      clientName: clientName ?? this.clientName,
-      clientPhoneNumber: clientPhoneNumber ?? this.clientPhoneNumber,
-      supervisorName: supervisorName ?? this.supervisorName,
-      supervisorPhoneNumber:supervisorPhoneNumber ?? this.supervisorPhoneNumber,
-      requesterName: requesterName ?? this.requesterName,
-      requesterPhoneNumber: requesterPhoneNumber ?? this.requesterPhoneNumber,
-      municipalityZone: municipalityZone ?? this.municipalityZone,
-      address: address ?? this.address,
-      projectUsageType: projectUsageType ?? this.projectUsageType,
-      floorCount: floorCount ?? this.floorCount,
-      cementType: cementType ?? this.cementType,
-      occupiedArea: occupiedArea ?? this.occupiedArea,
-      moldType: moldType ?? this.moldType,
-      ownerId: ownerId ?? this.ownerId,
-      samples: samples ?? this.samples,
-      contractPrice: contractPrice ?? this.contractPrice,
-      totalIncome: totalIncome ?? this.totalIncome,
-      totalExpense: totalExpense ?? this.totalExpense,
-      balance: balance ?? this.balance,
-      transactions: transactions ?? this.transactions,
-    );
-  }
-
-  /// تبدیل آبجکت به جیسان (Map)
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'file_number': fileNumber,
-      'created_at': createdAt.toIso8601String(), // <<-- ۳. اضافه کردن createdAt به JSON خروجی
-      'project_name': projectName,
-      'client_name': clientName,
-      'client_phone_number': clientPhoneNumber,
-      'supervisor_name': supervisorName,
-      'supervisor_phone_number': supervisorPhoneNumber,
-      'requester_name': requesterName,
-      'requester_phone_number': requesterPhoneNumber,
-      'municipality_zone': municipalityZone,
-      'address': address,
-      'project_usage_type': projectUsageType,
-      'floor_count': floorCount,
-      'cement_type': cementType,
-      'occupied_area': occupiedArea,
-      'mold_type': moldType,
-      'owner': ownerId,
-      'samples': samples.map((sample) => sample.toJson()).toList(),
-    };
-  }
-
-  /// ساخت آبجکت از روی جیسان (Map)
   factory Project.fromJson(Map<String, dynamic> json) {
     return Project(
       id: json['id'] as int,
-      createdAt: DateTime.parse(json['created_at'] as String), 
+      createdAt: DateTime.parse(json['created_at'] as String),
       fileNumber: json['file_number'] as String,
       projectName: json['project_name'] as String,
       clientName: json['client_name'] as String,
@@ -188,20 +76,84 @@ class Project {
       cementType: json['cement_type'] as String,
       occupiedArea: (json['occupied_area'] as num).toDouble(),
       moldType: json['mold_type'] as String,
+      contractPrice:
+          double.tryParse(json['contract_price'] as String? ?? '0.0') ?? 0.0,
       ownerId: json['owner'] as int,
+      // samples: parseList(json['samples'], Sample.fromJson),
+      // transactions: parseList(json['transactions'], Transaction.fromJson),
+      // totalIncome: (json['total_income'] as num).toDouble(),
+      // totalExpense: (json['total_expense'] as num).toDouble(),
+      // balance: (json['balance'] as num).toDouble(),
       samples:
-          (json['samples'] as List<dynamic>)
-              .map(
-                (sampleJson) =>
-                    Sample.fromJson(sampleJson as Map<String, dynamic>),
-              )
-              .toList(),
-      contractPrice: double.parse(json['contract_price'].toString()),
-      totalIncome: double.parse(json['total_income'].toString()),
-      totalExpense: double.parse(json['total_expense'].toString()),
-      balance: double.parse(json['balance'].toString()),
-      transactions: (json['transactions'] as List<dynamic>?)?.map((tx) => Transaction.fromJson(tx)).toList() ?? [],
+          json['samples'] == null
+              ? []
+              : parseList(json['samples'], Sample.fromJson),
 
+      // اگر 'transactions' در جیسان نبود، یک لیست خالی [] برگردان
+      transactions:
+          json['transactions'] == null
+              ? []
+              : parseList(json['transactions'], Transaction.fromJson),
+
+      // اگر فیلدهای عددی نبودند، مقدار پیش‌فرض 0.0 را برایشان در نظر بگیر
+      totalIncome: (json['total_income'] as num?)?.toDouble() ?? 0.0,
+      totalExpense: (json['total_expense'] as num?)?.toDouble() ?? 0.0,
+      balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
+    );
+  }
+  // در انتهای کلاس Project خود، این متد را اضافه کنید
+  Project copyWith({
+    int? id,
+    DateTime? createdAt,
+    String? fileNumber,
+    String? projectName,
+    String? clientName,
+    String? clientPhoneNumber,
+    String? supervisorName,
+    String? supervisorPhoneNumber,
+    String? requesterName,
+    String? requesterPhoneNumber,
+    String? municipalityZone,
+    String? address,
+    String? projectUsageType,
+    int? floorCount,
+    String? cementType,
+    double? occupiedArea,
+    String? moldType,
+    double? contractPrice,
+    int? ownerId,
+    List<Sample>? samples,
+    List<Transaction>? transactions,
+    double? totalIncome,
+    double? totalExpense,
+    double? balance,
+  }) {
+    return Project(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      fileNumber: fileNumber ?? this.fileNumber,
+      projectName: projectName ?? this.projectName,
+      clientName: clientName ?? this.clientName,
+      clientPhoneNumber: clientPhoneNumber ?? this.clientPhoneNumber,
+      supervisorName: supervisorName ?? this.supervisorName,
+      supervisorPhoneNumber:
+          supervisorPhoneNumber ?? this.supervisorPhoneNumber,
+      requesterName: requesterName ?? this.requesterName,
+      requesterPhoneNumber: requesterPhoneNumber ?? this.requesterPhoneNumber,
+      municipalityZone: municipalityZone ?? this.municipalityZone,
+      address: address ?? this.address,
+      projectUsageType: projectUsageType ?? this.projectUsageType,
+      floorCount: floorCount ?? this.floorCount,
+      cementType: cementType ?? this.cementType,
+      occupiedArea: occupiedArea ?? this.occupiedArea,
+      moldType: moldType ?? this.moldType,
+      contractPrice: contractPrice ?? this.contractPrice,
+      ownerId: ownerId ?? this.ownerId,
+      samples: samples ?? this.samples,
+      transactions: transactions ?? this.transactions,
+      totalIncome: totalIncome ?? this.totalIncome,
+      totalExpense: totalExpense ?? this.totalExpense,
+      balance: balance ?? this.balance,
     );
   }
 }

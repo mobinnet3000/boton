@@ -83,8 +83,8 @@ class ProjectListController extends GetxController {
           (a, b) => a.projectName.compareTo(b.projectName) * compare,
         );
         break;
-      case 1: // شماره پرونده
-        filtered.sort((a, b) => a.fileNumber.compareTo(b.fileNumber) * compare);
+      case 1: // تاریخ ساخت (createdAt)
+        filtered.sort((a, b) => a.createdAt.compareTo(b.createdAt) * compare);
         break;
       case 2: // نام کارفرما
         filtered.sort((a, b) => a.clientName.compareTo(b.clientName) * compare);
@@ -94,7 +94,18 @@ class ProjectListController extends GetxController {
           (a, b) => a.supervisorName.compareTo(b.supervisorName) * compare,
         );
         break;
-      // می‌توانید ستون‌های بیشتری برای مرتب‌سازی اضافه کنید
+      case 4: // منطقه
+        filtered.sort(
+          (a, b) => a.municipalityZone.compareTo(b.municipalityZone) * compare,
+        );
+        break;
+      case 5: // تعداد طبقات
+        filtered.sort((a, b) => a.fileNumber.compareTo(b.fileNumber) * compare);
+        break;
+      // case 6: // نوع آزمون - این فیلد روی مدل پروژه نیست و نیاز به منطق جدا دارد.
+      default:
+        // اگر اندیس نامعتبر بود، کاری انجام نده
+        break;
     }
 
     // 3. صفحه‌بندی لیست نهایی

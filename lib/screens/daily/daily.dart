@@ -1,6 +1,6 @@
 import 'package:boton/controllers/base_controller.dart';
 import 'package:boton/models/mold_model.dart';
-import 'package:boton/pages/mold_detail_page.dart';
+import 'package:boton/screens/pages/mold_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jalali_table_calendar_plus/jalali_table_calendar_plus.dart';
@@ -228,10 +228,10 @@ class FListing extends StatelessWidget {
                         ),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () {
-                          // بستن BottomSheet
-                          Navigator.pop(ctx);
-                          // رفتن به صفحه جزئیات قالب
-                          Get.to(() => MoldDetailPage(mold: mold));
+                          // // بستن BottomSheet
+                          // Navigator.pop(ctx);
+                          // // رفتن به صفحه جزئیات قالب
+                          // Get.to(() => MoldDetailPage(mold: mold));
                         },
                       ),
                     );

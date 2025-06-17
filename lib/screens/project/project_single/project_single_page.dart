@@ -3,7 +3,7 @@ import 'package:boton/models/project_model.dart';
 import 'package:flutter/material.dart';
 import 'package:boton/components/custom_animated_tab_bar.dart'; // ایمپورت کامپوننت جدید
 import 'tabs/details_tab.dart';
-import 'tabs/concrete_tab.dart';
+import 'tabs/concrete/concrete_tab.dart';
 import 'tabs/financial_tab.dart';
 import 'tabs/activity_report_tab.dart';
 

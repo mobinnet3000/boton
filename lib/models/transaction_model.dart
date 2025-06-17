@@ -21,11 +21,12 @@ class Transaction {
     return Transaction(
       id: json['id'],
       projectId: json['project'],
-      type: (json['type'] as String) == 'income' 
-          ? TransactionType.income 
-          : TransactionType.expense,
+      type:
+          (json['type'] as String) == 'income'
+              ? TransactionType.income
+              : TransactionType.expense,
       description: json['description'],
-      amount: double.parse(json['amount'].toString()),
+      amount: double.tryParse(json['amount'] as String? ?? '0.0') ?? 0.0,
       date: DateTime.parse(json['date']),
     );
   }

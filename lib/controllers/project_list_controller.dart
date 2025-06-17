@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 // مدل اصلی پروژه و کنترلر اصلی را ایمپورت می‌کنیم
 // توجه: مسیر این import ها را مطابق با پروژه خودتان تنظیم کنید
 import '../models/project_model.dart';
-import '../controllers/project_controller.dart'; // کنترلر اصلی که داده‌ها را از API می‌گیرد
 import '../utils/snackbar_helper.dart'; // ابزار کمکی برای نمایش اسنک‌بار
 
 class ProjectListController extends GetxController {
@@ -79,20 +78,23 @@ class ProjectListController extends GetxController {
   /// این متد اصلی، تمام فیلترها و مرتب‌سازی‌ها را اعمال می‌کند
   void _filterAndSortProjects() {
     // مرحله ۱: فیلتر کردن بر اساس جستجو
-    List<Project> filtered = _allProjects.where((p) {
-      final query = searchQuery.value.toLowerCase();
-      if (query.isEmpty) return true;
-      return p.projectName.toLowerCase().contains(query) ||
-             p.clientName.toLowerCase().contains(query) ||
-             p.supervisorName.toLowerCase().contains(query) ||
-             p.fileNumber.toLowerCase().contains(query);
-    }).toList();
+    List<Project> filtered =
+        _allProjects.where((p) {
+          final query = searchQuery.value.toLowerCase();
+          if (query.isEmpty) return true;
+          return p.projectName.toLowerCase().contains(query) ||
+              p.clientName.toLowerCase().contains(query) ||
+              p.supervisorName.toLowerCase().contains(query) ||
+              p.fileNumber.toLowerCase().contains(query);
+        }).toList();
 
     // مرحله ۲: مرتب‌سازی لیست فیلتر شده
     final compare = isSortAscending.value ? 1 : -1;
     switch (sortColumnIndex.value) {
       case 0: // نام پروژه
-        filtered.sort((a, b) => a.projectName.compareTo(b.projectName) * compare);
+        filtered.sort(
+          (a, b) => a.projectName.compareTo(b.projectName) * compare,
+        );
         break;
       case 1: // تاریخ ساخت (createdAt)
         filtered.sort((a, b) => a.createdAt.compareTo(b.createdAt) * compare);
@@ -101,20 +103,24 @@ class ProjectListController extends GetxController {
         filtered.sort((a, b) => a.clientName.compareTo(b.clientName) * compare);
         break;
       case 3: // نام ناظر
-        filtered.sort((a, b) => a.supervisorName.compareTo(b.supervisorName) * compare);
+        filtered.sort(
+          (a, b) => a.supervisorName.compareTo(b.supervisorName) * compare,
+        );
         break;
       case 4: // منطقه
-         filtered.sort((a, b) => a.municipalityZone.compareTo(b.municipalityZone) * compare);
+        filtered.sort(
+          (a, b) => a.municipalityZone.compareTo(b.municipalityZone) * compare,
+        );
         break;
       case 5: // تعداد طبقات
-        filtered.sort((a, b) => a.floorCount.compareTo(b.floorCount) * compare);
+        filtered.sort((a, b) => a.fileNumber.compareTo(b.fileNumber) * compare);
         break;
       // case 6: // نوع آزمون - این فیلد روی مدل پروژه نیست و نیاز به منطق جدا دارد.
       default:
         // اگر اندیس نامعتبر بود، کاری انجام نده
         break;
     }
-    
+
     // نتیجه نهایی را در لیست موقت ذخیره کرده و به صفحه اول می‌رویم
     _filteredAndSortedProjects.value = filtered;
     goToPage(1);
@@ -127,14 +133,17 @@ class ProjectListController extends GetxController {
     if (endIndex > _filteredAndSortedProjects.length) {
       endIndex = _filteredAndSortedProjects.length;
     }
-    
+
     if (startIndex > _filteredAndSortedProjects.length) {
       // جلوگیری از خطای رنج در صورتی که آیتم‌ها کم شوند
       startIndex = 0;
       endIndex = 0;
     }
-    
-    displayedProjects.value = _filteredAndSortedProjects.sublist(startIndex, endIndex);
+
+    displayedProjects.value = _filteredAndSortedProjects.sublist(
+      startIndex,
+      endIndex,
+    );
   }
 
   // --- متدهای عمومی برای فراخوانی از UI ---
@@ -162,7 +171,7 @@ class ProjectListController extends GetxController {
     }
     _filterAndSortProjects(); // مرتب‌سازی را دوباره از اول اعمال کن
   }
-  
+
   void deleteProject(int projectId) {
     Get.defaultDialog(
       title: "تایید حذف",
