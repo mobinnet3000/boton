@@ -138,14 +138,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
               icon: Icons.admin_panel_settings_outlined,
               selection: DrawerSection.managers,
             ),
-            DrawerItems(
-              opacity: Opacity7,
-              padding: Padding7,
-              menuController: menuController,
-              text: 'تنظیمات',
-              icon: Icons.settings_outlined,
-              selection: DrawerSection.settings,
-            ),
+            // DrawerItems(
+            //   opacity: Opacity7,
+            //   padding: Padding7,
+            //   menuController: menuController,
+            //   text: 'تنظیمات',
+            //   icon: Icons.settings_outlined,
+            //   selection: DrawerSection.settings,
+            // ),
             DrawerItems(
               opacity: Opacity8,
               padding: Padding8,

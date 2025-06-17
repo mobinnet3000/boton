@@ -43,7 +43,7 @@ class _MainLayoutState extends State<MainLayout> {
       case DrawerSection.financialReport:
         return FinancialDashboardScreen();
       case DrawerSection.managers:
-        return PlaceholderPage(title: 'مدیریت');
+        return TabsScreenImproved();
       case DrawerSection.settings:
         return TabsScreenImproved();
       case DrawerSection.support:
@@ -61,7 +61,7 @@ class _MainLayoutState extends State<MainLayout> {
     DrawerSection.activityReport,
     DrawerSection.financialReport,
     DrawerSection.managers,
-    DrawerSection.settings,
+    // DrawerSection.settings,
     DrawerSection.support,
   ]; // لیست صفحات ما که با انتخاب منو تغییر می‌کند
   // static const List<Widget> _pages = <Widget>[

@@ -88,11 +88,11 @@ class DrawerItems extends StatelessWidget {
         selectedIcon: Icon(Icons.admin_panel_settings),
         label: Text('مدیریت'),
       ),
-      NavigationRailDestination(
-        icon: Icon(Icons.settings_outlined),
-        selectedIcon: Icon(Icons.settings),
-        label: Text('تنظیمات'),
-      ),
+      // NavigationRailDestination(
+      //   icon: Icon(Icons.settings_outlined),
+      //   selectedIcon: Icon(Icons.settings),
+      //   label: Text('تنظیمات'),
+      // ),
       NavigationRailDestination(
         icon: Icon(Icons.support_agent_outlined),
         selectedIcon: Icon(Icons.support_agent),

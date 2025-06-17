@@ -225,9 +225,9 @@ class _DetailsTabState extends State<DetailsTab> {
         ) ??
         widget.project;
 
-    return Container(
-      constraints: BoxConstraints(maxWidth: 1000),
-      child: Center(
+    return Center(
+      child: Container(
+        constraints: BoxConstraints(maxWidth: 1000),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           key: const ValueKey('display'),
