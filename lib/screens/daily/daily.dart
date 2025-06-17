@@ -217,22 +217,86 @@ class FListing extends StatelessWidget {
                   itemCount: event.molds.length,
                   itemBuilder: (context, index) {
                     final mold = event.molds[index];
+                    // =====================================================================================================
                     return Card(
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          child: Text(mold.ageInDays.toString()),
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 8.0,
+                        horizontal: 16.0,
+                      ),
+                      color:
+                          mold.isDone
+                              ? const Color.fromARGB(167, 190, 255, 116)
+                              : const Color.fromARGB(168, 255, 120, 110),
+
+                      child: ExpansionTile(
+                        // عنوان برای حالت بسته
+                        title: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'ددلاین: ${DateFormat('yyyy/MM/dd').format(mold.deadline)}',
+                                style: TextStyle(
+                                  decoration:
+                                      mold.isDone
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                ),
+                              ),
+                            ),
+                            Checkbox(
+                              value: mold.isDone,
+                              onChanged: (bool? newValue) {
+                                // mold.isDone = newValue!;
+                              },
+                            ),
+                            Text(mold.isDone ? 'انجام شده' : 'انجام نشده'),
+                          ],
                         ),
-                        title: Text('شناسه: ${mold.sampleIdentifier}'),
-                        subtitle: Text(
-                          'ددلاین: ${DateFormat('yyyy/MM/dd').format(mold.deadline)}',
-                        ),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () {
-                          // // بستن BottomSheet
-                          // Navigator.pop(ctx);
-                          // // رفتن به صفحه جزئیات قالب
-                          // Get.to(() => MoldDetailPage(mold: mold));
-                        },
+                        // محتوا برای حالت باز
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                TextFormField(
+                                  decoration: const InputDecoration(
+                                    labelText: 'فیلد اول',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  // معمولاً در اینجا از TextEditingController استفاده می‌کنید
+                                  // controller: _fieldOneController,
+                                ),
+                                const SizedBox(height: 16),
+                                TextFormField(
+                                  decoration: const InputDecoration(
+                                    labelText: 'فیلد دوم',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  // معمولاً در اینجا از TextEditingController استفاده می‌کنید
+                                  // controller: _fieldTwoController,
+                                ),
+                                const SizedBox(height: 16),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    // منطق ارسال خود را در اینجا پیاده‌سازی کنید
+                                    // مثلاً: ذخیره داده‌ها، به‌روزرسانی وضعیت قالب و غیره.
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'اطلاعات قالب ${mold.sampleIdentifier} ارسال شد!',
+                                        ),
+                                      ),
+                                    );
+                                    // در صورت تمایل، می‌توانید پس از ارسال، تایل را ببندید
+                                    // ExpansionTile یک متد مستقیم برای بستن ندارد،
+                                    // اما در صورت نیاز می‌توانید یک وضعیت باز شده سراسری را مدیریت کنید.
+                                  },
+                                  child: const Text('ثبت اطلاعات'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },

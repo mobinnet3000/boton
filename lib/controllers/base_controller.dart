@@ -240,7 +240,8 @@ class ProjectController extends GetxController {
 
     final groupedData = groupBy(
       allMoldsWithInfo,
-      (info) => '${info.projectId}-${info.mold.deadline.toIso8601String()}',
+      (info) =>
+          '${info.projectId}-${info.mold.deadline.year}-${info.mold.deadline.month}-${info.mold.deadline.day}',
     );
 
     final result =

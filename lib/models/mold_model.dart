@@ -12,6 +12,7 @@ class Mold {
   final String sampleIdentifier;
   final Map<String, dynamic> extraData;
   final int seriesId;
+  final bool isDone; // اضافه شده برای پیگیری وضعیت تکمیل
 
   const Mold({
     required this.id,
@@ -24,6 +25,7 @@ class Mold {
     required this.sampleIdentifier,
     required this.extraData,
     required this.seriesId,
+    this.isDone = false, // به طور پیش‌فرض، انجام نشده
   });
 
   factory Mold.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class Mold {
       sampleIdentifier: json['sample_identifier'] as String,
       extraData: json['extra_data'] as Map<String, dynamic>? ?? const {},
       seriesId: json['series'] as int,
+      isDone: (json['breaking_load'] as num) != 0,
     );
   }
 }
