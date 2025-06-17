@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:boton/models/ProjectForCreation_model.dart';
 import 'package:boton/models/Sample_model.dart';
 import 'package:boton/models/project_model.dart';
 import 'package:boton/models/sampling_serie_model.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:dio/dio.dart';
 import '../models/api_response_model.dart'; // اطمینان حاصل کنید که این مدل را ساخته‌اید
 
@@ -128,23 +132,48 @@ class ApiService {
     }
   }
 
-  Future<SamplingSerie> createSerie(Map<String, dynamic> serieData) async {
-    try {
-      // ارسال درخواست POST به اندپوینت سری‌ها
-      final response = await _dio.post('api/series/', data: serieData);
+  // در کلاس ApiService
 
+  Future<SamplingSerie> createSerie(Map<String, dynamic> serieData) async {
+    // ۲. تعریف آدرس کامل و هدرها به صورت دستی
+    // مطمئن شوید IP و پورت صحیح است
+    final url = Uri.parse('http://127.0.0.1:8000/api/series/');
+
+    // توکن خود را مستقیماً اینجا قرار دهید
+    const String authToken = '1a9a3c2b359a18bdb1ea2a32bb0b3e4dc28128b9';
+
+    final headers = {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Token $authToken',
+    };
+
+    // ۳. تبدیل بدنه درخواست به رشته JSON
+    final body = json.encode(serieData);
+
+    print('Sending request to: $url');
+    print('With body: $body');
+
+    try {
+      // ۴. ارسال درخواست با پکیج http
+      final response = await http.post(url, headers: headers, body: body);
+
+      // ۵. بررسی پاسخ سرور
       if (response.statusCode == 201) {
-        // پاسخ موفقیت‌آمیز را به مدل SamplingSerie تبدیل کرده و برمی‌گردانیم
-        return SamplingSerie.fromJson(response.data);
+        // برای پشتیبانی از کاراکترهای فارسی، پاسخ را با utf8 دیکود می‌کنیم
+        final responseBody = json.decode(utf8.decode(response.bodyBytes));
+        return SamplingSerie.fromJson(responseBody);
       } else {
-        throw Exception('Failed to create serie on server');
+        // اگر سرور پاسخ خطا داد، آن را نمایش می‌دهیم
+        print('Server Error: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+        throw Exception('خطای سرور: ${response.statusCode}');
       }
-    } on DioException catch (e) {
-      // مدیریت خطاهای شبکه و نمایش پیام واضح‌تر
-      final errorMessage =
-          e.response?.data?.toString() ?? e.message ?? 'خطای ناشناخته';
-      print('Dio Error creating serie: $errorMessage');
-      throw Exception('خطا در ایجاد سری: $errorMessage');
+    } catch (e) {
+      // این بخش خطاهای اتصال شبکه را مدیریت می‌کند
+      print('HTTP Client Error: $e');
+      throw Exception(
+        'خطا در برقراری ارتباط با سرور. لطفاً اتصال و آدرس را چک کنید.',
+      );
     }
   }
 }
@@ -160,14 +189,16 @@ class DioClient {
       BaseOptions(
         // آدرس پایه سرور شما
         baseUrl: 'http://127.0.0.1:8000',
-        connectTimeout: const Duration(seconds: 5), // ۵ ثانیه مهلت برای اتصال
+        connectTimeout: const Duration(seconds: 25), // ۵ ثانیه مهلت برای اتصال
         receiveTimeout: const Duration(
-          seconds: 5,
+          seconds: 25,
         ), // ۳ ثانیه مهلت برای دریافت پاسخ
         headers: {
           'Content-Type': 'application/json',
           // اضافه کردن توکن به هدر تمام درخواست‌ها
           'Authorization': 'Token $_manualAuthToken',
+          'User-Agent': 'PostmanRuntime/7.29.2',
+          'Accept': '*/*',
         },
       ),
     )

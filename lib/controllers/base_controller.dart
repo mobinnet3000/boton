@@ -212,7 +212,8 @@ class ProjectController extends GetxController {
       // ۵. به GetX اطلاع می‌دهیم که لیست پروژه‌ها تغییر کرده تا UI به‌روز شود
       projects.refresh();
 
-      Get.snackbar('موفقیت', 'سری جدید با موفقیت ثبت شد.');
+      Get.back();
+      SnackbarHelper.showSuccess(message: 'سری جدید با موفقیت ثبت شد.');
       loadInitialData();
     } catch (e) {
       Get.snackbar('خطا', 'خطا در ثبت سری جدید: ${e.toString()}');

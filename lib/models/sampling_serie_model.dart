@@ -31,15 +31,16 @@ class SamplingSerie {
   factory SamplingSerie.fromJson(Map<String, dynamic> json) {
     return SamplingSerie(
       id: json['id'] as int,
-      name: json['name'] as String,
+      name: json['name'] != null ? json['name'] as String : 'سری ؟',
       concreteTemperature: (json['concrete_temperature'] as num).toDouble(),
       ambientTemperature: (json['ambient_temperature'] as num).toDouble(),
       slump: (json['slump'] as num).toDouble(),
       range: json['range'] as String,
       airPercentage: (json['air_percentage'] as num).toDouble(),
       hasAdditive: json['has_additive'] as bool,
-      sampleId: json['sample'] as int,
-      molds: parseList(json['molds'], Mold.fromJson),
+      sampleId: json['sample'] != null ? json['sample'] as int : 1,
+      molds:
+          json['molds'] != null ? parseList(json['molds'], Mold.fromJson) : [],
     );
   }
 }

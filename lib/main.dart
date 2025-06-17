@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       //======================================================================
       theme: ThemeData(
         primarySwatch: Colors.indigo,
-        // fontFamily: 'Vazir', // Make sure to add Vazir font to your project
+        fontFamily: 'DANA', // Make sure to add Vazir font to your project
         scaffoldBackgroundColor: Colors.grey[100],
         // inputDecorationTheme: InputDecorationTheme(
         //   filled: true,
@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
 
         // فعال کردن طراحی متریال ۳ برای ظاهری مدرن‌تر
         useMaterial3: true,
-        fontFamily: 'Vazirmatn', // فونت پیش‌فرض کل برنامه
+        // fontFamily: 'Vazirmatn', // فونت پیش‌فرض کل برنامه
         // استایل سفارشی برای AppBar
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.blue.shade700,
@@ -85,6 +85,7 @@ class MyApp extends StatelessWidget {
           labelStyle: TextStyle(
             color: Colors.blue.shade800,
             fontWeight: FontWeight.w500,
+            fontFamily: 'DANA',
           ),
           filled: true,
           fillColor: Colors.white.withOpacity(0.85),
@@ -104,7 +105,7 @@ class MyApp extends StatelessWidget {
             textStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              fontFamily: 'Vazirmatn',
+              fontFamily: 'DANA',
             ),
           ),
         ),

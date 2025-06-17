@@ -168,11 +168,10 @@ class AddConcreteView extends StatelessWidget {
                           margin: const EdgeInsets.symmetric(vertical: 6),
                           child: ListTile(
                             leading: CircleAvatar(child: Text('${index + 1}')),
-                            title: Text(
-                              'اسلامپ: ${serie.slump} - دما: ${serie.concreteTemperature}°C',
-                            ),
+                            title: Text(' ${serie.name}'),
                             subtitle: Text(
-                              'افزودنی: ${serie.hasAdditive ? "دارد" : "ندارد"} - درصد هوا: ${serie.airPercentage}%',
+                              'افزودنی: ${serie.hasAdditive ? "دارد" : "ندارد"} - درصد هوا: ${serie.airPercentage}% - اسلامپ: ${serie.slump} - دما: ${serie.concreteTemperature}°C',
+                              maxLines: 2,
                             ),
                             onTap: () {
                               // // ✅✅✅ این بخش را تغییر دهید ✅✅✅
@@ -957,7 +956,6 @@ class _AddSerieFormState extends State<_AddSerieForm> {
       'has_additive': _hasAdditive,
       'mold_ages': _moldAges,
     };
-
     await Get.find<ProjectController>().addSerieToSample(
       serieData,
       widget.projectId,
