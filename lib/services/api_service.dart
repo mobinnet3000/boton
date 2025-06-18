@@ -5,6 +5,7 @@ import 'package:boton/models/Sample_model.dart';
 import 'package:boton/models/project_model.dart';
 import 'package:boton/models/sampling_serie_model.dart';
 import 'package:boton/models/transaction_model.dart';
+import 'package:boton/models/user_model.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:dio/dio.dart';
@@ -112,6 +113,27 @@ class ApiService {
       throw Exception('خطا در ارتباط با سرور: ${e.message}');
     } catch (e) {
       throw Exception('خطای پیش‌بینی نشده در به‌روزرسانی پروژه.');
+    }
+  }
+
+  Future<LabProfile> updateProfile(
+    int profileId,
+    Map<String, dynamic> profileData,
+  ) async {
+    try {
+      final response = await _dio.put(
+        'api/profiles/$profileId/',
+        data: profileData,
+      );
+      if (response.statusCode == 200) {
+        return LabProfile.fromJson(response.data);
+      } else {
+        throw Exception('Failed to update profile');
+      }
+    } on DioException catch (e) {
+      final errorMessage =
+          e.response?.data?.toString() ?? e.message ?? 'خطای ناشناخته';
+      throw Exception('خطا در آپدیت پروفایل: $errorMessage');
     }
   }
 

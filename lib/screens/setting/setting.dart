@@ -1,149 +1,254 @@
+import 'package:boton/controllers/base_controller.dart';
+import 'package:boton/models/user_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'dart:math';
 
-// void main() {
-//   runApp(StyledAppWithoutAppBar());
-// }
+// ✅ مسیرهای صحیح مدل‌ها و کنترلر خود را وارد کنید
+import 'package:boton/controllers/project_controller.dart';
 
-// enum for Concrete calculation mode
-enum ConcreteMode { fixed, formula }
-
-class TabsScreenImproved extends StatefulWidget {
+//======================================================================
+// ویجت اصلی که Tab ها را مدیریت می‌کند
+//======================================================================
+class TabsScreenImproved extends StatelessWidget {
   const TabsScreenImproved({super.key});
 
   @override
-  _TabsScreenImprovedState createState() => _TabsScreenImprovedState();
+  Widget build(BuildContext context) {
+    // کنترلر اصلی برنامه را یک بار اینجا پیدا می‌کنیم
+    final ProjectController controller = Get.find();
+
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              // TabBar سفارشی شما
+              Container(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 10.0,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                    ),
+                  ],
+                ),
+                child: const TabBar(
+                  labelColor: Colors.teal,
+                  indicatorColor: Colors.teal,
+                  unselectedLabelColor: Colors.indigo,
+                  tabs: [
+                    Tab(icon: Icon(Icons.business_center), text: 'آزمایشگاه'),
+                    Tab(icon: Icon(Icons.layers), text: 'بتن'),
+                    Tab(
+                      icon: Icon(Icons.notifications_active),
+                      text: 'اطلاع رسانی',
+                    ),
+                  ],
+                ),
+              ),
+              // محتوای تب‌ها
+              Expanded(
+                child: TabBarView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    // هر تب حالا یک ویجت مستقل و تمیز است
+                    LaboratoryTab(controller: controller),
+                    ConcreteTab(controller: controller),
+                    NotificationTab(controller: controller),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _TabsScreenImprovedState extends State<TabsScreenImproved>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+//======================================================================
+// ✅ ویجت تب آزمایشگاه (بازنویسی شده و متصل به بک‌اند)
+//======================================================================
+class LaboratoryTab extends StatefulWidget {
+  final ProjectController controller;
+  const LaboratoryTab({super.key, required this.controller});
 
-  // Controllers for Laboratory Tab
-  final _labNameController = TextEditingController();
-  final _officePhoneController = TextEditingController();
-  final _samplerPhoneController = TextEditingController();
-  final _landlineController = TextEditingController();
-  final _addressController = TextEditingController();
+  @override
+  State<LaboratoryTab> createState() => _LaboratoryTabState();
+}
 
-  // Variables for Concrete Tab
-  ConcreteMode _concreteMode = ConcreteMode.fixed; // Default mode
-  final _fixedCoefficientController = TextEditingController();
-  final _aController = TextEditingController(text: '0');
-  final _bController = TextEditingController(text: '0');
-  final _cController = TextEditingController(text: '0');
-  double? _calculatedResult; // Nullable to show only when calculated
+class _LaboratoryTabState extends State<LaboratoryTab> {
+  // کنترلرها فقط در حالت ویرایش استفاده می‌شوند و در initState مقداردهی می‌شوند
+  late TextEditingController _labNameController;
+  late TextEditingController _officePhoneController;
+  late TextEditingController _samplerPhoneController;
+  late TextEditingController _landlineController;
+  late TextEditingController _addressController;
 
-  // Controllers for Notification Tab
-  final _telegramIdController = TextEditingController();
-  final String _telegramBotName = "YourBotName";
+  // وضعیت محلی برای مدیریت حالت نمایش یا ویرایش
+  bool _isEditing = false;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
+    // مقداردهی اولیه کنترلرها با داده‌های کنترلر اصلی
+    _initializeControllers();
+  }
+
+  void _initializeControllers() {
+    final profile = widget.controller.user.value?.labProfile;
+    _labNameController = TextEditingController(text: profile?.labName ?? '');
+    _officePhoneController = TextEditingController(
+      text: profile?.labPhoneNumber ?? '',
+    ); // فرض بر اینکه نام فیلد این است
+    _samplerPhoneController = TextEditingController(
+      text: profile?.labMobileNumber ?? '',
+    );
+    _landlineController = TextEditingController(
+      text: profile?.province ?? '',
+    ); // نام فیلد را مطابق مدل خود تغییر دهید
+    _addressController = TextEditingController(text: profile?.labAddress ?? '');
   }
 
   @override
   void dispose() {
-    // Dispose all controllers to free up resources
-    _tabController.dispose();
+    // آزادسازی تمام کنترلرها
     _labNameController.dispose();
     _officePhoneController.dispose();
     _samplerPhoneController.dispose();
     _landlineController.dispose();
     _addressController.dispose();
-    _fixedCoefficientController.dispose();
-    _aController.dispose();
-    _bController.dispose();
-    _cController.dispose();
-    _telegramIdController.dispose();
     super.dispose();
   }
 
-  void _calculateConcreteCoefficient() {
-    double a = double.tryParse(_aController.text) ?? 0;
-    double b = double.tryParse(_bController.text) ?? 0;
-    double c = double.tryParse(_cController.text) ?? 0;
-    // Assuming x=1 for simplicity, you can add a field for x
-    double x = 1.0;
+  // متد برای ذخیره تغییرات
+  void _onSaveChanges() async {
+    final updatedData = {
+      "lab_name": _labNameController.text,
+      "lab_phone_number": _officePhoneController.text,
+      "lab_mobile_number": _samplerPhoneController.text,
+      "landline_number":
+          _landlineController.text, // نام فیلد را مطابق API خود تغییر دهید
+      "lab_address": _addressController.text,
+      // سایر فیلدهای پروفایل مثل نام و ایمیل اگر نیاز به آپدیت دارند
+      "first_name": widget.controller.user.value?.firstName,
+      "last_name": widget.controller.user.value?.lastName,
+      "email": widget.controller.user.value?.email,
+    };
 
-    setState(() {
-      _calculatedResult = a * pow(x, 2) + b * x + c;
-    });
+    // فراخوانی متد کنترلر برای آپدیت
+    final success = await widget.controller.updateLabProfile(updatedData);
+
+    // فقط اگر عملیات موفق بود، از حالت ویرایش خارج شو
+    if (success && mounted) {
+      setState(() => _isEditing = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // The Scaffold no longer has an appBar
     return Scaffold(
-      body: SafeArea(
-        // Use SafeArea to avoid notch/system UI overlap
-        child: Column(
-          children: [
-            // Custom TabBar container
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: Offset(0, 3),
-                  ),
-                ],
+      floatingActionButton: Obx(
+        () => FloatingActionButton.extended(
+          onPressed:
+              widget.controller.isUpdatingProfile.value
+                  ? null // غیرفعال کردن دکمه هنگام لودینگ
+                  : () =>
+                      _isEditing
+                          ? _onSaveChanges()
+                          : setState(() => _isEditing = true),
+          label: Text(_isEditing ? 'ذخیره' : 'ویرایش'),
+          icon:
+              widget.controller.isUpdatingProfile.value
+                  ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                  : Icon(_isEditing ? Icons.save : Icons.edit),
+        ),
+      ),
+      body: Obx(() {
+        // به داده‌های کاربر در کنترلر گوش می‌دهیم
+        final profile = widget.controller.user.value?.labProfile;
+
+        if (widget.controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (profile == null) {
+          return const Center(child: Text('اطلاعات پروفایل دریافت نشد.'));
+        }
+
+        // اگر در حالت ویرایش هستیم، فرم را نمایش بده
+        if (_isEditing) {
+          return _buildEditForm();
+        }
+
+        // در غیر این صورت، اطلاعات را نمایش بده
+        return _buildDisplayInfo(profile);
+      }),
+    );
+  }
+
+  // ویجت برای نمایش اطلاعات (حالت فقط خواندنی)
+  Widget _buildDisplayInfo(LabProfile profile) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildDisplayRow(
+                Icons.business,
+                'نام آزمایشگاه',
+                profile.labName,
               ),
-              child: TabBar(
-                controller: _tabController,
-                // indicator: BoxDecoration(
-                //   borderRadius: BorderRadius.circular(15.0),
-                //   color: Colors.indigo[400],
-                // ),
-                labelColor: Colors.teal,
-                indicatorColor: Colors.teal,
-                unselectedLabelColor: Colors.indigo,
-                tabs: [
-                  Tab(icon: Icon(Icons.business_center), text: 'آزمایشگاه'),
-                  Tab(icon: Icon(Icons.layers), text: 'بتن'),
-                  Tab(
-                    icon: Icon(Icons.notifications_active),
-                    text: 'اطلاع رسانی',
-                  ),
-                ],
+              _buildDisplayRow(
+                Icons.phone,
+                'شماره تماس دفتر',
+                profile.labPhoneNumber,
               ),
-            ),
-            // The TabBarView must be wrapped in an Expanded widget
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildLaboratoryTab(),
-                  _buildConcreteTab(),
-                  _buildNotificationTab(),
-                ],
+              _buildDisplayRow(
+                Icons.phone_android,
+                'شماره تماس نمونه گیر',
+                profile.labMobileNumber,
               ),
-            ),
-          ],
+              _buildDisplayRow(Icons.call, 'استان', profile.province),
+              _buildDisplayRow(
+                Icons.location_on,
+                'آدرس',
+                profile.labAddress,
+                maxLines: 3,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // --- The rest of the tab building methods remain exactly the same ---
-  // (_buildLaboratoryTab, _buildConcreteTab, _buildFixedCoefficientCard, etc.)
-
-  // Stylish Laboratory Tab
-  Widget _buildLaboratoryTab() {
+  // ویجت برای فرم ویرایش
+  Widget _buildEditForm() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildTextField(
                 _labNameController,
@@ -174,195 +279,83 @@ class _TabsScreenImprovedState extends State<TabsScreenImproved>
                 Icons.location_on,
                 maxLines: 3,
               ),
-              SizedBox(height: 20),
-              ElevatedButton.icon(
-                onPressed: () {
-                  /* Save lab data logic */
-                },
-                icon: Icon(Icons.save),
-                label: Text('ذخیره اطلاعات'),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  // Concrete Tab with Radio Buttons
-  Widget _buildConcreteTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-      child: Column(
-        children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  RadioListTile<ConcreteMode>(
-                    title: Text('ضریب مقاومت نمونه (ثابت)'),
-                    value: ConcreteMode.fixed,
-                    groupValue: _concreteMode,
-                    onChanged: (ConcreteMode? value) {
-                      setState(() {
-                        _concreteMode = value!;
-                      });
-                    },
-                  ),
-                  RadioListTile<ConcreteMode>(
-                    title: Text('محاسبه با فرمول ضریب تبدیل'),
-                    value: ConcreteMode.formula,
-                    groupValue: _concreteMode,
-                    onChanged: (ConcreteMode? value) {
-                      setState(() {
-                        _concreteMode = value!;
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: 10),
-          // Conditionally show UI based on selected mode
-          if (_concreteMode == ConcreteMode.fixed)
-            _buildFixedCoefficientCard()
-          else
-            _buildFormulaCalculatorCard(),
-        ],
-      ),
-    );
-  }
+//======================================================================
+// ویجت‌های کمکی
+//======================================================================
+Widget _buildTextField(
+  TextEditingController controller,
+  String label,
+  IconData icon, {
+  int maxLines = 1,
+  TextInputType keyboardType = TextInputType.text,
+}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: TextFormField(
+      controller: controller,
+      maxLines: maxLines,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
+    ),
+  );
+}
 
-  Widget _buildFixedCoefficientCard() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _buildTextField(
-          _fixedCoefficientController,
-          'ضریب ثابت را وارد کنید',
-          Icons.filter_1,
-          keyboardType: TextInputType.number,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFormulaCalculatorCard() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'معادله: ax² + bx + c',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.indigo,
-              ),
-            ),
-            SizedBox(height: 15),
-            _buildTextField(
-              _aController,
-              'ضریب a',
-              Icons.looks_one,
-              keyboardType: TextInputType.number,
-            ),
-            _buildTextField(
-              _bController,
-              'ضریب b',
-              Icons.looks_two,
-              keyboardType: TextInputType.number,
-            ),
-            _buildTextField(
-              _cController,
-              'ضریب c',
-              Icons.looks_3,
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: _calculateConcreteCoefficient,
-              icon: Icon(Icons.calculate),
-              label: Text('محاسبه'),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            if (_calculatedResult != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Text(
-                  'نتیجه: $_calculatedResult',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Stylish Notification Tab
-  Widget _buildNotificationTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildTextField(_telegramIdController, 'آیدی تلگرام', Icons.send),
-              SizedBox(height: 20),
-              ListTile(
-                leading: Icon(Icons.smart_toy, color: Colors.indigo),
-                title: Text(
-                  'نام ربات تلگرام',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text(
-                  _telegramBotName,
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-            ],
+Widget _buildDisplayRow(
+  IconData icon,
+  String label,
+  String value, {
+  int maxLines = 1,
+}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 10.0),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: Colors.grey.shade600),
+        const SizedBox(width: 16),
+        Text('$label:', style: TextStyle(color: Colors.grey.shade700)),
+        const Spacer(),
+        Expanded(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            maxLines: maxLines,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
 
-  // Helper function to create styled TextFields with Icons
-  Widget _buildTextField(
-    TextEditingController controller,
-    String label,
-    IconData icon, {
-    int maxLines = 1,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextField(
-        controller: controller,
-        maxLines: maxLines,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
-      ),
+//======================================================================
+// ویجت‌های Placeholder برای تب‌های دیگر
+//======================================================================
+class ConcreteTab extends StatelessWidget {
+  final ProjectController controller;
+  const ConcreteTab({super.key, required this.controller});
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: Text('محتوای تب بتن در اینجا قرار می‌گیرد'));
+  }
+}
+
+class NotificationTab extends StatelessWidget {
+  final ProjectController controller;
+  const NotificationTab({super.key, required this.controller});
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('محتوای تب اطلاع‌رسانی در اینجا قرار می‌گیرد'),
     );
   }
 }

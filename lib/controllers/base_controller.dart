@@ -185,6 +185,31 @@ class ProjectController extends GetxController {
     }
   }
 
+  var isUpdatingProfile = false.obs;
+
+  Future<bool> updateLabProfile(Map<String, dynamic> updatedData) async {
+    if (user.value?.labProfile == null) return false;
+    try {
+      isUpdatingProfile(true);
+      final profileId = user.value!.labProfile!.id;
+      final updatedProfile = await _apiService.updateProfile(
+        profileId,
+        updatedData,
+      );
+      user.update((currentUser) {
+        // currentUser?. = updatedProfile;
+      });
+      loadInitialData();
+      Get.snackbar('موفقیت', 'اطلاعات با موفقیت به‌روزرسانی شد.');
+      return true;
+    } catch (e) {
+      Get.snackbar('خطا', 'خطا در به‌روزرسانی: ${e.toString()}');
+      return false;
+    } finally {
+      isUpdatingProfile(false);
+    }
+  }
+
   Future<void> addtrans(Map<String, dynamic> transData, int projectId) async {
     try {
       isLoading(true); // نمایش لودینگ

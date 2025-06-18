@@ -1,4 +1,5 @@
 import 'package:boton/controllers/base_controller.dart';
+import 'package:boton/screens/loading/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
@@ -16,103 +17,100 @@ class FinancialTab extends StatelessWidget {
   const FinancialTab({super.key, required this.project});
 
   // متد دیالوگ افزودن تراکنش
-  void _showAddTransactionDialog(
-    BuildContext context,
-    FinancialController controller,
-  ) {
-    final amountController = TextEditingController();
-    final descriptionController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-    final type =
-        controller.transactionTypeToAdd.value; // گرفتن نوع تراکنش از کنترلر
-
-    showDialog(
-      context: context,
-      builder:
-          (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Text(
-          type == TransactionType.income
-              ? 'افزودن واریزی جدید'
-              : 'افزودن هزینه جدید',
-        ),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: amountController,
-                keyboardType: TextInputType.number,
-                textDirection: TextDirection.ltr,
-                decoration: const InputDecoration(
-                  labelText: 'مبلغ (تومان)',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      double.tryParse(value) == null) {
-                    return 'لطفاً یک مبلغ معتبر وارد کنید.';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'توضیحات',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'توضیحات نمی‌تواند خالی باشد.';
-                  }
-                  return null;
-                },
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            child: const Text('لغو'),
-            onPressed: () => Navigator.of(ctx).pop(),
-          ),
-          ElevatedButton(
-            child: const Text('افزودن'),
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                final newTransaction = Transaction(
-                  id: DateTime.now().millisecondsSinceEpoch, // سرور ID را مشخص می‌کند
-                  projectId: project.id,
-                  type: type,
-                  description: descriptionController.text,
-                  amount: double.parse(amountController.text),
-                  date: DateTime.now(),
-                );
-                
-                // ✅✅✅ ۱. کلید حل مشکل: فراخوانی متد کنترلر ✅✅✅
-                controller.addTransaction(newTransaction);
-                
-                Navigator.of(ctx).pop();
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showAddTransactionDialog(
+  //   BuildContext context,
+  //   FinancialController controller,
+  // ) {
+  //   final amountController = TextEditingController();
+  //   final descriptionController = TextEditingController();
+  //   final formKey = GlobalKey<FormState>();
+  //   final type =
+  //       controller.transactionTypeToAdd.value; // گرفتن نوع تراکنش از کنترلر
+  //   showDialog(
+  //     context: context,
+  //     builder:
+  //         (ctx) => AlertDialog(
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(16),
+  //       ),
+  //       title: Text(
+  //         type == TransactionType.income
+  //             ? 'افزودن واریزی جدید'
+  //             : 'افزودن هزینه جدید',
+  //       ),
+  //       content: Form(
+  //         key: formKey,
+  //         child: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             TextFormField(
+  //               controller: amountController,
+  //               keyboardType: TextInputType.number,
+  //               textDirection: TextDirection.ltr,
+  //               decoration: const InputDecoration(
+  //                 labelText: 'مبلغ (تومان)',
+  //                 border: OutlineInputBorder(),
+  //               ),
+  //               validator: (value) {
+  //                 if (value == null ||
+  //                     value.isEmpty ||
+  //                     double.tryParse(value) == null) {
+  //                   return 'لطفاً یک مبلغ معتبر وارد کنید.';
+  //                 }
+  //                 return null;
+  //               },
+  //             ),
+  //             const SizedBox(height: 16),
+  //             TextFormField(
+  //               controller: descriptionController,
+  //               decoration: const InputDecoration(
+  //                 labelText: 'توضیحات',
+  //                 border: OutlineInputBorder(),
+  //               ),
+  //               validator: (value) {
+  //                 if (value == null || value.isEmpty) {
+  //                   return 'توضیحات نمی‌تواند خالی باشد.';
+  //                 }
+  //                 return null;
+  //               },
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           child: const Text('لغو'),
+  //           onPressed: () => Navigator.of(ctx).pop(),
+  //         ),
+  //         ElevatedButton(
+  //           child: const Text('افزودن'),
+  //           onPressed: () {
+  //             if (formKey.currentState!.validate()) {
+  //               final newTransaction = Transaction(
+  //                 id: DateTime.now().millisecondsSinceEpoch, // سرور ID را مشخص می‌کند
+  //                 projectId: project.id,
+  //                 type: type,
+  //                 description: descriptionController.text,
+  //                 amount: double.parse(amountController.text),
+  //                 date: DateTime.now(),
+  //               );
+  //               // ✅✅✅ ۱. کلید حل مشکل: فراخوانی متد کنترلر ✅✅✅
+  //               controller.addTransaction(newTransaction);
+  //               Navigator.of(ctx).pop();
+  //             }
+  //           },
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
     // ✅✅✅ ۲. بهینه‌سازی: استفاده از تگ برای جلوگیری از خطای Get.put مکرر ✅✅✅
     final FinancialController controller = Get.put(
       FinancialController(project),
-      tag: 'financial_${project.id}', // یک نام منحصر به فرد برای کنترلر هر پروژه
+      // tag: 'financial_${project.id}', // یک نام منحصر به فرد برای کنترلر هر پروژه
     );
     final numberFormat = intl.NumberFormat("#,###", "fa_IR");
     initializeDateFormatting('fa_IR', null);
@@ -121,68 +119,76 @@ class FinancialTab extends StatelessWidget {
       backgroundColor: Colors.grey[50],
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Obx( // این بخش از کد شما کاملاً درست بود و دست نخورده باقی ماند
-          () => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildFinancialSummaryCard(context, controller, numberFormat),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildActionButton(
-                      context,
-                      controller,
-                      TransactionType.income,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildActionButton(
-                      context,
-                      controller,
-                      TransactionType.expense,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                "تاریخچه تراکنش‌ها",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const Divider(height: 20),
+        child: Obx(
+          // این بخش از کد شما کاملاً درست بود و دست نخورده باقی ماند
+          () =>
+              Get.find<ProjectController>().isLoading.value
+                  ? Loadingg()
+                  : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildFinancialSummaryCard(
+                        context,
+                        controller,
+                        numberFormat,
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildActionButton(
+                              context,
+                              controller,
+                              TransactionType.income,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _buildActionButton(
+                              context,
+                              controller,
+                              TransactionType.expense,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      const Text(
+                        "تاریخچه تراکنش‌ها",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const Divider(height: 20),
 
-              if (controller.transactions.isEmpty)
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 32.0),
-                    child: Text(
-                      "هیچ تراکنشی ثبت نشده است.",
-                      style: TextStyle(color: Colors.grey),
-                    ),
+                      if (controller.transactions.isEmpty)
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 32.0),
+                            child: Text(
+                              "هیچ تراکنشی ثبت نشده است.",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                        )
+                      else
+                        ListView.separated(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: controller.transactions.length,
+                          itemBuilder: (context, index) {
+                            return _buildTransactionListItem(
+                              controller.transactions[index],
+                              numberFormat,
+                            );
+                          },
+                          separatorBuilder:
+                              (context, index) => const SizedBox(height: 8),
+                        ),
+                    ],
                   ),
-                )
-              else
-                ListView.separated(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: controller.transactions.length,
-                  itemBuilder: (context, index) {
-                    return _buildTransactionListItem(
-                      controller.transactions[index],
-                      numberFormat,
-                    );
-                  },
-                  separatorBuilder:
-                      (context, index) => const SizedBox(height: 8),
-                ),
-            ],
-          ),
         ),
       ),
     );
@@ -198,9 +204,14 @@ class FinancialTab extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: () {
         controller.transactionTypeToAdd.value = type;
-        
-        // ✅✅✅ ۳. اصلاح فراخوانی دیالوگ ✅✅✅
-        _showAddTransactionDialog(context, controller);
+
+        controller.transactionTypeToAdd.value =
+            type; // نوع تراکنش را در کنترلر ست می‌کنیم
+        showAddttransDialog(
+          context: context,
+          projectId: project.id,
+          income: isIncome,
+        );
       },
       icon: Icon(
         isIncome ? Icons.add_card_outlined : Icons.credit_card_off_outlined,
@@ -215,7 +226,6 @@ class FinancialTab extends StatelessWidget {
       ),
     );
   }
-
 
   Widget _buildFinancialSummaryCard(
     BuildContext context,
@@ -367,7 +377,7 @@ class FinancialTab extends StatelessWidget {
   }
 }
 
-Future<void> showAddSampleDialog({
+Future<void> showAddttransDialog({
   // ✅ خروجی تابع void است چون دیگر نیازی به بازگرداندن نمونه نداریم
   required BuildContext context,
   required int projectId,
