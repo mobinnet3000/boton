@@ -1,4 +1,5 @@
-// lib/controllers/financial_controller.dart (فایل جدید)
+// lib/controllers/financial_controller.dart
+
 import 'package:get/get.dart';
 import '../models/project_model.dart';
 import '../models/transaction_model.dart';
@@ -19,7 +20,7 @@ class FinancialController extends GetxController {
     transactions.value = project.transactions;
   }
   
-  // متدهای محاسباتی
+  // متدهای محاسباتی شما (کاملا صحیح و بدون تغییر)
   double get totalIncome => transactions
       .where((tx) => tx.type == TransactionType.income)
       .fold(0, (sum, item) => sum + item.amount);
@@ -32,4 +33,22 @@ class FinancialController extends GetxController {
   
   double get paymentProgress => (project.contractPrice > 0) ? totalIncome / project.contractPrice : 0.0;
 
+  // ✅✅✅ این متد را به کنترلر خود اضافه کنید تا ارور برطرف شود ✅✅✅
+  /// متدی برای افزودن تراکنش جدید به لیست و آپدیت خودکار UI
+  Future<void> addTransaction(Transaction newTransaction) async {
+    // در این بخش، شما باید درخواست را به API بک‌اند ارسال کنید تا تراکنش در دیتابیس ذخیره شود.
+    // بعد از دریافت پاسخ موفق از سرور، تراکنش را به لیست محلی اضافه می‌کنیم.
+    
+    // مثال برای ارسال به API:
+    // try {
+    //   final createdTransaction = await api.createTransaction(newTransaction.toJson());
+    //   transactions.add(createdTransaction);
+    // } catch (e) {
+    //   // مدیریت خطا
+    // }
+
+    // برای تست فعلی، تراکنش را مستقیماً به لیست .obs اضافه می‌کنیم.
+    // همین یک خط باعث رفرش شدن خودکار UI می‌شود.
+    transactions.add(newTransaction);
+  }
 }

@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 
-// ✅ مدل‌های خودتان را import کنید
 import '../../../../../models/mold_model.dart';
 import '../../../../../models/sampling_serie_model.dart';
-import '../../../../../controllers/base_controller.dart'; // کنترلر GetX شما
+import '../../../../../controllers/base_controller.dart'; 
 
-/// ویجت اصلی صفحه جزئیات یک سری نمونه‌گیری (بدون تغییر)
+// ✅✅✅ بخش ۱: استفاده از اسنک‌بار سفارشی شما ✅✅✅
+// import 'package:your_app/widgets/custom_snackbar.dart'; // مسیر اسنک‌بار خودتان را وارد کنید
+
+/// ویجت اصلی صفحه جزئیات
 class SerieDetailPage extends StatelessWidget {
   final SamplingSerie serie;
   final int projectId;
@@ -39,16 +41,30 @@ class SerieDetailPage extends StatelessWidget {
             key: ValueKey(mold.id),
             mold: mold,
             onSave: (Map<String, dynamic> updatedData) async {
-              // ... منطق ذخیره‌سازی شما بدون تغییر باقی می‌ماند
               print('Saving data for mold id ${mold.id}...');
               print('Data: $updatedData');
               // await Get.find<ProjectController>().updateMoldResult(...);
-              Get.snackbar(
-                'موفقیت',
-                'اطلاعات شکست برای قالب ${mold.ageInDays} روزه ثبت شد.',
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: Colors.green,
-                colorText: Colors.white,
+
+              // ✅✅✅ بخش ۲: جایگزینی اسنک‌بار ✅✅✅
+              // Get.snackbar( ... ); // این خط را حذف یا کامنت کنید
+
+              // اینجا از اسنک‌بار سفارشی خودتان به این شکل استفاده کنید:
+              // CustomSnackbar.showSuccess(
+              //   context, 
+              //   title: 'موفقیت',
+              //   message: 'اطلاعات برای قالب ${mold.ageInDays} روزه ثبت شد.'
+              // );
+              
+              // به عنوان نمونه، من از یک اسنک‌بار استاندارد ولی شیک‌تر استفاده می‌کنم
+               ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('اطلاعات قالب ${mold.ageInDays} روزه با موفقیت ثبت شد.'),
+                  backgroundColor: const Color(0xFF2E7D32), // یک سبز تیره و شیک
+                  behavior: SnackBarBehavior.floating,
+                   shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               );
             },
           );
@@ -59,7 +75,7 @@ class SerieDetailPage extends StatelessWidget {
 }
 
 // -----------------------------------------------------------------------------
-// ✅✅✅ ویجت آکاردئونی با منطق نهایی و کاملاً صحیح ✅✅✅
+// ✅✅✅ ویجت آکاردئونی با پالت رنگی جدید و لاکچری ✅✅✅
 // -----------------------------------------------------------------------------
 class MoldDataTile extends StatefulWidget {
   final Mold mold;
@@ -75,6 +91,26 @@ class MoldDataTile extends StatefulWidget {
   State<MoldDataTile> createState() => _MoldDataTileState();
 }
 
+
+// ✅✅✅ بخش ۳: تعریف پالت رنگی جدید ✅✅✅
+class _LuxuryColors {
+  // وضعیت انجام شده (سبز ملایم)
+  static const Color doneBackground = Color(0xFFE8F5E9);
+  static const Color doneIcon = Color(0xFF2E7D32);
+  
+  // وضعیت دیر شده (قرمز بسیار ملایم)
+  static const Color overdueBackground = Color(0xFFFFEBEE);
+  static const Color overdueIcon = Color(0xFFC62828);
+
+  // وضعیت امروز (نارنجی/زرد کهربایی)
+  static const Color todayBackground = Color(0xFFFFF8E1);
+  static const Color todayIcon = Color(0xFFFFA000);
+
+  // وضعیت عادی (خاکستری روشن)
+  static const Color pendingIcon = Color(0xFF757575);
+}
+
+
 class _MoldDataTileState extends State<MoldDataTile> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _massController;
@@ -89,20 +125,12 @@ class _MoldDataTileState extends State<MoldDataTile> {
     super.initState();
     _isMarkedAsDone = widget.mold.isDone;
     _selectedBreakDate = widget.mold.completedAt;
-
-    _massController = TextEditingController(
-        text: widget.mold.mass > 0 ? widget.mold.mass.toString() : '');
-    _loadController = TextEditingController(
-        text: widget.mold.breakingLoad > 0
-            ? widget.mold.breakingLoad.toString()
-            : '');
-    _breakDateController = TextEditingController(
-      text: _selectedBreakDate != null ? _toPersianDate(_selectedBreakDate!) : '',
-    );
+    _massController = TextEditingController(text: widget.mold.mass > 0 ? widget.mold.mass.toString() : '');
+    _loadController = TextEditingController(text: widget.mold.breakingLoad > 0 ? widget.mold.breakingLoad.toString() : '');
+    _breakDateController = TextEditingController(text: _selectedBreakDate != null ? _toPersianDate(_selectedBreakDate!) : '');
   }
-  
-  // سایر متدها (_dispose, _toPersianDate, _getTileColor, etc.) بدون تغییر هستند...
 
+  // سایر متدها (_dispose, _toPersianDate, etc.) بدون تغییر هستند...
   @override
   void dispose() {
     _massController.dispose();
@@ -114,22 +142,6 @@ class _MoldDataTileState extends State<MoldDataTile> {
   String _toPersianDate(DateTime date) {
     final f = Jalali.fromDateTime(date).formatter;
     return '${f.yyyy}/${f.mm}/${f.dd}';
-  }
-
-  Color _getTileColor(BuildContext context) {
-    if (widget.mold.isDone) return Colors.green.withOpacity(0.12);
-    final now = DateTime.now();
-    if (DateUtils.isSameDay(now, widget.mold.deadline)) return Colors.orange.withOpacity(0.15);
-    if (now.isAfter(widget.mold.deadline)) return Colors.red.withOpacity(0.12);
-    return Theme.of(context).cardColor;
-  }
-  
-  Color _getLeadingColor(BuildContext context) {
-    if (widget.mold.isDone) return Colors.green;
-    final now = DateTime.now();
-    if (DateUtils.isSameDay(now, widget.mold.deadline)) return Colors.orange.shade700;
-    if (now.isAfter(widget.mold.deadline)) return Colors.red;
-    return Colors.grey.shade400;
   }
 
   Future<void> _selectBreakDate() async {
@@ -149,11 +161,7 @@ class _MoldDataTileState extends State<MoldDataTile> {
 
   void _submitForm() {
     if (!_formKey.currentState!.validate()) return;
-    
-    if (_isMarkedAsDone && _selectedBreakDate == null) {
-      _selectedBreakDate = DateTime.now();
-    }
-    
+    if (_isMarkedAsDone && _selectedBreakDate == null) _selectedBreakDate = DateTime.now();
     final updatedData = {
       'mass': double.tryParse(_massController.text) ?? 0.0,
       'breaking_load': double.tryParse(_loadController.text) ?? 0.0,
@@ -162,21 +170,42 @@ class _MoldDataTileState extends State<MoldDataTile> {
     widget.onSave(updatedData);
   }
 
+  // ✅✅✅ بخش ۴: استفاده از پالت رنگی جدید در UI ✅✅✅
+  
+  // تابع برای تعیین رنگ پس‌زمینه کارت
+  Color _getTileColor(BuildContext context) {
+    if (widget.mold.isDone) return _LuxuryColors.doneBackground;
+    final now = DateTime.now();
+    if (DateUtils.isSameDay(now, widget.mold.deadline)) return _LuxuryColors.todayBackground;
+    if (now.isAfter(widget.mold.deadline)) return _LuxuryColors.overdueBackground;
+    return Theme.of(context).cardColor;
+  }
+  
+  // تابع برای رنگ آیکون جلوی کارت
+  Color _getLeadingColor() {
+    if (widget.mold.isDone) return _LuxuryColors.doneIcon;
+    final now = DateTime.now();
+    if (DateUtils.isSameDay(now, widget.mold.deadline)) return _LuxuryColors.todayIcon;
+    if (now.isAfter(widget.mold.deadline)) return _LuxuryColors.overdueIcon;
+    return _LuxuryColors.pendingIcon;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final leadingColor = _getLeadingColor();
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
-      clipBehavior: Clip.antiAlias,
+      elevation: 0.5,
       color: _getTileColor(context),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: _getTileColor(context).withOpacity(0.5), width: 1),
+        side: BorderSide(color: leadingColor.withOpacity(0.3)),
       ),
       child: ExpansionTile(
         leading: CircleAvatar(
-          backgroundColor: _getLeadingColor(context).withOpacity(0.15),
-          child: Text(widget.mold.ageInDays.toString(), style: TextStyle(fontWeight: FontWeight.bold, color: _getLeadingColor(context))),
+          backgroundColor: leadingColor.withOpacity(0.1),
+          child: Text(widget.mold.ageInDays.toString(), style: TextStyle(fontWeight: FontWeight.bold, color: leadingColor)),
         ),
         title: Text('قالب ${widget.mold.ageInDays} روزه', style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text('موعد شکست: ${_toPersianDate(widget.mold.deadline)}'),
@@ -191,10 +220,10 @@ class _MoldDataTileState extends State<MoldDataTile> {
                   _buildInfoRow('تاریخ نمونه‌گیری:', _toPersianDate(widget.mold.createdAt)),
                   _buildInfoRow('شناسه نمونه:', widget.mold.sampleIdentifier),
                   const Divider(height: 1),
-                  
                   SwitchListTile(
                     title: const Text('ثبت نتایج شکست', style: TextStyle(fontWeight: FontWeight.bold)),
                     value: _isMarkedAsDone,
+                    activeColor: _LuxuryColors.doneIcon, // رنگ سوییچ در حالت فعال
                     onChanged: (newValue) {
                       setState(() {
                         _isMarkedAsDone = newValue;
@@ -211,12 +240,10 @@ class _MoldDataTileState extends State<MoldDataTile> {
                   ),
                   const Divider(height: 1),
                   const SizedBox(height: 16),
-                  
                   TextFormField(
                     controller: _breakDateController,
                     decoration: const InputDecoration(labelText: 'تاریخ واقعی شکست', prefixIcon: Icon(Icons.calendar_today_outlined)),
                     readOnly: true,
-                    // ✅✅✅ تغییر کلیدی اینجا اعمال شد ✅✅✅
                     enabled: _isMarkedAsDone,
                     onTap: _isMarkedAsDone ? _selectBreakDate : null, 
                     validator: (v) => v!.isEmpty ? 'تاریخ الزامی است' : null,
@@ -244,6 +271,8 @@ class _MoldDataTileState extends State<MoldDataTile> {
                     label: const Text('ذخیره نتایج'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: _LuxuryColors.doneIcon,
+                      foregroundColor: Colors.white,
                     ),
                   ),
                 ],
