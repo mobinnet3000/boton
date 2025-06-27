@@ -1,6 +1,6 @@
-// ------------------- Ticketing Models -------------------
-
-import 'package:boton/models/allmodels.dart';
+// =============================================================
+// 1. مدل TicketMessage (پیام‌های داخل یک تیکت)
+// =============================================================
 import 'package:flutter/material.dart';
 
 @immutable
@@ -33,6 +33,9 @@ class TicketMessage {
   }
 }
 
+// =============================================================
+// 2. مدل Ticket (به‌روز شده برای استفاده از TicketMessage)
+// =============================================================
 @immutable
 class Ticket {
   final int id;
@@ -45,7 +48,8 @@ class Ticket {
   final String priorityDisplay;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final List<TicketMessage> messages;
+  final List<TicketMessage>
+  messages; // ✅ تغییر: این فیلد حالا لیستی از TicketMessage است
 
   const Ticket({
     required this.id,
@@ -62,6 +66,15 @@ class Ticket {
   });
 
   factory Ticket.fromJson(Map<String, dynamic> json) {
+    // تبدیل لیست پیام‌های JSON به لیستی از آبجکت‌های TicketMessage
+    var messagesList =
+        (json['messages'] as List<dynamic>)
+            .map(
+              (messageJson) =>
+                  TicketMessage.fromJson(messageJson as Map<String, dynamic>),
+            )
+            .toList();
+
     return Ticket(
       id: json['id'] as int,
       title: json['title'] as String,
@@ -73,7 +86,7 @@ class Ticket {
       priorityDisplay: json['priority_display'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
-      messages: parseList(json['messages'], TicketMessage.fromJson),
+      messages: messagesList, // ✅ استفاده از لیست تبدیل شده
     );
   }
 }

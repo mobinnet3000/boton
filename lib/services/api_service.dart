@@ -4,6 +4,7 @@ import 'package:boton/models/ProjectForCreation_model.dart';
 import 'package:boton/models/Sample_model.dart';
 import 'package:boton/models/project_model.dart';
 import 'package:boton/models/sampling_serie_model.dart';
+import 'package:boton/models/ticket_model.dart';
 import 'package:boton/models/transaction_model.dart';
 import 'package:boton/models/user_model.dart';
 import 'package:http/http.dart' as http;
@@ -191,6 +192,47 @@ class ApiService {
       // مدیریت خطاهای شبکه و نمایش پیام واضح‌تر
       print('Dio Error creating sample: ${e.response?.data ?? e.message}');
       throw Exception('خطا در ارتباط با سرور هنگام ایجاد نمونه.');
+    }
+  }
+
+  Future<Ticket> createtiket(Map<String, dynamic> tiketData) async {
+    try {
+      // ارسال درخواست POST به اندپوینت نمونه‌ها
+      final response = await _dio.post('/api/tickets/', data: tiketData);
+
+      if (response.statusCode == 201) {
+        // پاسخ موفقیت‌آمیز را به مدل Sample تبدیل کرده و برمی‌گردانیم
+        return Ticket.fromJson(response.data);
+      } else {
+        throw Exception('Failed to create sample on server');
+      }
+    } on DioException catch (e) {
+      // مدیریت خطاهای شبکه و نمایش پیام واضح‌تر
+      print('Dio Error creating sample: ${e.response?.data ?? e.message}');
+      throw Exception('خطا در ارتباط با سرور هنگام ایجاد تیکت.');
+    }
+  }
+
+  Future<TicketMessage> createtiketmas(
+    Map<String, dynamic> tiketmasData,
+  ) async {
+    try {
+      // ارسال درخواست POST به اندپوینت نمونه‌ها
+      final response = await _dio.post(
+        '/api/ticket-messages/',
+        data: tiketmasData,
+      );
+
+      if (response.statusCode == 201) {
+        // پاسخ موفقیت‌آمیز را به مدل Sample تبدیل کرده و برمی‌گردانیم
+        return TicketMessage.fromJson(response.data);
+      } else {
+        throw Exception('Failed to create sample on server');
+      }
+    } on DioException catch (e) {
+      // مدیریت خطاهای شبکه و نمایش پیام واضح‌تر
+      print('Dio Error creating sample: ${e.response?.data ?? e.message}');
+      throw Exception('خطا در ارتباط با سرور هنگام ایجاد تیکت.');
     }
   }
 
