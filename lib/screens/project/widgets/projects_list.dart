@@ -39,10 +39,11 @@ class ProjectListPage extends StatelessWidget {
                       ),
                       itemCount: controller.displayedProjects.length,
                       itemBuilder: (context, index) {
-                        final project = controller.displayedProjects[index];
+                        final projectiid =
+                            controller.displayedProjects[index].id;
                         return ProjectListItemCard(
-                          project: project,
-                          onDelete: () => controller.deleteProject(project.id),
+                          projectid: projectiid,
+                          onDelete: () => controller.deleteProject(projectiid),
                         );
                       },
                     ),

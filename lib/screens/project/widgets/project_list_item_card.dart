@@ -1,4 +1,5 @@
 // lib/pages/dashboard/widgets/project_list_item_card.dart
+import 'package:boton/controllers/base_controller.dart';
 import 'package:boton/models/project_model.dart';
 import 'package:boton/screens/project/project_single/project_single_page.dart';
 import 'package:flutter/material.dart';
@@ -6,17 +7,25 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ProjectListItemCard extends StatelessWidget {
-  final Project project;
+  final int projectid;
   final VoidCallback onDelete;
 
   const ProjectListItemCard({
     super.key,
-    required this.project,
+    required this.projectid,
     required this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
+    final Project project = Get.find<ProjectController>().projects.firstWhere(
+      (p) => p.id == projectid,
+      orElse:
+          () =>
+              Get.find<ProjectController>()
+                  .projects[0], // یک پروژه خالی برای جلوگیری از خطا
+    );
+    ;
     return Card(
       elevation: 3.0,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -28,7 +37,7 @@ class ProjectListItemCard extends StatelessWidget {
       child: InkWell(
         onTap:
             () => Get.to(
-              () => ProjectSinglePage(project: project),
+              () => ProjectSinglePage(projectid: projectid),
               transition: Transition.rightToLeftWithFade,
             ),
         borderRadius: BorderRadius.circular(16),

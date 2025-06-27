@@ -116,6 +116,45 @@ class ApiService {
     }
   }
 
+  Future<LabProfile> updateLab(int profileId, LabProfile labToUpdate) async {
+    try {
+      // ما از مدل ProjectForCreation استفاده می‌کنیم تا فقط فیلدهای قابل ویرایش ارسال شوند
+      // این کار باعث می‌شود فیلدهای read-only مانند samples یا transactions ارسال نشوند.
+      final updateData = LabProfile(
+        id: labToUpdate.id,
+        labName: labToUpdate.labName,
+        labPhoneNumber: labToUpdate.labPhoneNumber,
+        labMobileNumber: labToUpdate.labMobileNumber,
+        labAddress: labToUpdate.labAddress,
+        province: labToUpdate.province,
+        city: labToUpdate.city,
+        firstName: labToUpdate.firstName,
+        lastName: labToUpdate.lastName,
+        email: labToUpdate.email,
+        userId: labToUpdate.userId,
+      );
+
+      // ارسال درخواست PUT به اندپوینت مشخص شده با ID پروژه
+      final response = await _dio.put(
+        '/api/profiles/$profileId/',
+        data: updateData.toJson(),
+      );
+
+      if (response.statusCode == 200) {
+        // سرور پروژه کامل و به‌روز شده را برمی‌گرداند
+        return LabProfile.fromJson(response.data);
+      } else {
+        throw Exception(
+          'Failed to update project. Status Code: ${response.statusCode}',
+        );
+      }
+    } on DioException catch (e) {
+      throw Exception('خطا در ارتباط با سرور: ${e.message}');
+    } catch (e) {
+      throw Exception('خطای پیش‌بینی نشده در به‌روزرسانی پروژه.');
+    }
+  }
+
   Future<LabProfile> updateProfile(
     int profileId,
     Map<String, dynamic> profileData,

@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 
 // ✅✅ اطمینان حاصل کنید که مسیرهای زیر در پروژه شما صحیح است ✅✅
 import 'package:boton/models/project_model.dart';
-import 'package:boton/controllers/project_controller.dart';
 
 class DetailsTab extends StatefulWidget {
   final Project project;

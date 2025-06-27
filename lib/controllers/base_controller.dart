@@ -132,6 +132,35 @@ class ProjectController extends GetxController {
     }
   }
 
+  Future<bool> updateLabProfile(LabProfile lab) async {
+    try {
+      isUpdatingProject(true);
+
+      // فراخوانی سرویس API
+      final result = await _apiService.updateLab(lab.id, lab);
+
+      loadInitialData();
+
+      Get.snackbar(
+        'موفقیت',
+        'پروژه با موفقیت به‌روزرسانی شد.',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+      return true;
+    } catch (e) {
+      Get.snackbar(
+        'خطا',
+        'خطا در به‌روزرسانی پروژه: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return false;
+    } finally {
+      isUpdatingProject(false);
+    }
+  }
+
   Future<bool> addProject(ProjectForCreation projectData) async {
     try {
       isAddingProject(true);
@@ -187,28 +216,28 @@ class ProjectController extends GetxController {
 
   var isUpdatingProfile = false.obs;
 
-  Future<bool> updateLabProfile(Map<String, dynamic> updatedData) async {
-    if (user.value?.labProfile == null) return false;
-    try {
-      isUpdatingProfile(true);
-      final profileId = user.value!.labProfile!.id;
-      final updatedProfile = await _apiService.updateProfile(
-        profileId,
-        updatedData,
-      );
-      user.update((currentUser) {
-        // currentUser?. = updatedProfile;
-      });
-      loadInitialData();
-      Get.snackbar('موفقیت', 'اطلاعات با موفقیت به‌روزرسانی شد.');
-      return true;
-    } catch (e) {
-      Get.snackbar('خطا', 'خطا در به‌روزرسانی: ${e.toString()}');
-      return false;
-    } finally {
-      isUpdatingProfile(false);
-    }
-  }
+  // Future<bool> updateLabProfile(Map<String, dynamic> updatedData) async {
+  //   if (user.value?.labProfile == null) return false;
+  //   try {
+  //     isUpdatingProfile(true);
+  //     final profileId = user.value!.labProfile!.id;
+  //     final updatedProfile = await _apiService.updateProfile(
+  //       profileId,
+  //       updatedData,
+  //     );
+  //     user.update((currentUser) {
+  //       // currentUser?. = updatedProfile;
+  //     });
+  //     loadInitialData();
+  //     Get.snackbar('موفقیت', 'اطلاعات با موفقیت به‌روزرسانی شد.');
+  //     return true;
+  //   } catch (e) {
+  //     Get.snackbar('خطا', 'خطا در به‌روزرسانی: ${e.toString()}');
+  //     return false;
+  //   } finally {
+  //     isUpdatingProfile(false);
+  //   }
+  // }
 
   Future<void> addtrans(Map<String, dynamic> transData, int projectId) async {
     try {
@@ -228,6 +257,7 @@ class ProjectController extends GetxController {
 
       SnackbarHelper.showSuccess(message: 'تراکنش جدید با موفقیت ثبت شد.');
       loadInitialData();
+      projects.refresh();
     } catch (e) {
       Get.snackbar('خطا', 'خطا در ثبت نمونه: ${e.toString()}');
     } finally {

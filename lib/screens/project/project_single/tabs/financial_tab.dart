@@ -1,5 +1,4 @@
 import 'package:boton/controllers/base_controller.dart';
-import 'package:boton/screens/loading/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
@@ -8,210 +7,236 @@ import 'package:intl/date_symbol_data_local.dart';
 // توجه: مسیر ایمپورت‌های زیر را مطابق با ساختار پروژه خودتان اصلاح کنید
 import 'package:boton/models/project_model.dart';
 import 'package:boton/models/transaction_model.dart';
-import 'package:boton/controllers/financial_controller.dart';
+import 'package:boton/screens/loading/loading.dart';
 
-// ! <<-- تغییر: FinancialTab حالا یک StatelessWidget است و پروژه را به عنوان ورودی می‌گیرد --!
-class FinancialTab extends StatelessWidget {
-  final Project project;
+/// ویجت نمایش وضعیت مالی پروژه.
+/// این ویجت به صورت مستقیم به ProjectController گوش می‌دهد.
+class FinancialTab extends StatefulWidget {
+  final int projectId;
 
-  const FinancialTab({super.key, required this.project});
-
-  // متد دیالوگ افزودن تراکنش
-  // void _showAddTransactionDialog(
-  //   BuildContext context,
-  //   FinancialController controller,
-  // ) {
-  //   final amountController = TextEditingController();
-  //   final descriptionController = TextEditingController();
-  //   final formKey = GlobalKey<FormState>();
-  //   final type =
-  //       controller.transactionTypeToAdd.value; // گرفتن نوع تراکنش از کنترلر
-  //   showDialog(
-  //     context: context,
-  //     builder:
-  //         (ctx) => AlertDialog(
-  //       shape: RoundedRectangleBorder(
-  //         borderRadius: BorderRadius.circular(16),
-  //       ),
-  //       title: Text(
-  //         type == TransactionType.income
-  //             ? 'افزودن واریزی جدید'
-  //             : 'افزودن هزینه جدید',
-  //       ),
-  //       content: Form(
-  //         key: formKey,
-  //         child: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             TextFormField(
-  //               controller: amountController,
-  //               keyboardType: TextInputType.number,
-  //               textDirection: TextDirection.ltr,
-  //               decoration: const InputDecoration(
-  //                 labelText: 'مبلغ (تومان)',
-  //                 border: OutlineInputBorder(),
-  //               ),
-  //               validator: (value) {
-  //                 if (value == null ||
-  //                     value.isEmpty ||
-  //                     double.tryParse(value) == null) {
-  //                   return 'لطفاً یک مبلغ معتبر وارد کنید.';
-  //                 }
-  //                 return null;
-  //               },
-  //             ),
-  //             const SizedBox(height: 16),
-  //             TextFormField(
-  //               controller: descriptionController,
-  //               decoration: const InputDecoration(
-  //                 labelText: 'توضیحات',
-  //                 border: OutlineInputBorder(),
-  //               ),
-  //               validator: (value) {
-  //                 if (value == null || value.isEmpty) {
-  //                   return 'توضیحات نمی‌تواند خالی باشد.';
-  //                 }
-  //                 return null;
-  //               },
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //       actions: [
-  //         TextButton(
-  //           child: const Text('لغو'),
-  //           onPressed: () => Navigator.of(ctx).pop(),
-  //         ),
-  //         ElevatedButton(
-  //           child: const Text('افزودن'),
-  //           onPressed: () {
-  //             if (formKey.currentState!.validate()) {
-  //               final newTransaction = Transaction(
-  //                 id: DateTime.now().millisecondsSinceEpoch, // سرور ID را مشخص می‌کند
-  //                 projectId: project.id,
-  //                 type: type,
-  //                 description: descriptionController.text,
-  //                 amount: double.parse(amountController.text),
-  //                 date: DateTime.now(),
-  //               );
-  //               // ✅✅✅ ۱. کلید حل مشکل: فراخوانی متد کنترلر ✅✅✅
-  //               controller.addTransaction(newTransaction);
-  //               Navigator.of(ctx).pop();
-  //             }
-  //           },
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  const FinancialTab({super.key, required this.projectId});
 
   @override
-  Widget build(BuildContext context) {
-    // ✅✅✅ ۲. بهینه‌سازی: استفاده از تگ برای جلوگیری از خطای Get.put مکرر ✅✅✅
-    final FinancialController controller = Get.put(
-      FinancialController(project),
-      // tag: 'financial_${project.id}', // یک نام منحصر به فرد برای کنترلر هر پروژه
-    );
-    final numberFormat = intl.NumberFormat("#,###", "fa_IR");
+  State<FinancialTab> createState() => _FinancialTabState();
+}
+
+class _FinancialTabState extends State<FinancialTab> {
+  // پیدا کردن کنترلر اصلی پروژه
+  final ProjectController projectController = Get.find<ProjectController>();
+
+  @override
+  void initState() {
+    super.initState();
+    // این کار برای فرمت تاریخ فارسی لازم است
     initializeDateFormatting('fa_IR', null);
+  }
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Obx(
-          // این بخش از کد شما کاملاً درست بود و دست نخورده باقی ماند
-          () =>
-              Get.find<ProjectController>().isLoading.value
-                  ? Loadingg()
-                  : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildFinancialSummaryCard(
-                        context,
-                        controller,
-                        numberFormat,
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildActionButton(
-                              context,
-                              controller,
-                              TransactionType.income,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildActionButton(
-                              context,
-                              controller,
-                              TransactionType.expense,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        "تاریخچه تراکنش‌ها",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const Divider(height: 20),
+  /// متد نمایش دیالوگ برای افزودن تراکنش جدید
+  void _showAddTransactionDialog(BuildContext context, bool isIncome) {
+    final amountController = TextEditingController();
+    final descriptionController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
 
-                      if (controller.transactions.isEmpty)
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 32.0),
-                            child: Text(
-                              "هیچ تراکنشی ثبت نشده است.",
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                        )
-                      else
-                        ListView.separated(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: controller.transactions.length,
-                          itemBuilder: (context, index) {
-                            return _buildTransactionListItem(
-                              controller.transactions[index],
-                              numberFormat,
-                            );
-                          },
-                          separatorBuilder:
-                              (context, index) => const SizedBox(height: 8),
-                        ),
-                    ],
+    showDialog(
+      context: context,
+      builder:
+          (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Text(isIncome ? 'افزودن واریزی جدید' : 'افزودن هزینه جدید'),
+            content: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: amountController,
+                    keyboardType: TextInputType.number,
+                    textDirection: TextDirection.ltr,
+                    decoration: const InputDecoration(
+                      labelText: 'مبلغ (تومان)',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          double.tryParse(value) == null) {
+                        return 'لطفاً یک مبلغ معتبر وارد کنید.';
+                      }
+                      return null;
+                    },
                   ),
-        ),
-      ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(
+                      labelText: 'توضیحات',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'توضیحات نمی‌تواند خالی باشد.';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: const Text('لغو'),
+                onPressed: () => Navigator.of(ctx).pop(),
+              ),
+              ElevatedButton(
+                child: const Text('افزودن'),
+                onPressed: () async {
+                  if (formKey.currentState!.validate()) {
+                    // ✅ ساختن Map داده‌ها برای ارسال به API، مطابق با ساختار شما
+                    final transactionData = {
+                      'project': widget.projectId,
+                      'type': isIncome ? "income" : "expense",
+                      'description': descriptionController.text,
+                      'amount': amountController.text,
+                      'date': DateTime.now().toIso8601String(),
+                    };
+
+                    // ✅ فراخوانی متد کنترلر اصلی پروژه برای ثبت تراکنش
+                    await projectController.addtrans(
+                      transactionData,
+                      widget.projectId,
+                    );
+
+                    // بستن دیالوگ پس از اتمام موفقیت‌آمیز عملیات
+                    if (ctx.mounted) {
+                      Navigator.of(ctx).pop();
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
     );
   }
 
-  // ویجت‌های کمکی شما
-  Widget _buildActionButton(
-    BuildContext context,
-    FinancialController controller,
-    TransactionType type,
-  ) {
+  @override
+  Widget build(BuildContext context) {
+    final numberFormat = intl.NumberFormat("#,###", "fa_IR");
+
+    return Scaffold(
+      backgroundColor: Colors.grey[50],
+      // ✅ کلید اصلی: Obx کل UI را در بر می‌گیرد تا به تغییرات ProjectController گوش دهد
+      body: Obx(() {
+        if (projectController.isLoading.value) {
+          return const Loadingg();
+        }
+
+        // پروژه مورد نظر را هر بار از لیست به‌روز کنترلر پیدا می‌کنیم
+        final project = projectController.projects.firstWhere(
+          (p) => p.id == widget.projectId,
+          orElse:
+              () =>
+                  projectController
+                      .projects[0], // یک پروژه خالی برای جلوگیری از خطا
+        );
+
+        if (project.id == 0) {
+          // اگر پروژه پیدا نشد (نباید اتفاق بیفتد)
+          return const Center(child: Text("پروژه یافت نشد."));
+        }
+
+        // --- انجام محاسبات مالی در لحظه ---
+        final totalIncome = project.transactions
+            .where((t) => t.type == TransactionType.income)
+            .fold<double>(0, (sum, item) => sum + item.amount);
+
+        final totalExpense = project.transactions
+            .where((t) => t.type == TransactionType.expense)
+            .fold<double>(0, (sum, item) => sum + item.amount);
+
+        final balance = totalIncome - totalExpense;
+
+        final paymentProgress =
+            (project.contractPrice > 0)
+                ? (totalIncome / project.contractPrice).clamp(0.0, 1.0)
+                : 0.0;
+
+        // ------------------------------------
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildFinancialSummaryCard(
+                context,
+                project,
+                numberFormat,
+                totalIncome,
+                totalExpense,
+                balance,
+                paymentProgress,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildActionButton(context, TransactionType.income),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildActionButton(context, TransactionType.expense),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                "تاریخچه تراکنش‌ها",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const Divider(height: 20),
+
+              if (project.transactions.isEmpty)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32.0),
+                    child: Text(
+                      "هیچ تراکنشی ثبت نشده است.",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                )
+              else
+                ListView.separated(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: project.transactions.length,
+                  itemBuilder: (context, index) {
+                    // لیست تراکنش ها به ترتیب از جدید به قدیم نمایش داده می شود
+                    final transaction =
+                        project.transactions.reversed.toList()[index];
+                    return _buildTransactionListItem(transaction, numberFormat);
+                  },
+                  separatorBuilder:
+                      (context, index) => const SizedBox(height: 8),
+                ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildActionButton(BuildContext context, TransactionType type) {
     bool isIncome = type == TransactionType.income;
     return ElevatedButton.icon(
       onPressed: () {
-        controller.transactionTypeToAdd.value = type;
-
-        controller.transactionTypeToAdd.value =
-            type; // نوع تراکنش را در کنترلر ست می‌کنیم
-        showAddttransDialog(
-          context: context,
-          projectId: project.id,
-          income: isIncome,
-        );
+        _showAddTransactionDialog(context, isIncome);
       },
       icon: Icon(
         isIncome ? Icons.add_card_outlined : Icons.credit_card_off_outlined,
@@ -229,8 +254,12 @@ class FinancialTab extends StatelessWidget {
 
   Widget _buildFinancialSummaryCard(
     BuildContext context,
-    FinancialController controller,
+    Project project,
     intl.NumberFormat numberFormat,
+    double totalIncome,
+    double totalExpense,
+    double balance,
+    double paymentProgress,
   ) {
     return Card(
       elevation: 4,
@@ -249,44 +278,41 @@ class FinancialTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            // ! <<-- ۴. تمام مقادیر از کنترلر خوانده می‌شوند --!
             _buildSummaryRow(
               "مبلغ کل قرارداد:",
-              "${numberFormat.format(controller.project.contractPrice)} تومان",
+              "${numberFormat.format(project.contractPrice)} تومان",
             ),
             const Divider(height: 24),
             Text(
-              "میزان پرداخت: (${(controller.paymentProgress * 100).toStringAsFixed(1)}%)",
+              "میزان پرداخت: (${(paymentProgress * 100).toStringAsFixed(1)}%)",
               style: const TextStyle(fontSize: 14, color: Colors.black54),
             ),
             const SizedBox(height: 8),
             LinearProgressIndicator(
-              value: controller.paymentProgress,
+              value: paymentProgress,
               minHeight: 8,
               borderRadius: BorderRadius.circular(4),
             ),
             const SizedBox(height: 16),
             _buildSummaryRow(
               "کل واریزی:",
-              "+ ${numberFormat.format(controller.totalIncome)}",
+              "+ ${numberFormat.format(totalIncome)}",
               color: Colors.green.shade700,
             ),
             _buildSummaryRow(
               "کل برداشتی:",
-              "- ${numberFormat.format(controller.totalExpense)}",
+              "- ${numberFormat.format(totalExpense)}",
               color: Colors.red.shade700,
             ),
             const Divider(height: 24),
             _buildSummaryRow(
               "مانده حساب (نقدینگی):",
-              numberFormat.format(controller.balance),
+              numberFormat.format(balance),
               isBold: true,
             ),
             _buildSummaryRow(
               "مانده کل پروژه:",
-              numberFormat.format(
-                controller.project.contractPrice - controller.totalIncome,
-              ),
+              numberFormat.format(project.contractPrice - totalIncome),
               isBold: true,
             ),
           ],
@@ -372,133 +398,6 @@ class FinancialTab extends StatelessWidget {
             color: color,
           ),
         ),
-      ),
-    );
-  }
-}
-
-Future<void> showAddttransDialog({
-  // ✅ خروجی تابع void است چون دیگر نیازی به بازگرداندن نمونه نداریم
-  required BuildContext context,
-  required int projectId,
-  required bool income,
-  String? initialCategory,
-}) async {
-  final formWidgetKey = GlobalKey<_AddSampleFormContentState>();
-
-  return showDialog<void>(
-    // ✅ اینجا هم void است
-    context: context,
-    barrierDismissible: false,
-    builder: (ctx) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('ایجاد ${income ? "واریزی" : "برداشت"} جدید'),
-        content: SingleChildScrollView(
-          // ============================================
-          child: _AddSampleFormContent(
-            key: formWidgetKey,
-            initialCategory: initialCategory,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('انصراف'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              // ✅ دکمه ثبت باید async باشد
-              final formState = formWidgetKey.currentState;
-              if (formState != null &&
-                  formState.formKey.currentState!.validate()) {
-                // ✅ ۱. ساختن Map داده‌ها برای ارسال به API
-                final sampleData = {
-                  'project': projectId as int,
-                  'type': income ? "income" : "expense",
-                  //  ارسال تاریخ میلادی استاندارد===========================================
-                  'description': formState.disController.text as String,
-                  'amount': formState.amontController.text as String,
-                  'date': DateTime.now().toIso8601String(),
-                };
-
-                // ✅ ۲. فراخوانی متد کنترلر برای ارسال داده و آپدیت state
-                await Get.find<ProjectController>().addtrans(
-                  sampleData,
-                  projectId,
-                );
-
-                // ✅ ۳. بستن دیالوگ پس از اتمام کار
-                if (ctx.mounted) Navigator.pop(ctx);
-              }
-            },
-            child: const Text('ثبت'),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-class _AddSampleFormContent extends StatefulWidget {
-  // کلید فرم از بیرون به این ویجت داده می‌شود تا به دکمه‌ها دسترسی داشته باشیم
-  const _AddSampleFormContent({super.key, this.initialCategory});
-
-  final String? initialCategory;
-
-  @override
-  State<_AddSampleFormContent> createState() => _AddSampleFormContentState();
-}
-
-class _AddSampleFormContentState extends State<_AddSampleFormContent> {
-  final formKey = GlobalKey<FormState>();
-
-  // کنترلرها و متغیرها داخل State تعریف می‌شوند
-  final amontController = TextEditingController();
-  final disController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    // فلاتر به صورت خودکار و در زمان مناسب این متد را فراخوانی می‌کند
-    amontController.dispose();
-    disController.dispose();
-
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // این متد فقط UI فرم را می‌سازد
-    return Form(
-      key: formKey,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextFormField(
-            controller: amontController,
-            decoration: const InputDecoration(
-              labelText: 'مبلغ(ریال)',
-              prefixIcon: Icon(Icons.monetization_on_outlined),
-            ),
-            validator: (v) => v!.isEmpty ? 'این فیلد الزامی است' : null,
-          ),
-          const SizedBox(height: 16),
-
-          TextFormField(
-            controller: disController,
-            decoration: const InputDecoration(
-              labelText: 'توضیحات',
-              prefixIcon: Icon(Icons.description),
-            ),
-            validator: (v) => v!.isEmpty ? 'تاریخ الزامی است' : null,
-          ),
-          const SizedBox(height: 16),
-        ],
       ),
     );
   }

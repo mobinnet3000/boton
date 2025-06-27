@@ -146,12 +146,12 @@ class _LaboratoryTabState extends State<LaboratoryTab> {
     };
 
     // فراخوانی متد کنترلر برای آپدیت
-    final success = await widget.controller.updateLabProfile(updatedData);
+    // final success = await widget.controller.updateLabProfile(updatedData);
 
     // فقط اگر عملیات موفق بود، از حالت ویرایش خارج شو
-    if (success && mounted) {
-      setState(() => _isEditing = false);
-    }
+    // if (success && mounted) {
+    // setState(() => _isEditing = false);
+    // }
   }
 
   @override

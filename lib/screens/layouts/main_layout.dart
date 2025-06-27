@@ -10,6 +10,7 @@ import 'package:boton/screens/layouts/components/custom_drawer.dart';
 import 'package:boton/screens/layouts/components/header.dart';
 import 'package:boton/screens/layouts/components/item_drawer.dart';
 import 'package:boton/screens/report/report.dart';
+import 'package:boton/screens/setting/set.dart';
 import 'package:boton/screens/setting/setting.dart';
 import 'package:flutter/material.dart';
 // صفحات مختلف داشبورد را اینجا وارد می‌کنیم
@@ -30,6 +31,7 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   int _selectedIndex = 0; // آیتم منوی انتخاب شده
   bool _isRailExpanded = true; // آیا منوی کناری در حالت دسکتاپ باز است یا بسته
+  // final ProjectController controllerrr = Get.find<ProjectController>();
   Widget getBody(DrawerSection section) {
     switch (section) {
       case DrawerSection.dashboard:
@@ -43,9 +45,13 @@ class _MainLayoutState extends State<MainLayout> {
       case DrawerSection.financialReport:
         return FinancialDashboardScreen();
       case DrawerSection.managers:
-        return TabsScreenImproved();
+        return ProfileDetailsTab(
+          labProfile: Get.find<ProjectController>().user.value!.labProfile,
+        );
       case DrawerSection.settings:
-        return TabsScreenImproved();
+        return ProfileDetailsTab(
+          labProfile: Get.find<ProjectController>().user.value!.labProfile,
+        );
       case DrawerSection.support:
         return MainCirclesBackground(title: " پشتیبانی ", base: SupportPage());
 

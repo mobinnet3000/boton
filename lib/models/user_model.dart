@@ -33,6 +33,35 @@ class LabProfile {
     required this.email,
     required this.userId,
   });
+  LabProfile copyWith({
+    int? id,
+    String? labName,
+    String? labPhoneNumber,
+    String? labMobileNumber,
+    String? labAddress,
+    String? province,
+    String? city,
+    String? telegramId,
+    String? firstName,
+    String? lastName,
+    String? email,
+    int? userId,
+  }) {
+    return LabProfile(
+      id: id ?? this.id,
+      labName: labName ?? this.labName,
+      labPhoneNumber: labPhoneNumber ?? this.labPhoneNumber,
+      labMobileNumber: labMobileNumber ?? this.labMobileNumber,
+      labAddress: labAddress ?? this.labAddress,
+      province: province ?? this.province,
+      city: city ?? this.city,
+      telegramId: telegramId ?? this.telegramId,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
+      userId: userId ?? this.userId,
+    );
+  }
 
   factory LabProfile.fromJson(Map<String, dynamic> json) {
     return LabProfile(
@@ -49,6 +78,22 @@ class LabProfile {
       email: json['email'] as String,
       userId: json['user'] as int,
     );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'lab_name': labName,
+      'lab_phone_number': labPhoneNumber,
+      'lab_mobile_number': labMobileNumber,
+      'lab_address': labAddress,
+      'province': province,
+      'city': city,
+      'telegram_id': telegramId,
+      'first_name': firstName,
+      'last_name': lastName,
+      'email': email,
+      'user': userId,
+    };
   }
 }
 
@@ -71,6 +116,25 @@ class User {
     required this.labProfile,
     required this.tickets,
   });
+  User copyWith({
+    int? id,
+    String? username,
+    String? firstName,
+    String? lastName,
+    String? email,
+    LabProfile? labProfile,
+    List<Ticket>? tickets,
+  }) {
+    return User(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
+      labProfile: labProfile ?? this.labProfile,
+      tickets: tickets ?? this.tickets,
+    );
+  }
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(

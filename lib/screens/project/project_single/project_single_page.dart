@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart'; // ✅ ۱. ایمپورت Get برای استفاده از Obx و Get.find
 
 // ✅ ۲. ایمپورت کنترلر اصلی که منطق ریلود در آن قرار دارد
-import 'package:boton/controllers/base_controller.dart'; 
+import 'package:boton/controllers/base_controller.dart';
 
 import 'package:boton/components/custom_animated_tab_bar.dart';
 import 'tabs/details_tab.dart';
@@ -14,8 +14,8 @@ import 'tabs/financial_tab.dart';
 // import 'tabs/activity_report_tab.dart'; // این تب در لیست شما کامنت شده بود
 
 class ProjectSinglePage extends StatefulWidget {
-  final Project project;
-  const ProjectSinglePage({super.key, required this.project});
+  final int projectid;
+  const ProjectSinglePage({super.key, required this.projectid});
 
   @override
   State<ProjectSinglePage> createState() => _ProjectSinglePageState();
@@ -49,12 +49,18 @@ class _ProjectSinglePageState extends State<ProjectSinglePage>
   Widget build(BuildContext context) {
     // ✅ ۳. کنترلر پروژه را پیدا می‌کنیم تا به متغیر isLoading دسترسی داشته باشیم
     final projectController = Get.find<ProjectController>();
-
+    final Project project = Get.find<ProjectController>().projects.firstWhere(
+      (p) => p.id == widget.projectid,
+      orElse:
+          () =>
+              Get.find<ProjectController>()
+                  .projects[0], // یک پروژه خالی برای جلوگیری از خطا
+    );
     return Scaffold(
       appBar: AppBar(
-        title: Text('پروژه: ${widget.project.projectName}'),
+        title: Text('پروژه: ${project.projectName}'),
         bottom: CustomAnimatedTabBar(controller: _tabController, tabs: _tabs),
-        
+
         // ✅✅✅ ۴. بخش کلیدی: افزودن دکمه‌ها به اپ‌بار ✅✅✅
         actions: [
           // با Obx، آیکون را به وضعیت لودینگ کنترلر وصل می‌کنیم
@@ -92,9 +98,9 @@ class _ProjectSinglePageState extends State<ProjectSinglePage>
         controller: _tabController,
         // فرزندان باید با لیست _tabs هماهنگ باشند
         children: [
-          DetailsTab(project: widget.project),
-          ConcreteTab(project: widget.project),
-          FinancialTab(project: widget.project),
+          DetailsTab(project: project),
+          ConcreteTab(project: project),
+          FinancialTab(projectId: widget.projectid),
         ],
       ),
     );
