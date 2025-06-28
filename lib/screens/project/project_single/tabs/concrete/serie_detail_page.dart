@@ -1,17 +1,15 @@
-// screens/project/project_single/tabs/concrete/serie_detail_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 
-import '../../../../../models/mold_model.dart';
-import '../../../../../models/sampling_serie_model.dart';
-import '../../../../../controllers/base_controller.dart'; 
+// مسیر ایمپورت‌ها را مطابق با ساختار پروژه خودتان اصلاح کنید
+import 'package:boton/models/mold_model.dart';
+import 'package:boton/models/sampling_serie_model.dart';
+import 'package:boton/controllers/base_controller.dart'; // یا هر کنترلری که پروژه‌ها را مدیریت می‌کند
 
-// ✅✅✅ بخش ۱: استفاده از اسنک‌بار سفارشی شما ✅✅✅
-// import 'package:your_app/widgets/custom_snackbar.dart'; // مسیر اسنک‌بار خودتان را وارد کنید
-
-/// ویجت اصلی صفحه جزئیات
+// =======================================================================
+// ویجت اصلی صفحه جزئیات (بدنه اصلی صفحه)
+// =======================================================================
 class SerieDetailPage extends StatelessWidget {
   final SamplingSerie serie;
   final int projectId;
@@ -41,29 +39,20 @@ class SerieDetailPage extends StatelessWidget {
             key: ValueKey(mold.id),
             mold: mold,
             onSave: (Map<String, dynamic> updatedData) async {
-              print('Saving data for mold id ${mold.id}...');
-              print('Data: $updatedData');
-              // await Get.find<ProjectController>().updateMoldResult(...);
-
-              // ✅✅✅ بخش ۲: جایگزینی اسنک‌بار ✅✅✅
-              // Get.snackbar( ... ); // این خط را حذف یا کامنت کنید
-
-              // اینجا از اسنک‌بار سفارشی خودتان به این شکل استفاده کنید:
-              // CustomSnackbar.showSuccess(
-              //   context, 
-              //   title: 'موفقیت',
-              //   message: 'اطلاعات برای قالب ${mold.ageInDays} روزه ثبت شد.'
-              // );
+              // ✅✅✅ اتصال نهایی به کنترلر ✅✅✅
+              await Get.find<ProjectController>().updateMoldResult(
+                projectId: projectId,
+                sampleId: sampleId,
+                seriesId: serie.id,
+                moldId: mold.id,
+                resultData: updatedData,
+              );
               
-              // به عنوان نمونه، من از یک اسنک‌بار استاندارد ولی شیک‌تر استفاده می‌کنم
-               ScaffoldMessenger.of(context).showSnackBar(
+              // نمایش اسنک‌بار موفقیت (این بخش را می‌توانید با اسنک‌بار سفارشی خود جایگزین کنید)
+              ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('اطلاعات قالب ${mold.ageInDays} روزه با موفقیت ثبت شد.'),
-                  backgroundColor: const Color(0xFF2E7D32), // یک سبز تیره و شیک
-                  behavior: SnackBarBehavior.floating,
-                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  backgroundColor: const Color(0xFF2E7D32),
                 ),
               );
             },
@@ -74,9 +63,9 @@ class SerieDetailPage extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------------------
-// ✅✅✅ ویجت آکاردئونی با پالت رنگی جدید و لاکچری ✅✅✅
-// -----------------------------------------------------------------------------
+// =======================================================================
+// ویجت آکاردئونی برای هر قالب (بخش اصلی UI)
+// =======================================================================
 class MoldDataTile extends StatefulWidget {
   final Mold mold;
   final Future<void> Function(Map<String, dynamic> data) onSave;
@@ -91,25 +80,16 @@ class MoldDataTile extends StatefulWidget {
   State<MoldDataTile> createState() => _MoldDataTileState();
 }
 
-
-// ✅✅✅ بخش ۳: تعریف پالت رنگی جدید ✅✅✅
+// کلاس کمکی برای مدیریت پالت رنگی شیک
 class _LuxuryColors {
-  // وضعیت انجام شده (سبز ملایم)
   static const Color doneBackground = Color(0xFFE8F5E9);
   static const Color doneIcon = Color(0xFF2E7D32);
-  
-  // وضعیت دیر شده (قرمز بسیار ملایم)
   static const Color overdueBackground = Color(0xFFFFEBEE);
   static const Color overdueIcon = Color(0xFFC62828);
-
-  // وضعیت امروز (نارنجی/زرد کهربایی)
   static const Color todayBackground = Color(0xFFFFF8E1);
   static const Color todayIcon = Color(0xFFFFA000);
-
-  // وضعیت عادی (خاکستری روشن)
   static const Color pendingIcon = Color(0xFF757575);
 }
-
 
 class _MoldDataTileState extends State<MoldDataTile> {
   final _formKey = GlobalKey<FormState>();
@@ -117,20 +97,17 @@ class _MoldDataTileState extends State<MoldDataTile> {
   late final TextEditingController _loadController;
   late final TextEditingController _breakDateController;
 
-  late bool _isMarkedAsDone;
   DateTime? _selectedBreakDate;
 
   @override
   void initState() {
     super.initState();
-    _isMarkedAsDone = widget.mold.isDone;
     _selectedBreakDate = widget.mold.completedAt;
     _massController = TextEditingController(text: widget.mold.mass > 0 ? widget.mold.mass.toString() : '');
     _loadController = TextEditingController(text: widget.mold.breakingLoad > 0 ? widget.mold.breakingLoad.toString() : '');
     _breakDateController = TextEditingController(text: _selectedBreakDate != null ? _toPersianDate(_selectedBreakDate!) : '');
   }
 
-  // سایر متدها (_dispose, _toPersianDate, etc.) بدون تغییر هستند...
   @override
   void dispose() {
     _massController.dispose();
@@ -161,18 +138,15 @@ class _MoldDataTileState extends State<MoldDataTile> {
 
   void _submitForm() {
     if (!_formKey.currentState!.validate()) return;
-    if (_isMarkedAsDone && _selectedBreakDate == null) _selectedBreakDate = DateTime.now();
+    
     final updatedData = {
       'mass': double.tryParse(_massController.text) ?? 0.0,
       'breaking_load': double.tryParse(_loadController.text) ?? 0.0,
-      'completed_at': _isMarkedAsDone ? _selectedBreakDate?.toIso8601String() : null,
+      'completed_at': (_selectedBreakDate ?? DateTime.now()).toIso8601String(),
     };
     widget.onSave(updatedData);
   }
 
-  // ✅✅✅ بخش ۴: استفاده از پالت رنگی جدید در UI ✅✅✅
-  
-  // تابع برای تعیین رنگ پس‌زمینه کارت
   Color _getTileColor(BuildContext context) {
     if (widget.mold.isDone) return _LuxuryColors.doneBackground;
     final now = DateTime.now();
@@ -181,7 +155,6 @@ class _MoldDataTileState extends State<MoldDataTile> {
     return Theme.of(context).cardColor;
   }
   
-  // تابع برای رنگ آیکون جلوی کارت
   Color _getLeadingColor() {
     if (widget.mold.isDone) return _LuxuryColors.doneIcon;
     final now = DateTime.now();
@@ -193,7 +166,8 @@ class _MoldDataTileState extends State<MoldDataTile> {
   @override
   Widget build(BuildContext context) {
     final leadingColor = _getLeadingColor();
-
+    final String buttonText = widget.mold.isDone ? 'تغییر جزییات' : 'افزودن اطلاعات شکست';
+    
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       elevation: 0.5,
@@ -219,33 +193,13 @@ class _MoldDataTileState extends State<MoldDataTile> {
                 children: [
                   _buildInfoRow('تاریخ نمونه‌گیری:', _toPersianDate(widget.mold.createdAt)),
                   _buildInfoRow('شناسه نمونه:', widget.mold.sampleIdentifier),
-                  const Divider(height: 1),
-                  SwitchListTile(
-                    title: const Text('ثبت نتایج شکست', style: TextStyle(fontWeight: FontWeight.bold)),
-                    value: _isMarkedAsDone,
-                    activeColor: _LuxuryColors.doneIcon, // رنگ سوییچ در حالت فعال
-                    onChanged: (newValue) {
-                      setState(() {
-                        _isMarkedAsDone = newValue;
-                        if (!newValue) {
-                          _selectedBreakDate = null;
-                          _breakDateController.clear();
-                          _massController.clear();
-                          _loadController.clear();
-                        }
-                      });
-                    },
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  const Divider(height: 1),
-                  const SizedBox(height: 16),
+                  const Divider(height: 16),
+                  
                   TextFormField(
                     controller: _breakDateController,
                     decoration: const InputDecoration(labelText: 'تاریخ واقعی شکست', prefixIcon: Icon(Icons.calendar_today_outlined)),
                     readOnly: true,
-                    enabled: _isMarkedAsDone,
-                    onTap: _isMarkedAsDone ? _selectBreakDate : null, 
+                    onTap: _selectBreakDate,
                     validator: (v) => v!.isEmpty ? 'تاریخ الزامی است' : null,
                   ),
                   const SizedBox(height: 16),
@@ -253,7 +207,6 @@ class _MoldDataTileState extends State<MoldDataTile> {
                     controller: _massController,
                     decoration: const InputDecoration(labelText: 'جرم نمونه (گرم)', prefixIcon: Icon(Icons.scale_outlined)),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    enabled: _isMarkedAsDone, 
                     validator: (v) => v!.isEmpty ? 'جرم الزامی است' : null,
                   ),
                   const SizedBox(height: 16),
@@ -261,14 +214,13 @@ class _MoldDataTileState extends State<MoldDataTile> {
                     controller: _loadController,
                     decoration: const InputDecoration(labelText: 'بار گسیختگی (kN)', prefixIcon: Icon(Icons.line_weight_rounded)),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    enabled: _isMarkedAsDone,
                     validator: (v) => v!.isEmpty ? 'بار گسیختگی الزامی است' : null,
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
-                    onPressed: _isMarkedAsDone ? _submitForm : null,
+                    onPressed: _submitForm,
                     icon: const Icon(Icons.save_alt_outlined),
-                    label: const Text('ذخیره نتایج'),
+                    label: Text(buttonText),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       backgroundColor: _LuxuryColors.doneIcon,

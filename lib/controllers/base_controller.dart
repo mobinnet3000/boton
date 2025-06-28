@@ -1,6 +1,7 @@
 import 'package:boton/models/ProjectForCreation_model.dart';
 import 'package:boton/models/Sample_model.dart';
 import 'package:boton/utils/snackbar_helper.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:collection/collection.dart';
@@ -27,7 +28,13 @@ class ProjectController extends GetxController {
   // final MockApiService _apiService = MockApiService();
   final ApiService _apiService = ApiService(DioClient.instance);
   // final ApiService _apiService = ApiService(); // ✅ این خط جایگزین می‌شود
-
+final Dio _dio = Dio(BaseOptions(
+    baseUrl: 'http://127.0.0.1:8000/api', // آدرس پایه API شما
+    // می‌توانید هدرهای ثابت مثل توکن را هم اینجا اضافه کنید
+    // headers: {
+    //   'Authorization': 'Token YOUR_SAVED_TOKEN',
+    // },
+  ));
   var isLoading = true.obs;
   var user = Rxn<User>();
   var projects = <Project>[].obs;
@@ -56,6 +63,59 @@ class ProjectController extends GetxController {
       print("Stacktrace: $stacktrace");
     } finally {
       isLoading(false);
+    }
+  }
+
+  Future<void> updateMoldResult({
+    required int projectId,
+    required int sampleId,
+    required int seriesId,
+    required int moldId,
+    required Map<String, dynamic> resultData,
+  }) async {
+    try {
+      isLoading.value = true;
+      
+      // حالا به جای استفاده مستقیم از dio، متد سرویس را فراخوانی می‌کنیم
+      final updatedMold = await _apiService.updateMold(moldId, resultData);
+
+      // اگر خطایی رخ ندهد، یعنی درخواست موفق بوده و می‌توانیم state محلی را آپدیت کنیم
+      final projectIndex = projects.indexWhere((p) => p.id == projectId);
+      if (projectIndex != -1) {
+        final sampleIndex = projects[projectIndex].samples.indexWhere((s) => s.id == sampleId);
+        if (sampleIndex != -1) {
+          final seriesIndex = projects[projectIndex].samples[sampleIndex].series.indexWhere((se) => se.id == seriesId);
+          if (seriesIndex != -1) {
+            final moldIndex = projects[projectIndex].samples[sampleIndex].series[seriesIndex].molds.indexWhere((m) => m.id == moldId);
+            if (moldIndex != -1) {
+              projects[projectIndex].samples[sampleIndex].series[seriesIndex].molds[moldIndex] = updatedMold;
+              projects.refresh(); 
+              print("Mold updated successfully in both server and local state!");
+            }
+          }
+        }
+      }
+
+    } catch (e) {
+    // ✅✅✅ این بخش را با نسخه جدید جایگزین کنید ✅✅✅
+      print("================ KETCHUP: ERROR CATCHED ===============");
+      if (e is DioException) {
+        // اگر خطا از نوع خطاهای Dio (شبکه) باشد
+        print(" DioException Type: ${e.type}");
+        print(" DioException Message: ${e.message}");
+        print(" Request Path: ${e.requestOptions.path}");
+        print(" Response Status Code: ${e.response?.statusCode}");
+        print(" Response Data: ${e.response?.data}");
+      } else {
+        // برای سایر خطاها
+        print(" A non-Dio error occurred: $e");
+      }
+      print("======================================================");
+
+      Get.snackbar('خطا', 'متاسفانه در ثبت اطلاعات مشکلی پیش آمد.');
+
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -384,4 +444,5 @@ class ProjectController extends GetxController {
     print('✅             پایان گزارش               ');
     print('✅ ==========================================');
   }
+  
 }

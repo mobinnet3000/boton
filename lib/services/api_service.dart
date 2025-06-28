@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:boton/models/ProjectForCreation_model.dart';
 import 'package:boton/models/Sample_model.dart';
+import 'package:boton/models/mold_model.dart';
 import 'package:boton/models/project_model.dart';
 import 'package:boton/models/sampling_serie_model.dart';
 import 'package:boton/models/ticket_model.dart';
@@ -17,7 +18,20 @@ class ApiService {
 
   // سازنده کلاس که یک نمونه از Dio را دریافت می‌کند
   ApiService(this._dio);
-
+  Future<Mold> updateMold(int moldId, Map<String, dynamic> data) async {
+    try {
+      final response = await _dio.patch(
+        '/molds/$moldId/', // اندپوینت آپدیت قالب
+        data: data,
+      );
+      // پاسخ موفق را به صورت یک شیء Mold برمی‌گردانیم
+      return Mold.fromJson(response.data);
+    } on DioException catch (e) {
+      // خطا را برای مدیریت در کنترلر، دوباره پرتاب می‌کنیم
+      print('ApiService Error updating mold: ${e.response?.data}');
+      throw Exception('Failed to update mold');
+    }
+  }
   // متد برای دریافت داده‌های جامع کاربر
   Future<ApiResponse> getFullUserData() async {
     try {
@@ -303,40 +317,38 @@ class ApiService {
 }
 
 class DioClient {
-  // توکن احراز هویت که به صورت دستی وارد می‌شود
-  // !! در نسخه نهایی، این توکن باید از حافظه امن خوانده شود !!
+  // توکن احراز هویت شما
   static const String _manualAuthToken =
-      '1a9a3c2b359a18bdb1ea2a32bb0b3e4dc28128b9'; // <-- توکن خود را اینجا قرار دهید
+      '1a9a3c2b359a18bdb1ea2a32bb0b3e4dc28128b9'; 
 
-  // نمونه Singleton از Dio برای استفاده در کل برنامه
+  // نمونه Singleton از Dio
   static final Dio _dio = Dio(
-      BaseOptions(
-        // آدرس پایه سرور شما
-        baseUrl: 'http://127.0.0.1:8000',
-        connectTimeout: const Duration(seconds: 25), // ۵ ثانیه مهلت برای اتصال
-        receiveTimeout: const Duration(
-          seconds: 25,
-        ), // ۳ ثانیه مهلت برای دریافت پاسخ
-        headers: {
-          'Content-Type': 'application/json',
-          // اضافه کردن توکن به هدر تمام درخواست‌ها
-          'Authorization': 'Token $_manualAuthToken',
-          'User-Agent': 'PostmanRuntime/7.29.2',
-          'Accept': '*/*',
-        },
-      ),
-    )
-    ..interceptors.add(
-      // Interceptor برای لاگ کردن درخواست‌ها و پاسخ‌ها در کنسول (برای دیباگ)
-      LogInterceptor(
-        request: true,
-        requestHeader: true,
-        requestBody: true,
-        responseHeader: true,
-        responseBody: true,
-        error: true,
-      ),
-    );
+    BaseOptions(
+      // ✅✅✅ تنها تغییر لازم اینجاست ✅✅✅
+      // پیشوند /api به انتهای آدرس پایه اضافه شد
+      baseUrl: 'http://127.0.0.1:8000/api',
+      
+      connectTimeout: const Duration(seconds: 25),
+      receiveTimeout: const Duration(seconds: 25),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $_manualAuthToken',
+        'User-Agent': 'PostmanRuntime/7.29.2',
+        'Accept': '*/*',
+      },
+    ),
+  )
+  ..interceptors.add(
+    // Interceptor برای لاگ کردن درخواست‌ها (بسیار مفید و عالی)
+    LogInterceptor(
+      request: true,
+      requestHeader: true,
+      requestBody: true,
+      responseHeader: true,
+      responseBody: true,
+      error: true,
+    ),
+  );
 
   // Getter برای دسترسی به نمونه Dio
   static Dio get instance => _dio;
