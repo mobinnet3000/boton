@@ -28,15 +28,15 @@ class ProjectController extends GetxController {
   // final MockApiService _apiService = MockApiService();
   final ApiService _apiService = ApiService(DioClient.instance);
   // final ApiService _apiService = ApiService(); // ✅ این خط جایگزین می‌شود
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: 'http://127.0.0.1:8000/api', // آدرس پایه API شما
-      // می‌توانید هدرهای ثابت مثل توکن را هم اینجا اضافه کنید
-      // headers: {
-      //   'Authorization': 'Token YOUR_SAVED_TOKEN',
-      // },
-    ),
-  );
+  // final Dio _dio = Dio(
+  //   BaseOptions(
+  //     baseUrl: 'http://127.0.0.1:8000/api', // آدرس پایه API شما
+  //     // می‌توانید هدرهای ثابت مثل توکن را هم اینجا اضافه کنید
+  //     // headers: {
+  //     //   'Authorization': 'Token YOUR_SAVED_TOKEN',
+  //     // },
+  //   ),
+  // );
   var isLoading = true.obs;
   var user = Rxn<User>();
   var projects = <Project>[].obs;

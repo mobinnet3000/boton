@@ -21,7 +21,7 @@ class ApiService {
   Future<Mold> updateMold(int moldId, Map<String, dynamic> data) async {
     try {
       final response = await _dio.patch(
-        '/molds/$moldId/', // اندپوینت آپدیت قالب
+        '/api/molds/$moldId/', // اندپوینت آپدیت قالب
         data: data,
       );
       // پاسخ موفق را به صورت یک شیء Mold برمی‌گردانیم
@@ -32,6 +32,7 @@ class ApiService {
       throw Exception('Failed to update mold');
     }
   }
+
   // متد برای دریافت داده‌های جامع کاربر
   Future<ApiResponse> getFullUserData() async {
     try {
@@ -319,36 +320,36 @@ class ApiService {
 class DioClient {
   // توکن احراز هویت شما
   static const String _manualAuthToken =
-      '1a9a3c2b359a18bdb1ea2a32bb0b3e4dc28128b9'; 
+      '1a9a3c2b359a18bdb1ea2a32bb0b3e4dc28128b9';
 
   // نمونه Singleton از Dio
   static final Dio _dio = Dio(
-    BaseOptions(
-      // ✅✅✅ تنها تغییر لازم اینجاست ✅✅✅
-      // پیشوند /api به انتهای آدرس پایه اضافه شد
-      baseUrl: 'http://127.0.0.1:8000/api',
-      
-      connectTimeout: const Duration(seconds: 25),
-      receiveTimeout: const Duration(seconds: 25),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Token $_manualAuthToken',
-        'User-Agent': 'PostmanRuntime/7.29.2',
-        'Accept': '*/*',
-      },
-    ),
-  )
-  ..interceptors.add(
-    // Interceptor برای لاگ کردن درخواست‌ها (بسیار مفید و عالی)
-    LogInterceptor(
-      request: true,
-      requestHeader: true,
-      requestBody: true,
-      responseHeader: true,
-      responseBody: true,
-      error: true,
-    ),
-  );
+      BaseOptions(
+        // ✅✅✅ تنها تغییر لازم اینجاست ✅✅✅
+        // پیشوند /api به انتهای آدرس پایه اضافه شد
+        baseUrl: 'http://127.0.0.1:8000',
+
+        connectTimeout: const Duration(seconds: 25),
+        receiveTimeout: const Duration(seconds: 25),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Token $_manualAuthToken',
+          'User-Agent': 'PostmanRuntime/7.29.2',
+          'Accept': '*/*',
+        },
+      ),
+    )
+    ..interceptors.add(
+      // Interceptor برای لاگ کردن درخواست‌ها (بسیار مفید و عالی)
+      LogInterceptor(
+        request: true,
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: true,
+        responseBody: true,
+        error: true,
+      ),
+    );
 
   // Getter برای دسترسی به نمونه Dio
   static Dio get instance => _dio;
