@@ -1,6 +1,7 @@
 import 'package:boton/controllers/base_controller.dart';
 import 'package:boton/models/mold_model.dart';
 import 'package:boton/screens/pages/mold_detail_page.dart';
+import 'package:boton/screens/project/project_single/tabs/concrete/serie_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jalali_table_calendar_plus/jalali_table_calendar_plus.dart';
@@ -217,88 +218,110 @@ class FListing extends StatelessWidget {
                   itemCount: event.molds.length,
                   itemBuilder: (context, index) {
                     final mold = event.molds[index];
-                    // =====================================================================================================
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 8.0,
-                        horizontal: 16.0,
-                      ),
-                      color:
-                          mold.isDone
-                              ? const Color.fromARGB(167, 190, 255, 116)
-                              : const Color.fromARGB(168, 255, 120, 110),
 
-                      child: ExpansionTile(
-                        // عنوان برای حالت بسته
-                        title: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'ددلاین: ${DateFormat('yyyy/MM/dd').format(mold.deadline)}',
-                                style: TextStyle(
-                                  decoration:
-                                      mold.isDone
-                                          ? TextDecoration.lineThrough
-                                          : null,
-                                ),
-                              ),
+                    // =====================================================================================================
+                    return MoldDataTile(
+                      key: ValueKey(mold.id),
+                      mold: mold,
+                      onSave: (Map<String, dynamic> updatedData) async {
+                        // ✅✅✅ اتصال نهایی به کنترلر ✅✅✅
+                        await Get.find<ProjectController>().updateMoldResult(
+                          moldId: mold.id,
+                          resultData: updatedData,
+                        );
+
+                        // نمایش اسنک‌بار موفقیت (این بخش را می‌توانید با اسنک‌بار سفارشی خود جایگزین کنید)
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'اطلاعات قالب ${mold.ageInDays} روزه با موفقیت ثبت شد.',
                             ),
-                            Checkbox(
-                              value: mold.isDone,
-                              onChanged: (bool? newValue) {
-                                // mold.isDone = newValue!;
-                              },
-                            ),
-                            Text(mold.isDone ? 'انجام شده' : 'انجام نشده'),
-                          ],
-                        ),
-                        // محتوا برای حالت باز
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              children: [
-                                TextFormField(
-                                  decoration: const InputDecoration(
-                                    labelText: 'فیلد اول',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  // معمولاً در اینجا از TextEditingController استفاده می‌کنید
-                                  // controller: _fieldOneController,
-                                ),
-                                const SizedBox(height: 16),
-                                TextFormField(
-                                  decoration: const InputDecoration(
-                                    labelText: 'فیلد دوم',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  // معمولاً در اینجا از TextEditingController استفاده می‌کنید
-                                  // controller: _fieldTwoController,
-                                ),
-                                const SizedBox(height: 16),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    // منطق ارسال خود را در اینجا پیاده‌سازی کنید
-                                    // مثلاً: ذخیره داده‌ها، به‌روزرسانی وضعیت قالب و غیره.
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'اطلاعات قالب ${mold.sampleIdentifier} ارسال شد!',
-                                        ),
-                                      ),
-                                    );
-                                    // در صورت تمایل، می‌توانید پس از ارسال، تایل را ببندید
-                                    // ExpansionTile یک متد مستقیم برای بستن ندارد،
-                                    // اما در صورت نیاز می‌توانید یک وضعیت باز شده سراسری را مدیریت کنید.
-                                  },
-                                  child: const Text('ثبت اطلاعات'),
-                                ),
-                              ],
-                            ),
+                            backgroundColor: const Color(0xFF2E7D32),
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     );
+                    // return Card(
+                    //   margin: const EdgeInsets.symmetric(
+                    //     vertical: 8.0,
+                    //     horizontal: 16.0,
+                    //   ),
+                    //   color:
+                    //       mold.isDone
+                    //           ? const Color.fromARGB(167, 190, 255, 116)
+                    //           : const Color.fromARGB(168, 255, 120, 110),
+
+                    //   child: ExpansionTile(
+                    //     // عنوان برای حالت بسته
+                    //     title: Row(
+                    //       children: [
+                    //         Expanded(
+                    //           child: Text(
+                    //             'ددلاین: ${DateFormat('yyyy/MM/dd').format(mold.deadline)}',
+                    //             style: TextStyle(
+                    //               decoration:
+                    //                   mold.isDone
+                    //                       ? TextDecoration.lineThrough
+                    //                       : null,
+                    //             ),
+                    //           ),
+                    //         ),
+                    //         Checkbox(
+                    //           value: mold.isDone,
+                    //           onChanged: (bool? newValue) {
+                    //             // mold.isDone = newValue!;
+                    //           },
+                    //         ),
+                    //         Text(mold.isDone ? 'انجام شده' : 'انجام نشده'),
+                    //       ],
+                    //     ),
+                    //     // محتوا برای حالت باز
+                    //     children: [
+                    //       Padding(
+                    //         padding: const EdgeInsets.all(16.0),
+                    //         child: Column(
+                    //           children: [
+                    //             TextFormField(
+                    //               decoration: const InputDecoration(
+                    //                 labelText: 'فیلد اول',
+                    //                 border: OutlineInputBorder(),
+                    //               ),
+                    //               // معمولاً در اینجا از TextEditingController استفاده می‌کنید
+                    //               // controller: _fieldOneController,
+                    //             ),
+                    //             const SizedBox(height: 16),
+                    //             TextFormField(
+                    //               decoration: const InputDecoration(
+                    //                 labelText: 'فیلد دوم',
+                    //                 border: OutlineInputBorder(),
+                    //               ),
+                    //               // معمولاً در اینجا از TextEditingController استفاده می‌کنید
+                    //               // controller: _fieldTwoController,
+                    //             ),
+                    //             const SizedBox(height: 16),
+                    //             ElevatedButton(
+                    //               onPressed: () {
+                    //                 // منطق ارسال خود را در اینجا پیاده‌سازی کنید
+                    //                 // مثلاً: ذخیره داده‌ها، به‌روزرسانی وضعیت قالب و غیره.
+                    //                 ScaffoldMessenger.of(context).showSnackBar(
+                    //                   SnackBar(
+                    //                     content: Text(
+                    //                       'اطلاعات قالب ${mold.sampleIdentifier} ارسال شد!',
+                    //                     ),
+                    //                   ),
+                    //                 );
+                    //                 // در صورت تمایل، می‌توانید پس از ارسال، تایل را ببندید
+                    //                 // ExpansionTile یک متد مستقیم برای بستن ندارد،
+                    //                 // اما در صورت نیاز می‌توانید یک وضعیت باز شده سراسری را مدیریت کنید.
+                    //               },
+                    //               child: const Text('ثبت اطلاعات'),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // );
                   },
                 ),
               ),

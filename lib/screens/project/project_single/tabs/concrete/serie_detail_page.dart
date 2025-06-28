@@ -41,17 +41,19 @@ class SerieDetailPage extends StatelessWidget {
             onSave: (Map<String, dynamic> updatedData) async {
               // ✅✅✅ اتصال نهایی به کنترلر ✅✅✅
               await Get.find<ProjectController>().updateMoldResult(
-                projectId: projectId,
-                sampleId: sampleId,
-                seriesId: serie.id,
+                // projectId: projectId,
+                // sampleId: sampleId,
+                // seriesId: serie.id,
                 moldId: mold.id,
                 resultData: updatedData,
               );
-              
+
               // نمایش اسنک‌بار موفقیت (این بخش را می‌توانید با اسنک‌بار سفارشی خود جایگزین کنید)
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('اطلاعات قالب ${mold.ageInDays} روزه با موفقیت ثبت شد.'),
+                  content: Text(
+                    'اطلاعات قالب ${mold.ageInDays} روزه با موفقیت ثبت شد.',
+                  ),
                   backgroundColor: const Color(0xFF2E7D32),
                 ),
               );
@@ -70,11 +72,7 @@ class MoldDataTile extends StatefulWidget {
   final Mold mold;
   final Future<void> Function(Map<String, dynamic> data) onSave;
 
-  const MoldDataTile({
-    super.key,
-    required this.mold,
-    required this.onSave,
-  });
+  const MoldDataTile({super.key, required this.mold, required this.onSave});
 
   @override
   State<MoldDataTile> createState() => _MoldDataTileState();
@@ -103,9 +101,19 @@ class _MoldDataTileState extends State<MoldDataTile> {
   void initState() {
     super.initState();
     _selectedBreakDate = widget.mold.completedAt;
-    _massController = TextEditingController(text: widget.mold.mass > 0 ? widget.mold.mass.toString() : '');
-    _loadController = TextEditingController(text: widget.mold.breakingLoad > 0 ? widget.mold.breakingLoad.toString() : '');
-    _breakDateController = TextEditingController(text: _selectedBreakDate != null ? _toPersianDate(_selectedBreakDate!) : '');
+    _massController = TextEditingController(
+      text: widget.mold.mass > 0 ? widget.mold.mass.toString() : '',
+    );
+    _loadController = TextEditingController(
+      text:
+          widget.mold.breakingLoad > 0
+              ? widget.mold.breakingLoad.toString()
+              : '',
+    );
+    _breakDateController = TextEditingController(
+      text:
+          _selectedBreakDate != null ? _toPersianDate(_selectedBreakDate!) : '',
+    );
   }
 
   @override
@@ -138,7 +146,7 @@ class _MoldDataTileState extends State<MoldDataTile> {
 
   void _submitForm() {
     if (!_formKey.currentState!.validate()) return;
-    
+
     final updatedData = {
       'mass': double.tryParse(_massController.text) ?? 0.0,
       'breaking_load': double.tryParse(_loadController.text) ?? 0.0,
@@ -150,15 +158,18 @@ class _MoldDataTileState extends State<MoldDataTile> {
   Color _getTileColor(BuildContext context) {
     if (widget.mold.isDone) return _LuxuryColors.doneBackground;
     final now = DateTime.now();
-    if (DateUtils.isSameDay(now, widget.mold.deadline)) return _LuxuryColors.todayBackground;
-    if (now.isAfter(widget.mold.deadline)) return _LuxuryColors.overdueBackground;
+    if (DateUtils.isSameDay(now, widget.mold.deadline))
+      return _LuxuryColors.todayBackground;
+    if (now.isAfter(widget.mold.deadline))
+      return _LuxuryColors.overdueBackground;
     return Theme.of(context).cardColor;
   }
-  
+
   Color _getLeadingColor() {
     if (widget.mold.isDone) return _LuxuryColors.doneIcon;
     final now = DateTime.now();
-    if (DateUtils.isSameDay(now, widget.mold.deadline)) return _LuxuryColors.todayIcon;
+    if (DateUtils.isSameDay(now, widget.mold.deadline))
+      return _LuxuryColors.todayIcon;
     if (now.isAfter(widget.mold.deadline)) return _LuxuryColors.overdueIcon;
     return _LuxuryColors.pendingIcon;
   }
@@ -166,8 +177,9 @@ class _MoldDataTileState extends State<MoldDataTile> {
   @override
   Widget build(BuildContext context) {
     final leadingColor = _getLeadingColor();
-    final String buttonText = widget.mold.isDone ? 'تغییر جزییات' : 'افزودن اطلاعات شکست';
-    
+    final String buttonText =
+        widget.mold.isDone ? 'تغییر جزییات' : 'افزودن اطلاعات شکست';
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       elevation: 0.5,
@@ -179,9 +191,15 @@ class _MoldDataTileState extends State<MoldDataTile> {
       child: ExpansionTile(
         leading: CircleAvatar(
           backgroundColor: leadingColor.withOpacity(0.1),
-          child: Text(widget.mold.ageInDays.toString(), style: TextStyle(fontWeight: FontWeight.bold, color: leadingColor)),
+          child: Text(
+            widget.mold.ageInDays.toString(),
+            style: TextStyle(fontWeight: FontWeight.bold, color: leadingColor),
+          ),
         ),
-        title: Text('قالب ${widget.mold.ageInDays} روزه', style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          'قالب ${widget.mold.ageInDays}  روزه (${widget.mold.sampleIdentifier})',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         subtitle: Text('موعد شکست: ${_toPersianDate(widget.mold.deadline)}'),
         children: [
           Padding(
@@ -191,13 +209,19 @@ class _MoldDataTileState extends State<MoldDataTile> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildInfoRow('تاریخ نمونه‌گیری:', _toPersianDate(widget.mold.createdAt)),
+                  _buildInfoRow(
+                    'تاریخ نمونه‌گیری:',
+                    _toPersianDate(widget.mold.createdAt),
+                  ),
                   _buildInfoRow('شناسه نمونه:', widget.mold.sampleIdentifier),
                   const Divider(height: 16),
-                  
+
                   TextFormField(
                     controller: _breakDateController,
-                    decoration: const InputDecoration(labelText: 'تاریخ واقعی شکست', prefixIcon: Icon(Icons.calendar_today_outlined)),
+                    decoration: const InputDecoration(
+                      labelText: 'تاریخ واقعی شکست',
+                      prefixIcon: Icon(Icons.calendar_today_outlined),
+                    ),
                     readOnly: true,
                     onTap: _selectBreakDate,
                     validator: (v) => v!.isEmpty ? 'تاریخ الزامی است' : null,
@@ -205,16 +229,27 @@ class _MoldDataTileState extends State<MoldDataTile> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _massController,
-                    decoration: const InputDecoration(labelText: 'جرم نمونه (گرم)', prefixIcon: Icon(Icons.scale_outlined)),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(
+                      labelText: 'جرم نمونه (گرم)',
+                      prefixIcon: Icon(Icons.scale_outlined),
+                    ),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     validator: (v) => v!.isEmpty ? 'جرم الزامی است' : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _loadController,
-                    decoration: const InputDecoration(labelText: 'بار گسیختگی (kN)', prefixIcon: Icon(Icons.line_weight_rounded)),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    validator: (v) => v!.isEmpty ? 'بار گسیختگی الزامی است' : null,
+                    decoration: const InputDecoration(
+                      labelText: 'بار گسیختگی (kN)',
+                      prefixIcon: Icon(Icons.line_weight_rounded),
+                    ),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    validator:
+                        (v) => v!.isEmpty ? 'بار گسیختگی الزامی است' : null,
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(

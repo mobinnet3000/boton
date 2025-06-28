@@ -28,13 +28,15 @@ class ProjectController extends GetxController {
   // final MockApiService _apiService = MockApiService();
   final ApiService _apiService = ApiService(DioClient.instance);
   // final ApiService _apiService = ApiService(); // ✅ این خط جایگزین می‌شود
-final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://127.0.0.1:8000/api', // آدرس پایه API شما
-    // می‌توانید هدرهای ثابت مثل توکن را هم اینجا اضافه کنید
-    // headers: {
-    //   'Authorization': 'Token YOUR_SAVED_TOKEN',
-    // },
-  ));
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: 'http://127.0.0.1:8000/api', // آدرس پایه API شما
+      // می‌توانید هدرهای ثابت مثل توکن را هم اینجا اضافه کنید
+      // headers: {
+      //   'Authorization': 'Token YOUR_SAVED_TOKEN',
+      // },
+    ),
+  );
   var isLoading = true.obs;
   var user = Rxn<User>();
   var projects = <Project>[].obs;
@@ -67,37 +69,37 @@ final Dio _dio = Dio(BaseOptions(
   }
 
   Future<void> updateMoldResult({
-    required int projectId,
-    required int sampleId,
-    required int seriesId,
+    // required int projectId,
+    // required int sampleId,
+    // required int seriesId,
     required int moldId,
     required Map<String, dynamic> resultData,
   }) async {
     try {
       isLoading.value = true;
-      
+
       // حالا به جای استفاده مستقیم از dio، متد سرویس را فراخوانی می‌کنیم
       final updatedMold = await _apiService.updateMold(moldId, resultData);
 
       // اگر خطایی رخ ندهد، یعنی درخواست موفق بوده و می‌توانیم state محلی را آپدیت کنیم
-      final projectIndex = projects.indexWhere((p) => p.id == projectId);
-      if (projectIndex != -1) {
-        final sampleIndex = projects[projectIndex].samples.indexWhere((s) => s.id == sampleId);
-        if (sampleIndex != -1) {
-          final seriesIndex = projects[projectIndex].samples[sampleIndex].series.indexWhere((se) => se.id == seriesId);
-          if (seriesIndex != -1) {
-            final moldIndex = projects[projectIndex].samples[sampleIndex].series[seriesIndex].molds.indexWhere((m) => m.id == moldId);
-            if (moldIndex != -1) {
-              projects[projectIndex].samples[sampleIndex].series[seriesIndex].molds[moldIndex] = updatedMold;
-              projects.refresh(); 
-              print("Mold updated successfully in both server and local state!");
-            }
-          }
-        }
-      }
-
+      // final projectIndex = projects.indexWhere((p) => p.id == projectId);
+      // if (projectIndex != -1) {
+      //   final sampleIndex = projects[projectIndex].samples.indexWhere((s) => s.id == sampleId);
+      //   if (sampleIndex != -1) {
+      //     final seriesIndex = projects[projectIndex].samples[sampleIndex].series.indexWhere((se) => se.id == seriesId);
+      //     if (seriesIndex != -1) {
+      //       final moldIndex = projects[projectIndex].samples[sampleIndex].series[seriesIndex].molds.indexWhere((m) => m.id == moldId);
+      //       if (moldIndex != -1) {
+      //         projects[projectIndex].samples[sampleIndex].series[seriesIndex].molds[moldIndex] = updatedMold;
+      //         projects.refresh();
+      //         print("Mold updated successfully in both server and local state!");
+      //       }
+      //     }
+      //   }
+      // }
+      loadInitialData();
     } catch (e) {
-    // ✅✅✅ این بخش را با نسخه جدید جایگزین کنید ✅✅✅
+      // ✅✅✅ این بخش را با نسخه جدید جایگزین کنید ✅✅✅
       print("================ KETCHUP: ERROR CATCHED ===============");
       if (e is DioException) {
         // اگر خطا از نوع خطاهای Dio (شبکه) باشد
@@ -113,7 +115,6 @@ final Dio _dio = Dio(BaseOptions(
       print("======================================================");
 
       Get.snackbar('خطا', 'متاسفانه در ثبت اطلاعات مشکلی پیش آمد.');
-
     } finally {
       isLoading.value = false;
     }
@@ -444,5 +445,4 @@ final Dio _dio = Dio(BaseOptions(
     print('✅             پایان گزارش               ');
     print('✅ ==========================================');
   }
-  
 }
