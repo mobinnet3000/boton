@@ -177,10 +177,11 @@ class AddConcreteView extends StatelessWidget {
                             onTap: () {
                               // ✅✅✅ این بخش برای ناوبری استفاده می‌شود ✅✅✅
                               Navigator.of(context).pop(); // اول BottomSheet را ببند
-                              Navigator.of(context).push(
+                              Navigator.push(
+                                context,
                                 MaterialPageRoute(
-                                  builder: (ctx) => SerieDetailPage(
-                                    serie: serie, // پاس دادن کل شیء سری
+                                  builder: (_) => SerieDetailPage(
+                                    serieId: serie.id, // فقط ID را پاس می‌دهیم
                                     projectId: project.id,
                                     sampleId: sample.id,
                                   ),

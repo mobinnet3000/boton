@@ -11,60 +11,77 @@ import 'package:boton/controllers/base_controller.dart'; // یا هر کنترل
 // ویجت اصلی صفحه جزئیات (بدنه اصلی صفحه)
 // =======================================================================
 class SerieDetailPage extends StatelessWidget {
-  final SamplingSerie serie;
+  final int serieId;
   final int projectId;
   final int sampleId;
 
   const SerieDetailPage({
     super.key,
-    required this.serie,
+    required this.serieId,
     required this.projectId,
     required this.sampleId,
   });
 
   @override
   Widget build(BuildContext context) {
+    final ProjectController controller = Get.find<ProjectController>();
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('جزئیات سری: ${serie.name}'),
+        title: Obx(() {
+          // ✅ ۲. استفاده از firstWhereOrNull برای پیدا کردن امن داده‌ها
+          final serie = controller.projects
+              .firstWhereOrNull((p) => p.id == projectId)
+              ?.samples
+              .firstWhereOrNull((s) => s.id == sampleId)
+              ?.series
+              .firstWhereOrNull((se) => se.id == serieId);
+          return Text('جزئیات سری: ${serie?.name ?? "..."}');
+        }),
         elevation: 0,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(12.0),
-        itemCount: serie.molds.length,
-        itemBuilder: (context, index) {
-          final mold = serie.molds[index];
-          return MoldDataTile(
-            key: ValueKey(mold.id),
-            mold: mold,
-            onSave: (Map<String, dynamic> updatedData) async {
-              // ✅✅✅ اتصال نهایی به کنترلر ✅✅✅
-              await Get.find<ProjectController>().updateMoldResult(
-                // projectId: projectId,
-                // sampleId: sampleId,
-                // seriesId: serie.id,
-                moldId: mold.id,
-                resultData: updatedData,
-              );
+      body: Obx(() {
+        // ✅ ۳. استفاده از firstWhereOrNull در بدنه اصلی
+        final project = controller.projects.firstWhereOrNull((p) => p.id == projectId);
+        if (project == null) return const Center(child: Text('پروژه یافت نشد!'));
 
-              // نمایش اسنک‌بار موفقیت (این بخش را می‌توانید با اسنک‌بار سفارشی خود جایگزین کنید)
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'اطلاعات قالب ${mold.ageInDays} روزه با موفقیت ثبت شد.',
-                  ),
-                  backgroundColor: const Color(0xFF2E7D32),
-                ),
-              );
-            },
-          );
-        },
-      ),
+        final sample = project.samples.firstWhereOrNull((s) => s.id == sampleId);
+        if (sample == null) return const Center(child: Text('نمونه یافت نشد!'));
+
+        final liveSerie = sample.series.firstWhereOrNull((se) => se.id == serieId);
+        if (liveSerie == null) return const Center(child: Text('سری نمونه‌گیری یافت نشد!'));
+        
+        return ListView.builder(
+          padding: const EdgeInsets.all(12.0),
+          itemCount: liveSerie.molds.length,
+          itemBuilder: (context, index) {
+            final mold = liveSerie.molds[index];
+            return MoldDataTile(
+              key: ValueKey(mold.id),
+              mold: mold,
+              onSave: (Map<String, dynamic> updatedData) async {
+                await Get.find<ProjectController>().updateMoldResult(
+                  moldId: mold.id,
+                  resultData: updatedData,
+                );
+                
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('اطلاعات قالب ${mold.ageInDays} روزه با موفقیت ثبت شد.'),
+                      backgroundColor: const Color(0xFF2E7D32),
+                    ),
+                  );
+                }
+              },
+            );
+          },
+        );
+      }),
     );
   }
 }
-
 // =======================================================================
 // ویجت آکاردئونی برای هر قالب (بخش اصلی UI)
 // =======================================================================

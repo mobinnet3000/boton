@@ -37,7 +37,7 @@ class ApiService {
   Future<ApiResponse> getFullUserData() async {
     try {
       // ارسال درخواست GET به اندپوینت full-data
-      final response = await _dio.get('https://django.chbk.app/api/full-data/');
+      final response = await _dio.get('http://127.0.0.1:8000/api/full-data/');
 
       // بررسی موفقیت‌آمیز بودن پاسخ (کد 200)
       if (response.statusCode == 200) {
@@ -62,10 +62,11 @@ class ApiService {
       // درخواست POST به اندپوینت پروژه‌ها ارسال می‌شود.
       // متد toJson که ساختید، داده‌ها را برای ارسال آماده می‌کند.
       final response = await _dio.post(
-        'https://django.chbk.app/api/projects/',
+        'http://127.0.0.1:8000/api/projects/',
+        
         data: newProjectData.toJson(),
       );
-
+//https://django.chbk.app
       // اگر سرور با کد 201 (Created) پاسخ دهد، یعنی پروژه با موفقیت ساخته شده.
       if (response.statusCode == 201) {
         // سرور، پروژه کامل (با id و تاریخ) را برمی‌گرداند.
@@ -276,7 +277,7 @@ class ApiService {
   Future<SamplingSerie> createSerie(Map<String, dynamic> serieData) async {
     // ۲. تعریف آدرس کامل و هدرها به صورت دستی
     // مطمئن شوید IP و پورت صحیح است
-    final url = Uri.parse('https://django.chbk.app/api/series/');
+    final url = Uri.parse('http://127.0.0.1:8000/api/series/');
 
     // توکن خود را مستقیماً اینجا قرار دهید
     const String authToken = '1a9a3c2b359a18bdb1ea2a32bb0b3e4dc28128b9';
@@ -327,7 +328,7 @@ class DioClient {
       BaseOptions(
         // ✅✅✅ تنها تغییر لازم اینجاست ✅✅✅
         // پیشوند /api به انتهای آدرس پایه اضافه شد
-        baseUrl: 'https://django.chbk.app',
+        baseUrl: 'http://127.0.0.1:8000',
 
         connectTimeout: const Duration(seconds: 25),
         receiveTimeout: const Duration(seconds: 25),

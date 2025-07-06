@@ -96,12 +96,13 @@ class ConcreteListView extends StatelessWidget {
             onTap: () {
               // ✅✅✅ این بخش کامل می‌شود ✅✅✅
               Navigator.of(context).pop(); // اول BottomSheet را می‌بندیم
-              Navigator.of(context).push(
+              Navigator.push(
+                context,
                 MaterialPageRoute(
-                  builder: (ctx) => SerieDetailPage(
-                    serie: serie,
+                  builder: (_) => SerieDetailPage(
+                    serieId: serie.id, // فقط ID را پاس می‌دهیم
                     projectId: project.id,
-                    sampleId: parentSample.id, // شیء sample در اینجا در دسترس است
+                    sampleId: parentSample.id,
                   ),
                 ),
               );

@@ -68,54 +68,65 @@ class ProjectController extends GetxController {
     }
   }
 
+
   Future<void> updateMoldResult({
-    // required int projectId,
-    // required int sampleId,
-    // required int seriesId,
+    // ✅ فقط پارامترهایی که واقعا نیاز داریم باقی می‌مانند
     required int moldId,
     required Map<String, dynamic> resultData,
   }) async {
+    // isLoading را در ابتدای کار true می‌کنیم تا لودر نمایش داده شود
+    isLoading.value = true;
     try {
-      isLoading.value = true;
-
-      // حالا به جای استفاده مستقیم از dio، متد سرویس را فراخوانی می‌کنیم
+      // ۱. متد سرویس را برای ارسال داده به سرور فراخوانی می‌کنیم
       final updatedMold = await _apiService.updateMold(moldId, resultData);
 
-      // اگر خطایی رخ ندهد، یعنی درخواست موفق بوده و می‌توانیم state محلی را آپدیت کنیم
-      // final projectIndex = projects.indexWhere((p) => p.id == projectId);
-      // if (projectIndex != -1) {
-      //   final sampleIndex = projects[projectIndex].samples.indexWhere((s) => s.id == sampleId);
-      //   if (sampleIndex != -1) {
-      //     final seriesIndex = projects[projectIndex].samples[sampleIndex].series.indexWhere((se) => se.id == seriesId);
-      //     if (seriesIndex != -1) {
-      //       final moldIndex = projects[projectIndex].samples[sampleIndex].series[seriesIndex].molds.indexWhere((m) => m.id == moldId);
-      //       if (moldIndex != -1) {
-      //         projects[projectIndex].samples[sampleIndex].series[seriesIndex].molds[moldIndex] = updatedMold;
-      //         projects.refresh();
-      //         print("Mold updated successfully in both server and local state!");
-      //       }
-      //     }
-      //   }
-      // }
-      loadInitialData();
-    } catch (e) {
-      // ✅✅✅ این بخش را با نسخه جدید جایگزین کنید ✅✅✅
-      print("================ KETCHUP: ERROR CATCHED ===============");
-      if (e is DioException) {
-        // اگر خطا از نوع خطاهای Dio (شبکه) باشد
-        print(" DioException Type: ${e.type}");
-        print(" DioException Message: ${e.message}");
-        print(" Request Path: ${e.requestOptions.path}");
-        print(" Response Status Code: ${e.response?.statusCode}");
-        print(" Response Data: ${e.response?.data}");
+      // ✅✅✅ منطق جدید: جستجو و جایگزینی در لیست محلی ✅✅✅
+      bool moldWasFoundAndUpdated = false;
+      for (var project in projects) {
+        for (var sample in project.samples) {
+          for (var series in sample.series) {
+            // در لیست قالب‌های هر سری، به دنبال ایندکس قالب مورد نظر می‌گردیم
+            final moldIndex = series.molds.indexWhere((m) => m.id == moldId);
+            
+            if (moldIndex != -1) {
+              // پیدا شد! حالا آن را با نسخه آپدیت شده از سرور جایگزین می‌کنیم.
+              series.molds[moldIndex] = updatedMold;
+              
+              // پرچم را برای اطلاع از موفقیت‌آمیز بودن جستجو، true می‌کنیم
+              moldWasFoundAndUpdated = true;
+              
+              // با break از حلقه‌ها خارج می‌شویم تا جستجوی اضافه انجام نشود
+              break; 
+            }
+          }
+          if (moldWasFoundAndUpdated) break;
+        }
+        if (moldWasFoundAndUpdated) break;
+      }
+
+      if (moldWasFoundAndUpdated) {
+        // اگر قالب پیدا و آپدیت شد، به GetX اطلاع می‌دهیم تا UI را رفرش کند
+        projects.refresh();
+        print("Mold with ID $moldId updated locally!");
       } else {
-        // برای سایر خطاها
+        // این حالت به ندرت اتفاق می‌افتد، مگر اینکه داده‌ها از قبل هماهنگ نباشند
+        // به عنوان یک راه حل جایگزین، کل داده‌ها را رفرش می‌کنیم
+        print("Mold not found in local state, performing a full reload as a fallback.");
+        await loadInitialData();
+      }
+
+    } catch (e) {
+      // بخش مدیریت خطای شما که صحیح است
+      print("================ ERROR CATCHED ===============");
+      if (e is DioException) {
+        print(" DioException Response Data: ${e.response?.data}");
+      } else {
         print(" A non-Dio error occurred: $e");
       }
-      print("======================================================");
-
+      print("==============================================");
       Get.snackbar('خطا', 'متاسفانه در ثبت اطلاعات مشکلی پیش آمد.');
     } finally {
+      // در هر صورت (موفقیت یا شکست)، لودینگ را false می‌کنیم
       isLoading.value = false;
     }
   }
