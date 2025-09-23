@@ -88,7 +88,7 @@ class ConcreteListView extends StatelessWidget {
             ),
             title: Text(
               // نمایش اینکه کدام سری مربوط به کدام نمونه است
-              'سری ${serie.id} - نمونه ${parentSample.category}',
+              ' ${serie.name} ',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Text(deadlineInfo),
@@ -99,11 +99,12 @@ class ConcreteListView extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => SerieDetailPage(
-                    serieId: serie.id, // فقط ID را پاس می‌دهیم
-                    projectId: project.id,
-                    sampleId: parentSample.id,
-                  ),
+                  builder:
+                      (_) => SerieDetailPage(
+                        serieId: serie.id, // فقط ID را پاس می‌دهیم
+                        projectId: project.id,
+                        sampleId: parentSample.id,
+                      ),
                 ),
               );
             },

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:boton/models/ProjectForCreation_model.dart';
 import 'package:boton/models/Sample_model.dart';
 import 'package:boton/models/mold_model.dart';
@@ -18,26 +17,12 @@ class ApiService {
 
   // سازنده کلاس که یک نمونه از Dio را دریافت می‌کند
   ApiService(this._dio);
-  Future<Mold> updateMold(int moldId, Map<String, dynamic> data) async {
-    try {
-      final response = await _dio.patch(
-        '/api/molds/$moldId/', // اندپوینت آپدیت قالب
-        data: data,
-      );
-      // پاسخ موفق را به صورت یک شیء Mold برمی‌گردانیم
-      return Mold.fromJson(response.data);
-    } on DioException catch (e) {
-      // خطا را برای مدیریت در کنترلر، دوباره پرتاب می‌کنیم
-      print('ApiService Error updating mold: ${e.response?.data}');
-      throw Exception('Failed to update mold');
-    }
-  }
 
   // متد برای دریافت داده‌های جامع کاربر
   Future<ApiResponse> getFullUserData() async {
     try {
       // ارسال درخواست GET به اندپوینت full-data
-      final response = await _dio.get('http://127.0.0.1:8000/api/full-data/');
+      final response = await _dio.get('/api/full-data/');
 
       // بررسی موفقیت‌آمیز بودن پاسخ (کد 200)
       if (response.statusCode == 200) {
@@ -62,11 +47,11 @@ class ApiService {
       // درخواست POST به اندپوینت پروژه‌ها ارسال می‌شود.
       // متد toJson که ساختید، داده‌ها را برای ارسال آماده می‌کند.
       final response = await _dio.post(
-        'http://127.0.0.1:8000/api/projects/',
-        
+        '/api/projects/',
+
         data: newProjectData.toJson(),
       );
-//https://django.chbk.app
+      //https://django.chbk.app
       // اگر سرور با کد 201 (Created) پاسخ دهد، یعنی پروژه با موفقیت ساخته شده.
       if (response.statusCode == 201) {
         // سرور، پروژه کامل (با id و تاریخ) را برمی‌گرداند.
@@ -172,27 +157,6 @@ class ApiService {
     }
   }
 
-  Future<LabProfile> updateProfile(
-    int profileId,
-    Map<String, dynamic> profileData,
-  ) async {
-    try {
-      final response = await _dio.put(
-        'api/profiles/$profileId/',
-        data: profileData,
-      );
-      if (response.statusCode == 200) {
-        return LabProfile.fromJson(response.data);
-      } else {
-        throw Exception('Failed to update profile');
-      }
-    } on DioException catch (e) {
-      final errorMessage =
-          e.response?.data?.toString() ?? e.message ?? 'خطای ناشناخته';
-      throw Exception('خطا در آپدیت پروفایل: $errorMessage');
-    }
-  }
-
   Future<Sample> createSample(Map<String, dynamic> sampleData) async {
     try {
       // ارسال درخواست POST به اندپوینت نمونه‌ها
@@ -272,53 +236,43 @@ class ApiService {
     }
   }
 
-  // در کلاس ApiService
+  Future<Mold> updateMold(int moldId, Map<String, dynamic> data) async {
+    try {
+      final response = await _dio.patch(
+        '/api/molds/$moldId/', // اندپوینت آپدیت قالب
+        data: data,
+      );
+      // پاسخ موفق را به صورت یک شیء Mold برمی‌گردانیم
+      return Mold.fromJson(response.data);
+    } on DioException catch (e) {
+      // خطا را برای مدیریت در کنترلر، دوباره پرتاب می‌کنیم
+      print('ApiService Error updating mold: ${e.response?.data}');
+      throw Exception('Failed to update mold');
+    }
+  }
 
   Future<SamplingSerie> createSerie(Map<String, dynamic> serieData) async {
-    // ۲. تعریف آدرس کامل و هدرها به صورت دستی
-    // مطمئن شوید IP و پورت صحیح است
-    final url = Uri.parse('http://127.0.0.1:8000/api/series/');
-
-    // توکن خود را مستقیماً اینجا قرار دهید
-    const String authToken = '1a9a3c2b359a18bdb1ea2a32bb0b3e4dc28128b9';
-
-    final headers = {
-      'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Token $authToken',
-    };
-
-    // ۳. تبدیل بدنه درخواست به رشته JSON
-    final body = json.encode(serieData);
-
-    print('Sending request to: $url');
-    print('With body: $body');
-
     try {
-      // ۴. ارسال درخواست با پکیج http
-      final response = await http.post(url, headers: headers, body: body);
+      // ارسال درخواست POST به اندپوینت سری‌ها
+      final response = await _dio.post('/api/series/', data: serieData);
 
-      // ۵. بررسی پاسخ سرور
       if (response.statusCode == 201) {
-        // برای پشتیبانی از کاراکترهای فارسی، پاسخ را با utf8 دیکود می‌کنیم
-        final responseBody = json.decode(utf8.decode(response.bodyBytes));
-        return SamplingSerie.fromJson(responseBody);
+        // پاسخ موفقیت‌آمیز را به مدل SamplingSerie تبدیل کرده و برمی‌گردانیم
+        return SamplingSerie.fromJson(response.data);
       } else {
-        // اگر سرور پاسخ خطا داد، آن را نمایش می‌دهیم
-        print('Server Error: ${response.statusCode}');
-        print('Response Body: ${response.body}');
-        throw Exception('خطای سرور: ${response.statusCode}');
+        // پرتاب خطا در صورت عدم موفقیت درخواست
+        throw Exception('Failed to create series on server');
       }
-    } catch (e) {
-      // این بخش خطاهای اتصال شبکه را مدیریت می‌کند
-      print('HTTP Client Error: $e');
-      throw Exception(
-        'خطا در برقراری ارتباط با سرور. لطفاً اتصال و آدرس را چک کنید.',
-      );
+    } on DioException catch (e) {
+      // مدیریت خطاهای شبکه (مانند خطای اتصال، تایم‌اوت و ...)
+      print('Dio Error creating series: ${e.response?.data ?? e.message}');
+      throw Exception('خطا در ارتباط با سرور هنگام ایجاد سری.');
     }
   }
 }
 
 class DioClient {
+  //TODO باید وصلش کنیم به لاگ این
   // توکن احراز هویت شما
   static const String _manualAuthToken =
       '1a9a3c2b359a18bdb1ea2a32bb0b3e4dc28128b9';

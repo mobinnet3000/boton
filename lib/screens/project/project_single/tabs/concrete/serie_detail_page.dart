@@ -43,15 +43,23 @@ class SerieDetailPage extends StatelessWidget {
       ),
       body: Obx(() {
         // ✅ ۳. استفاده از firstWhereOrNull در بدنه اصلی
-        final project = controller.projects.firstWhereOrNull((p) => p.id == projectId);
-        if (project == null) return const Center(child: Text('پروژه یافت نشد!'));
+        final project = controller.projects.firstWhereOrNull(
+          (p) => p.id == projectId,
+        );
+        if (project == null)
+          return const Center(child: Text('پروژه یافت نشد!'));
 
-        final sample = project.samples.firstWhereOrNull((s) => s.id == sampleId);
+        final sample = project.samples.firstWhereOrNull(
+          (s) => s.id == sampleId,
+        );
         if (sample == null) return const Center(child: Text('نمونه یافت نشد!'));
 
-        final liveSerie = sample.series.firstWhereOrNull((se) => se.id == serieId);
-        if (liveSerie == null) return const Center(child: Text('سری نمونه‌گیری یافت نشد!'));
-        
+        final liveSerie = sample.series.firstWhereOrNull(
+          (se) => se.id == serieId,
+        );
+        if (liveSerie == null)
+          return const Center(child: Text('سری نمونه‌گیری یافت نشد!'));
+
         return ListView.builder(
           padding: const EdgeInsets.all(12.0),
           itemCount: liveSerie.molds.length,
@@ -65,11 +73,13 @@ class SerieDetailPage extends StatelessWidget {
                   moldId: mold.id,
                   resultData: updatedData,
                 );
-                
+
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('اطلاعات قالب ${mold.ageInDays} روزه با موفقیت ثبت شد.'),
+                      content: Text(
+                        'اطلاعات قالب ${mold.ageInDays} روزه با موفقیت ثبت شد.',
+                      ),
                       backgroundColor: const Color(0xFF2E7D32),
                     ),
                   );
@@ -82,6 +92,7 @@ class SerieDetailPage extends StatelessWidget {
     );
   }
 }
+
 // =======================================================================
 // ویجت آکاردئونی برای هر قالب (بخش اصلی UI)
 // =======================================================================
@@ -170,6 +181,7 @@ class _MoldDataTileState extends State<MoldDataTile> {
       'completed_at': (_selectedBreakDate ?? DateTime.now()).toIso8601String(),
     };
     widget.onSave(updatedData);
+    Get.find<ProjectController>().loadInitialData();
   }
 
   Color _getTileColor(BuildContext context) {
