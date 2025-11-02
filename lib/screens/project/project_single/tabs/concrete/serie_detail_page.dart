@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 
-// مسیر ایمپورت‌ها را مطابق با ساختار پروژه خودتان اصلاح کنید
+// مسیر ایمپورت‌ها را مطابق ساختار پروژه خودتان اصلاح کنید
 import 'package:boton/models/mold_model.dart';
 import 'package:boton/models/sampling_serie_model.dart';
-import 'package:boton/controllers/base_controller.dart'; // یا هر کنترلری که پروژه‌ها را مدیریت می‌کند
+import 'package:boton/controllers/base_controller.dart';
 
 // =======================================================================
-// ویجت اصلی صفحه جزئیات (بدنه اصلی صفحه)
+// ویجت اصلی صفحه جزئیات سری
 // =======================================================================
 class SerieDetailPage extends StatelessWidget {
   final int serieId;
@@ -29,64 +29,120 @@ class SerieDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Obx(() {
-          // ✅ ۲. استفاده از firstWhereOrNull برای پیدا کردن امن داده‌ها
           final serie = controller.projects
               .firstWhereOrNull((p) => p.id == projectId)
               ?.samples
               .firstWhereOrNull((s) => s.id == sampleId)
               ?.series
               .firstWhereOrNull((se) => se.id == serieId);
-          return Text('جزئیات سری: ${serie?.name ?? "..."}');
+
+          // ✅ نمایش محور سری (axis)
+          return Text('سری ${serie?.name ?? "..."} (${serie?.axis ?? "-"})');
         }),
         elevation: 0,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
+
+      // ===================================================================
+      // بدنه اصلی صفحه
+      // ===================================================================
       body: Obx(() {
-        // ✅ ۳. استفاده از firstWhereOrNull در بدنه اصلی
-        final project = controller.projects.firstWhereOrNull(
-          (p) => p.id == projectId,
-        );
-        if (project == null)
+        final project =
+            controller.projects.firstWhereOrNull((p) => p.id == projectId);
+        if (project == null) {
           return const Center(child: Text('پروژه یافت نشد!'));
+        }
 
-        final sample = project.samples.firstWhereOrNull(
-          (s) => s.id == sampleId,
-        );
-        if (sample == null) return const Center(child: Text('نمونه یافت نشد!'));
+        final sample =
+            project.samples.firstWhereOrNull((s) => s.id == sampleId);
+        if (sample == null) {
+          return const Center(child: Text('نمونه یافت نشد!'));
+        }
 
-        final liveSerie = sample.series.firstWhereOrNull(
-          (se) => se.id == serieId,
-        );
-        if (liveSerie == null)
+        final liveSerie =
+            sample.series.firstWhereOrNull((se) => se.id == serieId);
+        if (liveSerie == null) {
           return const Center(child: Text('سری نمونه‌گیری یافت نشد!'));
+        }
 
-        return ListView.builder(
+        return ListView(
           padding: const EdgeInsets.all(12.0),
-          itemCount: liveSerie.molds.length,
-          itemBuilder: (context, index) {
-            final mold = liveSerie.molds[index];
-            return MoldDataTile(
-              key: ValueKey(mold.id),
-              mold: mold,
-              onSave: (Map<String, dynamic> updatedData) async {
-                await Get.find<ProjectController>().updateMoldResult(
-                  moldId: mold.id,
-                  resultData: updatedData,
-                );
+          children: [
+            // ✅ خلاصه اطلاعات سری
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('محور: ${liveSerie.axis}',
+                      style:
+                          const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text('دمای بتن: ${liveSerie.concreteTemperature} °C'),
+                  Text('اسلامپ: ${liveSerie.slump} cm'),
+                  if (liveSerie.hasAdditive)
+                    const Text('دارای افزودنی',
+                        style: TextStyle(color: Colors.green)),
+                  const Divider(thickness: 1, height: 20),
+                ],
+              ),
+            ),
 
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'اطلاعات قالب ${mold.ageInDays} روزه با موفقیت ثبت شد.',
+            // ✅ نمایش تصاویر سری
+            if (liveSerie.photos != null && liveSerie.photos!.isNotEmpty)
+              SizedBox(
+                height: 100,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: liveSerie.photos!.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    final photoUrl = liveSerie.photos![index];
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        photoUrl,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) =>
+                            const Icon(Icons.image_not_supported),
                       ),
-                      backgroundColor: const Color(0xFF2E7D32),
-                    ),
+                    );
+                  },
+                ),
+              ),
+
+            const SizedBox(height: 20),
+            const Text(
+              'لیست قالب‌ها:',
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+
+            // ✅ لیست قالب‌ها
+            ...liveSerie.molds.map((mold) {
+              return MoldDataTile(
+                key: ValueKey(mold.id),
+                mold: mold,
+                onSave: (updatedData) async {
+                  await Get.find<ProjectController>().updateMoldResult(
+                    moldId: mold.id,
+                    resultData: updatedData,
                   );
-                }
-              },
-            );
-          },
+
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            'اطلاعات قالب ${mold.ageInDays} روزه با موفقیت ثبت شد.'),
+                        backgroundColor: const Color(0xFF2E7D32),
+                      ),
+                    );
+                  }
+                },
+              );
+            }),
+          ],
         );
       }),
     );
@@ -94,7 +150,7 @@ class SerieDetailPage extends StatelessWidget {
 }
 
 // =======================================================================
-// ویجت آکاردئونی برای هر قالب (بخش اصلی UI)
+// ویجت آکاردئونی برای هر قالب (Mold)
 // =======================================================================
 class MoldDataTile extends StatefulWidget {
   final Mold mold;
@@ -106,7 +162,6 @@ class MoldDataTile extends StatefulWidget {
   State<MoldDataTile> createState() => _MoldDataTileState();
 }
 
-// کلاس کمکی برای مدیریت پالت رنگی شیک
 class _LuxuryColors {
   static const Color doneBackground = Color(0xFFE8F5E9);
   static const Color doneIcon = Color(0xFF2E7D32);
@@ -134,9 +189,7 @@ class _MoldDataTileState extends State<MoldDataTile> {
     );
     _loadController = TextEditingController(
       text:
-          widget.mold.breakingLoad > 0
-              ? widget.mold.breakingLoad.toString()
-              : '',
+          widget.mold.breakingLoad > 0 ? widget.mold.breakingLoad.toString() : '',
     );
     _breakDateController = TextEditingController(
       text:
@@ -187,18 +240,21 @@ class _MoldDataTileState extends State<MoldDataTile> {
   Color _getTileColor(BuildContext context) {
     if (widget.mold.isDone) return _LuxuryColors.doneBackground;
     final now = DateTime.now();
-    if (DateUtils.isSameDay(now, widget.mold.deadline))
+    if (DateUtils.isSameDay(now, widget.mold.deadline)) {
       return _LuxuryColors.todayBackground;
-    if (now.isAfter(widget.mold.deadline))
+    }
+    if (now.isAfter(widget.mold.deadline)) {
       return _LuxuryColors.overdueBackground;
+    }
     return Theme.of(context).cardColor;
   }
 
   Color _getLeadingColor() {
     if (widget.mold.isDone) return _LuxuryColors.doneIcon;
     final now = DateTime.now();
-    if (DateUtils.isSameDay(now, widget.mold.deadline))
+    if (DateUtils.isSameDay(now, widget.mold.deadline)) {
       return _LuxuryColors.todayIcon;
+    }
     if (now.isAfter(widget.mold.deadline)) return _LuxuryColors.overdueIcon;
     return _LuxuryColors.pendingIcon;
   }
@@ -206,8 +262,7 @@ class _MoldDataTileState extends State<MoldDataTile> {
   @override
   Widget build(BuildContext context) {
     final leadingColor = _getLeadingColor();
-    final String buttonText =
-        widget.mold.isDone ? 'تغییر جزییات' : 'افزودن اطلاعات شکست';
+    final buttonText = widget.mold.isDone ? 'تغییر جزییات' : 'افزودن اطلاعات شکست';
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -226,10 +281,11 @@ class _MoldDataTileState extends State<MoldDataTile> {
           ),
         ),
         title: Text(
-          'قالب ${widget.mold.ageInDays}  روزه (${widget.mold.sampleIdentifier})',
+          'قالب ${widget.mold.ageInDays} روزه (${widget.mold.sampleIdentifier})',
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text('موعد شکست: ${_toPersianDate(widget.mold.deadline)}'),
+        subtitle:
+            Text('موعد شکست: ${_toPersianDate(widget.mold.deadline)}'),
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -239,11 +295,58 @@ class _MoldDataTileState extends State<MoldDataTile> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildInfoRow(
-                    'تاریخ نمونه‌گیری:',
-                    _toPersianDate(widget.mold.createdAt),
-                  ),
+                      'تاریخ نمونه‌گیری:', _toPersianDate(widget.mold.createdAt)),
                   _buildInfoRow('شناسه نمونه:', widget.mold.sampleIdentifier),
                   const Divider(height: 16),
+
+                  // 🟢 عکس‌های قبل و بعد شکست
+                  if (widget.mold.preBreakImage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('📸 عکس قبل شکست:',
+                              style: TextStyle(color: Colors.black54)),
+                          const SizedBox(height: 6),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              widget.mold.preBreakImage!,
+                              height: 150,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Icons.image_not_supported_outlined),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  if (widget.mold.postBreakImage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('📸 عکس بعد شکست:',
+                              style: TextStyle(color: Colors.black54)),
+                          const SizedBox(height: 6),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              widget.mold.postBreakImage!,
+                              height: 150,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Icons.image_not_supported_outlined),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  const SizedBox(height: 16),
 
                   TextFormField(
                     controller: _breakDateController,
@@ -262,9 +365,8 @@ class _MoldDataTileState extends State<MoldDataTile> {
                       labelText: 'جرم نمونه (گرم)',
                       prefixIcon: Icon(Icons.scale_outlined),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     validator: (v) => v!.isEmpty ? 'جرم الزامی است' : null,
                   ),
                   const SizedBox(height: 16),
@@ -274,11 +376,10 @@ class _MoldDataTileState extends State<MoldDataTile> {
                       labelText: 'بار گسیختگی (kN)',
                       prefixIcon: Icon(Icons.line_weight_rounded),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    validator:
-                        (v) => v!.isEmpty ? 'بار گسیختگی الزامی است' : null,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    validator: (v) =>
+                        v!.isEmpty ? 'بار گسیختگی الزامی است' : null,
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(

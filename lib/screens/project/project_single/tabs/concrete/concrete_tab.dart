@@ -171,7 +171,7 @@ class AddConcreteView extends StatelessWidget {
                             leading: CircleAvatar(child: Text('${index + 1}')),
                             title: Text(' ${serie.name}'),
                             subtitle: Text(
-                              'افزودنی: ${serie.hasAdditive ? "دارد" : "ندارد"} - درصد هوا: ${serie.airPercentage}% - اسلامپ: ${serie.slump} - دما: ${serie.concreteTemperature}°C',
+                            'افزودنی: ${serie.hasAdditive ? "دارد" : "ندارد"} - محور: ${serie.axis} - اسلامپ: ${serie.slump}cm - دمای بتن: ${serie.concreteTemperature}°C',
                               maxLines: 2,
                             ),
                             onTap: () {
@@ -297,12 +297,6 @@ class AddConcreteView extends StatelessWidget {
                             const Divider(height: 1, indent: 16, endIndent: 16),
                             _buildDetailRow(
                               context,
-                              Icons.science_outlined,
-                              'نوع آزمون',
-                              sample.testType,
-                            ),
-                            _buildDetailRow(
-                              context,
                               Icons.speed_outlined,
                               'عیار سیمان',
                               sample.cementGrade,
@@ -379,7 +373,6 @@ class _AddSampleFormContentState extends State<_AddSampleFormContent> {
   final concreteFactoryController = TextEditingController();
 
   DateTime? selectedDate;
-  String? selectedTestType = 'فشاری';
   String? selectedCementGrade = 'C25';
   String? selectedWeatherCondition = 'آفتابی';
 
@@ -431,19 +424,7 @@ class _AddSampleFormContentState extends State<_AddSampleFormContent> {
             validator: (v) => v!.isEmpty ? 'این فیلد الزامی است' : null,
           ),
           const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            value: selectedTestType,
-            decoration: const InputDecoration(
-              labelText: 'نوع آزمون*',
-              prefixIcon: Icon(Icons.science_outlined),
-            ),
-            items:
-                ['فشاری', 'کششی', 'خمشی']
-                    .map((l) => DropdownMenuItem(value: l, child: Text(l)))
-                    .toList(),
-            onChanged: (v) => setState(() => selectedTestType = v!),
-            validator: (v) => v == null ? 'این فیلد الزامی است' : null,
-          ),
+
           const SizedBox(height: 16),
           TextFormField(
             controller: dateController,
@@ -547,16 +528,20 @@ Future<void> showAddSampleDialog({
                 // ✅ ۱. ساختن Map داده‌ها برای ارسال به API
                 final sampleData = {
                   'project': projectId,
-                  'date':
-                      formState.selectedDate!
-                          .toIso8601String(), // ارسال تاریخ میلادی استاندارد
-                  'test_type': formState.selectedTestType!,
+                  'date': formState.selectedDate!.toIso8601String(),
                   'sampling_volume': formState.samplingVolumeController.text,
                   'cement_grade': formState.selectedCementGrade!,
+                  'cement_type': 'تیپ 2',
+                  'ambient_temperature': 20.0,
+                  'specimen_type': 'مکعبی',
+                  'specimen_size': '15x15x15',
+                  'sampling_location': 'کارگاه',
+                  'concrete_production_method': 'دستی',
                   'category': formState.categoryController.text.trim(),
                   'weather_condition': formState.selectedWeatherCondition!,
                   'concrete_factory': formState.concreteFactoryController.text,
                 };
+
 
                 // ✅ ۲. فراخوانی متد کنترلر برای ارسال داده و آپدیت state
                 await Get.find<ProjectController>().addSampleToProject(
@@ -950,14 +935,15 @@ class _AddSerieFormState extends State<_AddSerieForm> {
       'sample': widget.sampleId,
       'concrete_temperature':
           double.tryParse(_concreteTempController.text) ?? 0.0,
-      'ambient_temperature':
-          double.tryParse(_ambientTempController.text) ?? 0.0,
       'slump': double.tryParse(_slumpController.text) ?? 0.0,
-      'range': _rangeController.text,
-      'air_percentage': double.tryParse(_airPercentageController.text) ?? 0.0,
+      'axis': 'A1',
       'has_additive': _hasAdditive,
+      'photos': [],
+      'concrete_temperature_image': null,
+      'slump_image': null,
       'mold_ages': _moldAges,
     };
+
     await Get.find<ProjectController>().addSerieToSample(
       serieData,
       widget.projectId,

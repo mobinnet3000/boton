@@ -1,5 +1,6 @@
 import 'package:boton/models/ProjectForCreation_model.dart';
 import 'package:boton/models/Sample_model.dart';
+import 'package:boton/models/sampling_serie_model.dart';
 import 'package:boton/utils/snackbar_helper.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -236,7 +237,82 @@ class ProjectController extends GetxController {
   Future<bool> addProject(ProjectForCreation projectData) async {
     try {
       isAddingProject(true);
-      final createdProject = await _apiService.createProject(projectData);
+
+      // ایجاد پروژه سمت سرور
+      var createdProject = await _apiService.createProject(projectData);
+
+      // تعداد نمونه‌ها (2 * floorCount + 1)
+      final totalSamples = (2 * (createdProject.floorCount ?? 0)) + 1;
+
+      createdProject.samples ??= [];
+
+      for (int i = 0; i < totalSamples; i++) {
+        final sampleName = i == 0
+            ? 'فنداسیون'
+            : i.isOdd
+                ? 'ستون ${(i / 2).ceil()}'
+                : 'سقف ${(i / 2).ceil()}';
+
+        // ایجاد هر نمونه (Sample)
+        final sample = Sample.fromJson({
+          'id': i + 1,
+          'project': createdProject.id,
+          'cement_type': 'Type I',
+          'ambient_temperature': 25,
+          'specimen_type': 'cube',
+          'specimen_size': '150x150x150',
+          'sampling_location': sampleName,
+          'concrete_production_method': 'بچینگ کارخانه',
+          'series': [],
+        });
+
+        // حجم بتن برای این نمونه
+        final double volume =
+            double.tryParse(createdProject.samplingVolume?.toString() ?? '0') ?? 0;
+
+        // تعداد سری‌های نمونه (ceil(volume / 30))
+        final seriesCount = (volume / 30).ceil().clamp(1, 20);
+
+        for (int j = 0; j < seriesCount; j++) {
+          // ساخت هر سری نمونه
+          final serie = SamplingSerie.fromJson({
+            'id': j + 1,
+            'name': '$sampleName-${j + 1}',
+            'axis': 'A${j + 1}',
+            'concrete_temperature': 0.0,
+            'has_additive': false,
+            'concrete_temperature_image': null,
+            'slump_image': null,
+            'photos': [],
+            'molds': [],
+          });
+
+          // افزودن 3 عدد قالب به هر سری
+          final List<Mold> molds = List.generate(3, (mIdx) {
+            return Mold(
+              id: 0,
+              ageInDays: [7, 14, 28][mIdx],
+              mass: 0.0,
+              breakingLoad: 0.0,
+              createdAt: DateTime.now(),
+              completedAt: null,
+              deadline: DateTime.now().add(Duration(days: [7, 14, 28][mIdx])),
+              sampleIdentifier: '${sampleName}-${j + 1}-M${mIdx + 1}',
+              extraData: {},
+              seriesId: 0,
+              isDone: false,
+              preBreakImage: null,
+              postBreakImage: null,
+            );
+          });
+
+          serie.molds.addAll(molds);
+          sample.series.add(serie);
+        }
+
+        createdProject.samples.add(sample);
+      }
+
       projects.insert(0, createdProject);
 
       Get.snackbar(
@@ -245,19 +321,24 @@ class ProjectController extends GetxController {
         backgroundColor: Colors.green,
         colorText: Colors.white,
       );
-      return true; // ✅ موفقیت
+
+      return true;
     } catch (e) {
       Get.snackbar(
         'خطا',
         'متاسفانه در ایجاد پروژه مشکلی پیش آمد: $e',
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        duration: const Duration(seconds: 4),
+        margin: const EdgeInsets.all(12),
       );
-      return false; // ✅ شکست
+      return false;
     } finally {
       isAddingProject(false);
     }
   }
+
+
 
   Future<void> addSampleToProject(
     Map<String, dynamic> sampleData,

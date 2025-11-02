@@ -33,9 +33,8 @@ class _DetailsTabState extends State<DetailsTab> {
   late TextEditingController _municipalityZoneController;
   late TextEditingController _floorCountController;
   late TextEditingController _occupiedAreaController;
-  late TextEditingController _moldTypeController;
   late TextEditingController _projectUsageTypeController;
-  late TextEditingController _cementTypeController;
+  late TextEditingController _testTypeController;
 
   @override
   void initState() {
@@ -83,11 +82,11 @@ class _DetailsTabState extends State<DetailsTab> {
     _occupiedAreaController = TextEditingController(
       text: project.occupiedArea.toString(),
     );
-    _moldTypeController = TextEditingController(text: project.moldType);
     _projectUsageTypeController = TextEditingController(
       text: project.projectUsageType,
     );
-    _cementTypeController = TextEditingController(text: project.cementType);
+    _testTypeController = TextEditingController(text: project.testType);
+
   }
 
   @override
@@ -105,9 +104,8 @@ class _DetailsTabState extends State<DetailsTab> {
     _municipalityZoneController.dispose();
     _floorCountController.dispose();
     _occupiedAreaController.dispose();
-    _moldTypeController.dispose();
     _projectUsageTypeController.dispose();
-    _cementTypeController.dispose();
+    _testTypeController.dispose();
     super.dispose();
   }
 
@@ -144,9 +142,8 @@ class _DetailsTabState extends State<DetailsTab> {
         occupiedArea:
             double.tryParse(_occupiedAreaController.text) ??
             widget.project.occupiedArea,
-        moldType: _moldTypeController.text,
         projectUsageType: _projectUsageTypeController.text,
-        cementType: _cementTypeController.text,
+        testType: _testTypeController.text,
       );
 
       // فراخوانی متد کنترلر برای آپدیت پروژه در سرور و state برنامه
@@ -309,15 +306,9 @@ class _DetailsTabState extends State<DetailsTab> {
                   project.occupiedArea.toString(),
                   Icons.square_foot_outlined,
                 ),
-                _buildDisplayRow(
-                  'نوع سیمان:',
-                  project.cementType,
-                  Icons.grain_outlined,
-                ),
-                _buildDisplayRow(
-                  'نوع قالب:',
-                  project.moldType,
-                  Icons.view_in_ar_outlined,
+                _buildDisplayRow('نوع آزمون:',
+                  project.testType, 
+                  Icons.science_outlined
                 ),
               ],
             ),
@@ -417,16 +408,13 @@ class _DetailsTabState extends State<DetailsTab> {
                 icon: Icons.square_foot_outlined,
                 keyboardType: TextInputType.number,
               ),
-              _buildTextFormField(
-                controller: _cementTypeController,
-                label: 'نوع سیمان',
-                icon: Icons.grain_outlined,
+              _buildDropdownFormField(
+                controller: _testTypeController,
+                label: 'نوع آزمون',
+                icon: Icons.science_outlined,
+                items: const ['مقاومت فشاری', 'چکش اشمیت'],
               ),
-              _buildTextFormField(
-                controller: _moldTypeController,
-                label: 'نوع قالب',
-                icon: Icons.view_in_ar_outlined,
-              ),
+
             ],
           ),
         ],
@@ -461,6 +449,34 @@ class _DetailsTabState extends State<DetailsTab> {
       ),
     );
   }
+
+  Widget _buildDropdownFormField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required List<String> items,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: DropdownButtonFormField<String>(
+        value: controller.text.isEmpty ? null : controller.text,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon),
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+          ),
+        ),
+        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+        onChanged: (value) => controller.text = value ?? '',
+        validator: (value) {
+          if (value == null || value.isEmpty) return '$label را انتخاب کنید';
+          return null;
+        },
+      ),
+    );
+  }
+
 
   Widget _buildDisplayRow(String label, String value, IconData icon) {
     return Padding(

@@ -30,10 +30,10 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
     'address': TextEditingController(),
     'projectUsageType': TextEditingController(),
     'floorCount': TextEditingController(),
-    'cementType': TextEditingController(),
     'occupiedArea': TextEditingController(),
-    'moldType': TextEditingController(),
     'contractPrice': TextEditingController(),
+    'testType': TextEditingController(),
+
   };
 
   // تعریف FocusNode برای هر فیلد
@@ -78,28 +78,26 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
     }
 
     // ساخت آبجکت پروژه از داده‌های فرم
-    final newProjectData = ProjectForCreation(
-      fileNumber: _controllers['fileNumber']!.text,
-      projectName: _controllers['projectName']!.text,
-      clientName: _controllers['clientName']!.text,
-      clientPhoneNumber: _controllers['clientPhoneNumber']!.text,
-      supervisorName: _controllers['supervisorName']!.text,
-      supervisorPhoneNumber: _controllers['supervisorPhoneNumber']!.text,
-      requesterName: _controllers['requesterName']!.text,
-      requesterPhoneNumber: _controllers['requesterPhoneNumber']!.text,
-      municipalityZone: _controllers['municipalityZone']!.text,
-      address: _controllers['address']!.text,
-      projectUsageType: _controllers['projectUsageType']!.text,
-      floorCount: int.tryParse(_controllers['floorCount']!.text) ?? 0,
-      cementType: _controllers['cementType']!.text,
-      occupiedArea: double.tryParse(_controllers['occupiedArea']!.text) ?? 0.0,
-      moldType: _controllers['moldType']!.text,
-      contractPrice:
-          double.tryParse(
-            _controllers['contractPrice']!.text.replaceAll(',', ''),
-          ) ??
-          0.0,
-    );
+  final newProjectData = ProjectForCreation(
+    fileNumber: _controllers['fileNumber']!.text,
+    projectName: _controllers['projectName']!.text,
+    clientName: _controllers['clientName']!.text,
+    clientPhoneNumber: _controllers['clientPhoneNumber']!.text,
+    supervisorName: _controllers['supervisorName']!.text,
+    supervisorPhoneNumber: _controllers['supervisorPhoneNumber']!.text,
+    requesterName: _controllers['requesterName']!.text,
+    requesterPhoneNumber: _controllers['requesterPhoneNumber']!.text,
+    municipalityZone: _controllers['municipalityZone']!.text,
+    address: _controllers['address']!.text,
+    projectUsageType: _controllers['projectUsageType']!.text,
+    floorCount: int.tryParse(_controllers['floorCount']!.text) ?? 0,
+    testType: _controllers['testType']!.text, // ✅ جایگزین cementType و moldType
+    occupiedArea: double.tryParse(_controllers['occupiedArea']!.text) ?? 0.0,
+    contractPrice: double.tryParse(
+      _controllers['contractPrice']!.text.replaceAll(',', ''),
+    ) ?? 0.0,
+  );
+
 
     // منتظر نتیجه از کنترلر بمان
     final bool success = await _projectController.addProject(newProjectData);
@@ -251,20 +249,43 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                 title: 'مشخصات قرارداد و بتن',
                 icon: Icons.receipt_long,
                 children: [
-                  _CustomTextFormField(
-                    controller: _controllers['cementType']!,
-                    focusNode: _focusNodes['cementType']!,
-                    nextFocusNode: _focusNodes['moldType']!,
-                    labelText: 'نوع سیمان مصرفی',
-                    icon: Icons.blender,
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: DropdownButtonFormField<String>(
+                    value: _controllers['testType']!.text.isEmpty
+                        ? null
+                        : _controllers['testType']!.text,
+                    decoration: InputDecoration(
+                      labelText: 'نوع آزمایش',
+                      prefixIcon: const Icon(Icons.science_outlined),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      filled: true,
+                      fillColor: Colors.grey.shade50,
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'compressive',
+                        child: Text('مقاومت فشاری'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'schmidt',
+                        child: Text('چکش اشمیت'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        _controllers['testType']!.text = value;
+                      }
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'نوع آزمایش را انتخاب کنید';
+                      }
+                      return null;
+                    },
                   ),
-                  _CustomTextFormField(
-                    controller: _controllers['moldType']!,
-                    focusNode: _focusNodes['moldType']!,
-                    nextFocusNode: _focusNodes['contractPrice']!,
-                    labelText: 'نوع قالب',
-                    icon: Icons.view_in_ar,
-                  ),
+                ),
+
                   _CustomTextFormField(
                     controller: _controllers['contractPrice']!,
                     focusNode: _focusNodes['contractPrice']!,

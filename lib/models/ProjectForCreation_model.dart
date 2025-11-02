@@ -14,9 +14,8 @@ class ProjectForCreation {
   final String address;
   final String projectUsageType;
   final int floorCount;
-  final String cementType;
+  final String testType; // ✅
   final double occupiedArea;
-  final String moldType;
   final double contractPrice;
 
   const ProjectForCreation({
@@ -32,13 +31,12 @@ class ProjectForCreation {
     required this.address,
     required this.projectUsageType,
     required this.floorCount,
-    required this.cementType,
+    required this.testType,
     required this.occupiedArea,
-    required this.moldType,
     required this.contractPrice,
   });
 
-  /// این متد آبجکت دیتای پروژه را به فرمت Map برای ارسال به سرور تبدیل می‌کند.
+
   Map<String, dynamic> toJson() {
     return {
       'file_number': fileNumber,
@@ -53,9 +51,8 @@ class ProjectForCreation {
       'address': address,
       'project_usage_type': projectUsageType,
       'floor_count': floorCount,
-      'cement_type': cementType,
+      'test_type': testType,
       'occupied_area': occupiedArea,
-      'mold_type': moldType,
       'contract_price': contractPrice,
     };
   }

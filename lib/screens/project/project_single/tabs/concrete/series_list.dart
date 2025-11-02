@@ -1,13 +1,12 @@
 import 'package:boton/models/Sample_model.dart';
 import 'package:boton/models/project_model.dart';
 import 'package:boton/models/sampling_serie_model.dart';
-import 'package:boton/screens/project/project_single/tabs/concrete/concrete_tab.dart';
 import 'package:boton/screens/project/project_single/tabs/concrete/serie_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 
 //======================================================================
-// ۳. ویجت مربوط به تب "لیست کل نمونه‌ها" (کامل شده)
+// تب "لیست کل نمونه‌ها" – نمایش تمام سری‌ها از تمام نمونه‌های یک پروژه
 //======================================================================
 
 class ConcreteListView extends StatelessWidget {
@@ -17,13 +16,13 @@ class ConcreteListView extends StatelessWidget {
   /// تابع کمکی برای تبدیل تاریخ میلادی به شمسی
   String _toPersianDate(DateTime date) {
     final f = Jalali.fromDateTime(date);
-    return f.toString(); // فرمت YYYY/MM/DD
+    return '${f.year}/${f.month.toString().padLeft(2, '0')}/${f.day.toString().padLeft(2, '0')}';
   }
 
   @override
   Widget build(BuildContext context) {
     //------------------------------------------------------------------
-    // مرحله اول: ساختن یک لیست یکپارچه از تمام سری‌ها در پروژه
+    // مرحله ۱: ساخت لیست تمام سری‌ها در پروژه
     //------------------------------------------------------------------
     final List<SerieWithContext> allSeries = [];
     for (final sample in project.samples) {
@@ -32,13 +31,13 @@ class ConcreteListView extends StatelessWidget {
       }
     }
 
-    // (اختیاری) مرتب‌سازی لیست بر اساس تاریخ نمونه‌گیری
+    // مرتب‌سازی بر اساس تاریخ نمونه‌گیری
     allSeries.sort(
       (a, b) => a.parentSample.date.compareTo(b.parentSample.date),
     );
 
     //------------------------------------------------------------------
-    // مرحله دوم: ساخت UI
+    // مرحله ۲: ساخت نمای UI
     //------------------------------------------------------------------
     if (allSeries.isEmpty) {
       return Center(
@@ -57,54 +56,91 @@ class ConcreteListView extends StatelessWidget {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8),
       itemCount: allSeries.length,
       itemBuilder: (context, index) {
         final item = allSeries[index];
         final serie = item.serie;
         final parentSample = item.parentSample;
 
-        // پیدا کردن اولین تاریخ شکست برای نمایش در زیرنویس
+        //--------------------------------------------------------------
+        // تعیین تاریخ شکست بعدی بر اساس کمترین deadline قالب‌ها
+        //--------------------------------------------------------------
         String deadlineInfo = 'بدون قالب';
         if (serie.molds.isNotEmpty) {
-          // برای اطمینان، قالب‌ها را بر اساس تاریخ مرتب می‌کنیم
           serie.molds.sort((a, b) => a.deadline.compareTo(b.deadline));
           final nextDeadline = serie.molds.first.deadline;
           deadlineInfo = 'تاریخ شکست بعدی: ${_toPersianDate(nextDeadline)}';
         }
 
+        //--------------------------------------------------------------
+        // عکس نمایه (اولین عکس سری در صورت وجود)
+        //--------------------------------------------------------------
+        String? previewImage =
+            (serie.photos != null && serie.photos!.isNotEmpty)
+                ? serie.photos!.first
+                : null;
+
+        //--------------------------------------------------------------
+        // ساخت کارت نمایش سری
+        //--------------------------------------------------------------
         return Card(
           elevation: 2,
+          margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-              child: Icon(
-                Icons.science_outlined,
-                color: Theme.of(context).primaryColor,
-              ),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: previewImage != null
+                  ? Image.network(
+                      previewImage,
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) =>
+                          const Icon(Icons.image_not_supported, size: 30),
+                    )
+                  : CircleAvatar(
+                      backgroundColor:
+                          Theme.of(context).primaryColor.withOpacity(0.1),
+                      child: Icon(Icons.science_outlined,
+                          color: Theme.of(context).primaryColor),
+                    ),
             ),
             title: Text(
-              // نمایش اینکه کدام سری مربوط به کدام نمونه است
-              ' ${serie.name} ',
+              'سری ${serie.name} (${serie.axis})',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: Text(deadlineInfo),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(deadlineInfo),
+                const SizedBox(height: 4),
+                Text(
+                  'دما: ${serie.concreteTemperature}°C | اسلامپ: ${serie.slump}cm ${serie.hasAdditive ? "| افزودنی دارد" : ""}',
+                  style: const TextStyle(color: Colors.black54, fontSize: 13),
+                ),
+              ],
+            ),
+
+            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
             onTap: () {
-              // ✅✅✅ این بخش کامل می‌شود ✅✅✅
-              Navigator.of(context).pop(); // اول BottomSheet را می‌بندیم
+              // بستن BottomSheet در صورت باز بودن
+              Navigator.of(context).pop();
+              // رفتن به صفحه جزئیات سری
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder:
-                      (_) => SerieDetailPage(
-                        serieId: serie.id, // فقط ID را پاس می‌دهیم
-                        projectId: project.id,
-                        sampleId: parentSample.id,
-                      ),
+                  builder: (_) => SerieDetailPage(
+                    serieId: serie.id,
+                    projectId: project.id,
+                    sampleId: parentSample.id,
+                  ),
                 ),
               );
             },
@@ -116,7 +152,7 @@ class ConcreteListView extends StatelessWidget {
 }
 
 //======================================================================
-// ۱. کلاس کمکی برای نگهداری هر سری نمونه همراه با نمونه والد آن
+// کلاس کمکی برای نگهداری رابطه سری با نمونه والد آن
 //======================================================================
 class SerieWithContext {
   final SamplingSerie serie;
